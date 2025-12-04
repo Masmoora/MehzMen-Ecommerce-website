@@ -6,4 +6,6 @@ router.get("/",userController.loadHomepage);
 router.get("/pageNotFound",userController.pageNotFound);
 router.get('/signup',userController.loadsignup)
 router.post('/signup',userController.signup)
+router.post('/verify-otp',userController.verifyOtp)
+router.post('/resend-otp',userController.verifyOtp)
 module.exports=router;

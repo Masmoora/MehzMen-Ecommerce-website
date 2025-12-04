@@ -1,4 +1,5 @@
 const User = require("../../models/userSchema");
+const bcrypt = require('bcrypt');
 const nodemailer = require("nodemailer");
 const env = require("dotenv").config()
 
@@ -68,7 +69,7 @@ async function sendVarificationMail(email, otp) {
 
 const signup = async (req, res) => {
     try {
-        let { email, password, cpassword } = req.body;
+        let {name,phone, email, password, cpassword } = req.body;
         console.log(req.body)
 
 
@@ -84,12 +85,12 @@ const signup = async (req, res) => {
         if (!emailSent) return res.render('signup', { message: "Failed to send OTP. Try again." });
 
         // Store temporary signup info in session
-        req.session.userData = { email, password };
+        req.session.userData = { name,phone,email, password };
         req.session.userotp = otp;
 
-        // res.render('verify-otp', { message: null });
+        res.render('verify-otp');
         console.log("otp sent", otp)
-        return res.send("otp send")
+        
 
     } catch (error) {
         console.error('Signup error:', error);
@@ -97,10 +98,74 @@ const signup = async (req, res) => {
     }
 };
 
+// ---------- PASSWORD HASHING ----------
+
+const securePassword = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
+
+// ---------- VERIFY OTP ----------
+
+const verifyOtp = async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    if (!otp || otp !== req.session.userotp) {
+      return res.status(400).json({ success: false, message: 'Invalid OTP, please enter again' });
+    }
+
+    const newUser = req.session.userData;
+    const hashedPassword = await securePassword(newUser.password);
+
+    const saveUser = new User({
+      name: newUser.name,
+      email: newUser.email,
+      phone: newUser.phone,
+      password: hashedPassword
+    });
+
+    await saveUser.save();
+
+    // Clear temporary session data
+    req.session.userData = null;
+    req.session.userotp = null;
+    //req.session.user = saveUser._id
+    // Do NOT log in automatically, redirect to login page
+    res.json({ success: true, redirectUrl:"/"});
+
+  } catch (error) {
+    console.error("Error verifying OTP:", error);
+    res.status(500).json({ success: false, message: 'Something went wrong' });
+  }
+};
+// ---------- RESEND OTP ----------
+
+const resend_otp = async (req, res) => {
+  try {
+    const email = req.session.userData?.email;
+    if (!email) return res.status(400).json({ success: false, message: 'Email not found in session' });
+
+    const otp = generateOtp();
+    req.session.userotp = otp;
+    console.log(otp)
+
+    const emailSent = await sendVarificationMail(email, otp);
+
+    if (emailSent) return res.status(200).json({ success: true, message: 'OTP resent successfully' });
+    return res.status(500).json({ success: false, message: 'Failed to resend OTP' });
+
+  } catch (error) {
+    console.error('Error resending OTP:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+
 
 module.exports = {
     loadHomepage,
     pageNotFound,
     loadsignup,
-    signup
+    signup,
+    verifyOtp 
 }
