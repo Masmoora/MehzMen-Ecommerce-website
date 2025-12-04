@@ -174,6 +174,33 @@ const resend_otp = async (req, res) => {
   }
 };
 
+// ---------- LOGIN ----------
+
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email) return res.render('login', { message: 'Email is required' });
+    if (!password) return res.render('login', { message: 'Password is required' });
+
+    const existingUser = await user.findOne({ email, isAdmin: 0 });
+    if (!existingUser) return res.render('login', { message: 'Invalid email or password' });
+    if (existingUser.isBlocked) return res.render('login', { message: 'User is blocked by admin' });
+
+    const isMatch = await bcrypt.compare(password, existingUser.password);
+    if (!isMatch) return res.render('login', { message: 'Invalid password' });
+
+    // Set session after successful login
+    req.session.user =existingUser._id
+
+    res.redirect('/');
+
+  } catch (error) {
+    console.log('Login error:', error);
+    res.render('login', { message: 'Login failed, try again' });
+  }
+};
+
 
 
 module.exports = {
@@ -183,5 +210,6 @@ module.exports = {
     signup,
     verifyOtp ,
     resend_otp,
-    loadLogin
+    loadLogin,
+    loginUser
 }
