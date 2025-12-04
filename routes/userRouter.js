@@ -21,4 +21,5 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
   }
 });
 
+router.get('/login',userController.loadLogin)
 module.exports=router;

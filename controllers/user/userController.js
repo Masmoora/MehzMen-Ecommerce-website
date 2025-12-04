@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const nodemailer = require("nodemailer");
 const env = require("dotenv").config()
 
+// ---------- PAGE LOAD FUNCTIONS ----------
+
 const pageNotFound = async (req, res) => {
     try {
         res.render("page-404")
@@ -21,12 +23,24 @@ const loadHomepage = async (req, res) => {
 
 const loadsignup = async (req, res) => {
     try {
-        res.render('signup', { user: null, message: null });
+        res.render('signup');
     } catch (error) {
         console.log("Signup page error:", error);
         res.status(500).send('Server error');
     }
 };
+
+const loadLogin = async (req,res)=>{
+    try{
+        if(!req.session.user){
+            return res.render("login")
+        }else{
+            res.redirect("/")
+        }
+    }catch{
+        res.redirect("/pageNotFound")
+    }
+}
 
 // ---------- OTP & EMAIL ----------
 
@@ -168,5 +182,6 @@ module.exports = {
     loadsignup,
     signup,
     verifyOtp ,
-    resend_otp
+    resend_otp,
+    loadLogin
 }
