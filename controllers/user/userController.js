@@ -167,5 +167,6 @@ module.exports = {
     pageNotFound,
     loadsignup,
     signup,
-    verifyOtp 
+    verifyOtp ,
+    resend_otp
 }
