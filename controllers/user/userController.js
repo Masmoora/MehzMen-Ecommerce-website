@@ -15,9 +15,16 @@ const pageNotFound = async (req, res) => {
 
 const loadHomepage = async (req, res) => {
     try {
+        const userId = req.session.user;
+        if(userId){
+            const userData = await User.findById(userId).lean();
+            res.render("home",{user:userData})
+        }else{
         return res.render("Home")
+        }
     } catch (error) {
-        console.log("Home page not found")
+        console.log("Home page not found",error)
+        res.status(500).send('server error')
     }
 };
 
@@ -141,11 +148,11 @@ const verifyOtp = async (req, res) => {
     await saveUser.save();
 
     // Clear temporary session data
-    req.session.userData = null;
-    req.session.userotp = null;
-    //req.session.user = saveUser._id
+    //req.session.userData = null;
+    //req.session.userotp = null;
+    req.session.user = saveUser._id
     // Do NOT log in automatically, redirect to login page
-    res.json({ success: true, redirectUrl:"/"});
+    res.json({ success: true, redirectUrl:"/login"});
 
   } catch (error) {
     console.error("Error verifying OTP:", error);
@@ -183,7 +190,7 @@ const loginUser = async (req, res) => {
     if (!email) return res.render('login', { message: 'Email is required' });
     if (!password) return res.render('login', { message: 'Password is required' });
 
-    const existingUser = await user.findOne({ email, isAdmin: 0 });
+    const existingUser = await User.findOne({ email, isAdmin: 0 });
     if (!existingUser) return res.render('login', { message: 'Invalid email or password' });
     if (existingUser.isBlocked) return res.render('login', { message: 'User is blocked by admin' });
 

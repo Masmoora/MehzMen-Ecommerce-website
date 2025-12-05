@@ -153,18 +153,18 @@
             <form action="/login" method="POST">
                 <input type="email" class="form-control" placeholder="Email" required>
                 <input type="password" class="form-control" placeholder="Password" required>
-                 <!-- Error Message -->
-          <% if(locals.message && message.length > 0){ %>
-            <div class="alert alert-danger text-center mt-2">
-              <%= message %>
-            </div>
-          <% } %>
+                <!-- Error Message -->
+                <% if(locals.message && message.length> 0){ %>
+                    <div class="alert alert-danger text-center mt-2">
+                        <%= message %>
+                    </div>
+                    <% } %>
 
-                <div class="text-end">
-                    <a href="/forgot-password" class="text-decoration-none small">Forgot password?</a>
-                </div>
+                        <div class="text-end">
+                            <a href="/forgot-password" class="text-decoration-none small">Forgot password?</a>
+                        </div>
 
-                <button class="login-btn">Login</button>
+                        <button class="login-btn">Login</button>
             </form>
 
             <div class="bottom-text">
