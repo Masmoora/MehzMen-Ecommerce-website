@@ -23,5 +23,6 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 
 router.get('/login',userController.loadLogin)
 router.post('/login',userController.loginUser)
+router.get('/logout',userController.logout)
 
 module.exports=router;
