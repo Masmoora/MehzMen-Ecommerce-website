@@ -2,10 +2,11 @@ const express=require("express");
 const router=express.Router();
 const passport = require('../config/passport');
 const userController=require("../controllers/user/userController");
+const auth=require('../middlewares/auth')
 
-router.get("/",userController.loadHomepage);
+router.get("/",auth.checkSession,userController.loadHomepage);
 router.get("/pageNotFound",userController.pageNotFound);
-router.get('/signup',userController.loadsignup)
+router.get('/signup',auth.isLogin,userController.loadsignup)
 router.post('/signup',userController.signup)
 router.post('/verify-otp',userController.verifyOtp)
 router.post('/resend-otp',userController.resend_otp)
@@ -21,7 +22,7 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
   }
 });
 
-router.get('/login',userController.loadLogin)
+router.get('/login',auth.isLogin,userController.loadLogin)
 router.post('/login',userController.loginUser)
 router.get('/logout',userController.logout)
 
