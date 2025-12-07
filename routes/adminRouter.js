@@ -10,11 +10,4 @@ router.get('/dashboard',adminController.loadDashboard)
 router.get('/logout',adminController.logout)
 
 
-
-
-
-
-
-
-
 module.exports=router
