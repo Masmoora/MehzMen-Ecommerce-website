@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {Schema} = mongoose
+const {Schema} = mongoose;
 const couponSchema = new mongoose.Schema({
   code: { type: String, required: true, unique: true }, // WELCOME100
 
@@ -9,11 +9,10 @@ const couponSchema = new mongoose.Schema({
     required: true
   },
 
-  value: { 
-      type: Number, required: true
-  }, 
+  value: {
+    type: Number, required: true
+  },
 
-  
   startingDate: { type: Date, required: true }, // Coupon valid until
 
   expiryDate: { type: Date, required: true }, // Coupon valid until

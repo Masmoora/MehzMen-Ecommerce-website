@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const offerSchema = new Schema({
-  productId: { type: Schema.Types.ObjectId, ref: "Product" },   // For Product Offer
+  productId: { type: Schema.Types.ObjectId, ref: 'Product' },   // For Product Offer
   discountPercentage: { type: Number, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
@@ -10,4 +10,4 @@ const offerSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Offer", offerSchema);
+module.exports = mongoose.model('Offer', offerSchema);

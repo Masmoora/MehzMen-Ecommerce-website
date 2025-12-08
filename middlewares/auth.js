@@ -1,4 +1,4 @@
-const User = require("../models/userSchema");
+const User = require('../models/userSchema');
 const checkSession = async (req, res, next) => {
   try {
     if (!req.session.user) {
