@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-import { search } from '../app';
-import {Schema} from mongoose;
+const {Schema} = mongoose;
 
 //create the user schema(blueprint)
 const userSchema = new Schema({
@@ -15,14 +14,14 @@ const userSchema = new Schema({
   },
   phone:{
     type:String,
-    required:true,
+    required:false,
     unique:false,
     sparse:true,
     default:null
   },
   googleId:{
     type:String,
-    unique:false,
+    unique:true,
     sparse:true
 
   },
@@ -66,10 +65,10 @@ const userSchema = new Schema({
     type:Boolean,
     //   required:true
   },
-  redeemedUsers:{
-    type:Schema.Types.ObjectId,
-    //  ref:"User"
-  },
+redeemedUsers: [{
+  type: Schema.Types.ObjectId,
+  ref: "User"
+}],
   searchHistory:[{
     category:{
       type:Schema.Types.ObjectId,
@@ -79,7 +78,7 @@ const userSchema = new Schema({
       type:Schema.Types.ObjectId,
       ref:'Brand'
     },
-    serachOn:{
+    searchOn:{
       type:Date,
       default:Date.now
     }

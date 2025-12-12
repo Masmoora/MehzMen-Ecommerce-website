@@ -85,30 +85,35 @@
     <div class="login-card">
 
         <div class="logo-text">MehzMen</div>
-
-        <!-- Admin Login Form -->
-        <form action="/admin/login" method="POST">
-
-            <!-- Email -->
-            <div class="mb-3">
-                <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+        <%if(typeof message!=='undefined' && message){%>
+            <div class="alert alert-danger text-center">
+                <%=message%>
             </div>
+            <%}%>
 
-            <!-- Password -->
-            <div class="mb-2 password-box">
-                <input type="password" name="password" id="passwordField" class="form-control"
-                    placeholder="Password" required>
-                <span class="toggle-icon" onclick="togglePassword()">
-                    👁️
-                </span>
-            </div>
+                <!-- Admin Login Form -->
+                <form action="/admin/login" method="POST">
 
-            <a href="#" class="forgot-link">Forgot Password?</a>
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+                    </div>
 
-            <!-- Login Button -->
-            <button type="submit" class="btn btn-login">Login</button>
+                    <!-- Password -->
+                    <div class="mb-2 password-box">
+                        <input type="password" name="password" id="passwordField" class="form-control"
+                            placeholder="Password" required>
+                        <span class="toggle-icon" onclick="togglePassword()">
+                            👁️
+                        </span>
+                    </div>
 
-        </form>
+                    <a href="#" class="forgot-link">Forgot Password?</a>
+
+                    <!-- Login Button -->
+                    <button type="submit" class="btn btn-login">Login</button>
+
+                </form>
 
     </div>
 

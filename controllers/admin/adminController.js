@@ -1,74 +1,81 @@
-const User = require('../../models/userSchema');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+import AdminService from '../../service/adminService.js'
 
-const pageerror = async (req, res) => {
-  res.render('pageerror');
-};
+class AdminController {
 
-const loadLogin = async (req, res) => {
-  if (req.session.admin) {
-    return res.redirect('/admin/dashboard');
-  }
-  res.render('admin-login', { message: null });
-};
+    pageerror = async (req, res) => {
+        res.render('pageerror');
+    };
 
-const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email) {
-      return res.render('admin-login', { message: 'Email is required' });
+    //get admin login page
+    loadLogin = async (req, res) => {
+        if (req.session.admin) {
+            return res.redirect('/admin/dashboard');
+        }
+        res.render('admin-login', { message: "" });
+    };
+
+    //post login page
+    login = async (req, res) => {
+        try {
+            const { email, password } = req.body;
+            if (!email) {
+                return res.render('admin-login', { message: 'Email is required' });
+            }
+            if (!password) {
+                return res.render('admin-login', { message: 'Enter Password' });
+            }
+            const admin = await AdminService.findAdminByEmail(email);
+            if (!admin) {
+                return res.render('admin-login', { message: 'Invalid admin credentials' });
+            }
+            const isMatch = await AdminService.comparePassword(password, admin.password);
+            if (isMatch) {
+                req.session.admin = admin._id;
+                return res.redirect('/admin/dashboard');
+            } else {
+                return res.render('/admin/login', { message: 'Invalid password' });
+            }
+        } catch (error) {
+            console.log('login error', error);
+            return res.redirect('/pageerror');
+
+        }
+    };
+
+    loadDashboard = async (req, res) => {
+        if (req.session.admin) {
+            try {
+                return res.render('dashboard');
+            } catch (error) {
+                return res.render('pageerror');
+            }
+        } else {
+            return res.render('admin-login')
+        }
+    };
+
+    logout = async (req, res) => {
+        try {
+            if (req.session.admin) {
+
+                delete req.session.admin;
+
+                req.session.save((err) => {
+                    if (err) {
+                        console.log('Error saving session during logout:', err);
+                        return res.redirect('/admin/pageerror');
+                    }
+                    return res.redirect('/admin/login');
+                });
+            } else {
+
+                return res.redirect('/admin/login');
+            }
+        } catch (error) {
+            console.log('Logout error:', error);
+            return res.redirect('/admin/pageerror');
+        }
     }
-    if (!password) {
-      return res.render('admin-login', { message: 'Enter Password' });
-    }
-    const admin = await User.findOne({ email: email, isAdmin: true });
-    if (!admin) {
-      return res.render('admin-login', { message: 'Admin not found' });
-    }
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (isMatch) {
-      req.session.admin = true;
-      return res.redirect('/admin/dashboard');
-    } else {
-      return res.redirect('/admin/login');
-    }
-  } catch (error) {
-    console.log('login error', error);
-    return res.redirect('/pageerror');
+}
 
-  }
-};
-
-const loadDashboard = async (req, res) => {
-  if (req.session.admin) {
-    try {
-      return res.render('dashboard');
-    } catch (error) {
-      return res.render('pageerror');
-    }
-  }
-};
-
-const logout = async (req,res)=>{
-  try{
-    req.session.destroy(err=>{
-      if(err){
-        console.log('Error destroying session',err);
-        return res.redirect('/pageerror');
-      }
-      res.redirect('/admin/login');
-    });
-  }catch(error){
-    console.log('unexpected error during logout',error);
-    res.redirect('/pageerror');
-  }
-};
-
-module.exports = {
-  loadLogin,
-  login,
-  pageerror,
-  loadDashboard,
-  logout
-};
+export default new AdminController();

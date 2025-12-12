@@ -42,4 +42,4 @@ const productVariantSchema = new Schema({
 productVariantSchema.index({ productId: 1 });
 
 const ProductVariant = mongoose.model('ProductVariant',productVariantSchema);
-module.exports = ProductVariant;
+export default ProductVariant;

@@ -1,11 +1,14 @@
 import express from 'express';
-import app from express();
+const app = express();
 import env from 'dotenv';
 env.config();
 import session from 'express-session';
 import passport from './config/passport.js';
 import connectDB from './config/db.js';
 import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import userRouter from './routes/userRouter.js';
 import adminRouter from './routes/adminRouter.js';
 
@@ -21,13 +24,18 @@ app.use(session({
   cookie:{
     secure:false,
     httpOnly:true,
-    maxAge:process.env.MAX_AGE
+    maxAge:Number(process.env.MAX_AGE)||0
   }
 }));
 
 //passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use((req,res,next)=>{
+    res.set('cache-control','no-store')
+    next();
+});
 
 //view engine setting
 app.set('view engine','ejs');

@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
-const {Schema} = mongoose;
-const couponSchema = new mongoose.Schema({
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+
+const couponSchema = new Schema({
   code: { type: String, required: true, unique: true }, // WELCOME100
 
   type: {
@@ -29,4 +30,4 @@ const couponSchema = new mongoose.Schema({
   status: { type: String, default: true } // Active / Inactive
 });
 
-module.exports = mongoose.model('Coupon', couponSchema);
+export default mongoose.model('Coupon', couponSchema);

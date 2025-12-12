@@ -1,84 +1,84 @@
-const User = require('../models/userSchema');
-const checkSession = async (req, res, next) => {
-  try {
-    if (!req.session.user) {
-      return res.redirect('/login');
-    }
+import { Admin } from 'mongodb';
+import User from '../models/userSchema.js'
 
-    const userData = await User.findById(req.session.user);
-    if (!userData) {
-      // Remove only user session
-      delete req.session.user;
-      return res.redirect('/signup');
-    }
+class AuthMiddleware {
 
-    if (userData.isBlocked) {
-      delete req.session.user;
-      return res.render('login', { message: 'Your account has been blocked by admin.' });
-    }
+    checkSession = async (req, res, next) => {
+        try {
+            if (!req.session.user) {
+                return res.redirect('/login');
+            }
 
-    next();
-  } catch (error) {
-    console.log('Error in checkSession middleware:', error);
-    res.status(500).send('Server error');
-  }
-};
+            const userData = await User.findById(req.session.user);
+            if (!userData) {
+                // Remove only user session
+                delete req.session.user;
+                return res.redirect('/signup');
+            }
 
-const isLogin = async (req, res, next) => {
-  try {
-    if (req.session.user) {
-      const userData = await User.findById(req.session.user);
+            if (userData.isBlocked) {
+                delete req.session.user;
+                return res.render('login', { message: 'Your account has been blocked by admin.' });
+            }
 
-      if (userData && userData.isBlocked) {
-        delete req.session.user;
-        return res.render('login', { message: 'Your account has been blocked by admin.' });
-      }
+            next();
+        } catch (error) {
+            console.log('Error in checkSession middleware:', error);
+            res.status(500).send('Server error');
+        }
+    };
 
-      return res.redirect('/home');
-    }
+    isLogin = async (req, res, next) => {
+        try {
+            if (req.session.user) {
+                const userData = await User.findById(req.session.user);
 
-    next();
-  } catch (error) {
-    console.log('Error in isLogin middleware:', error);
-    res.status(500).send('Server error');
-  }
-};
+                if (userData && userData.isBlocked) {
+                    delete req.session.user;
+                    return res.render('login', { message: 'Your account has been blocked by admin.' });
+                }
 
-// Admin middlewares remain the same
-const adminAuth = async (req, res, next) => {
-  try {
-    if (!req.session.admin) {
-      return res.redirect('/admin/login');
-    }
+                return res.redirect('/home');
+            }
 
-    const adminId = req.session.admin;
-    const admin = await User.findById(adminId);
-    if (admin && admin.isAdmin) {
-      next();
-    } else {
-      return res.redirect('/admin/login');
-    }
-  } catch (error) {
-    console.log('Access denied: not admin');
-    res.status(500).send('Server Error');
-  }
-};
+            next();
+        } catch (error) {
+            console.log('Error in isLogin middleware:', error);
+            res.status(500).send('Server error');
+        }
+    };
 
-const isAdminLogin = async (req, res, next) => {
-  try {
-    if (req.session.admin) {
-      return res.redirect('/admin/dashboard');
-    }
-    next();
-  } catch (error) {
-    console.log('Error in isAdminLogin middleware:', error);
-    res.status(500).send('Server error');
-  }
-};
+    // Admin middlewares remain the same
+    adminAuth = async (req, res, next) => {
+        try {
+            if (!req.session.admin) {
+                return res.redirect('/admin/login');
+            }
 
-module.exports = {
-  adminAuth,
-  checkSession,
-  isLogin,
-  isAdminLogin
-};
+            const adminId = req.session.admin;
+            const admin = await User.findById(adminId);
+            if (admin && admin.isAdmin) {
+                next();
+            } else {
+                return res.redirect('/admin/login');
+            }
+        } catch (error) {
+            console.log('Access denied: not admin');
+            res.status(500).send('Server Error');
+        }
+    };
+
+    isAdminLogin = async (req, res, next) => {
+        try {
+            if (req.session.admin) {
+                return res.redirect('/admin/dashboard');
+            }
+            next();
+        } catch (error) {
+            console.log('Error in isAdminLogin middleware:', error);
+            res.status(500).send('Server error');
+        }
+    };
+}
+
+export default new AuthMiddleware();
