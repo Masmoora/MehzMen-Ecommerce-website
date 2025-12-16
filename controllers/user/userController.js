@@ -23,7 +23,7 @@ class UserController {
                 const userData = await UserService.getUserById(userId);
                 res.render('home', { user: userData });
             } else {
-                return res.render('home',{user:null});
+                return res.render('home', { user: null });
             }
         } catch (error) {
             console.log('Home page not found', error);
@@ -33,7 +33,7 @@ class UserController {
 
     loadsignup = async (req, res) => {
         try {
-            res.render('signup', {user:null, message: null });
+            res.render('signup', { user: null, message: null });
         } catch (error) {
             console.log('Signup page error:', error);
             res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send('Server error');
@@ -41,13 +41,13 @@ class UserController {
     };
 
     loadLogin = async (req, res) => {
-      try {
-    res.render('login', { message: null });
-  } catch (error) {
-    console.log('Login page error:', error);
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send('Server error');
-  }
-};
+        try {
+            res.render('login', { message: null });
+        } catch (error) {
+            console.log('Login page error:', error);
+            res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send('Server error');
+        }
+    };
 
     // ---------- OTP & EMAIL ----------
 
@@ -66,7 +66,7 @@ class UserController {
                     user: process.env.NODEMAILER_GMAIL,
                     pass: process.env.NODEMAILER_PASSWORD,
                 },
-                tls:{rejectUnauthorized:false}
+                tls: { rejectUnauthorized: false }
 
             });
             console.log('before sending mail');
@@ -95,7 +95,7 @@ class UserController {
             //email = email.trim().toLowerCase();
 
             if (password !== cpassword) return res.render('signup', { message: 'Passwords do not match' });
-            
+
             const existingUser = await UserService.findByEmail(email);
             if (existingUser) return res.render('signup', { message: 'User already exists' });
 
@@ -109,12 +109,12 @@ class UserController {
             req.session.userData = { name, phone, email, password };
             req.session.userotp = otp;
             console.log(' session otp sent', req.session.userotp);
-            
+
             res.render('verify-otp');
 
-            
 
-            
+
+
             console.log('otp sent', otp);
 
         } catch (error) {
@@ -134,8 +134,8 @@ class UserController {
     verifyOtp = async (req, res) => {
         try {
             const { otp } = req.body;
-            console.log("received otp",otp)
-            console.log("session otp",req.session.userotp)
+            console.log("received otp", otp)
+            console.log("session otp", req.session.userotp)
 
             if (!otp || otp !== req.session.userotp) {
                 return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, message: 'Invalid OTP, please enter again' });
@@ -152,19 +152,21 @@ class UserController {
             })
 
             // Clear temporary session data
-           // req.session.userData = null;
-           // req.session.userotp = null;
+            // req.session.userData = null;
+            // req.session.userotp = null;
             req.session.user = saveUser._id;
             req.session.userData = null;
             req.session.userotp = null
             // Do NOT log in automatically, redirect to login page
-            return res.redirect('/login')
-
+           res.json({success:true, redirectUrl:"/login"})
         } catch (error) {
-            console.error('Error verifying OTP:', error);
-            res.redirect('/pageNotFound')
-        }
-    };
+            console.error("Error verifying OTP:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Server error"
+            });
+        };
+    }
     // ---------- RESEND OTP ----------
 
     resend_otp = async (req, res) => {
@@ -231,5 +233,6 @@ class UserController {
         }
     };
 }
+
 
 export default new UserController();
