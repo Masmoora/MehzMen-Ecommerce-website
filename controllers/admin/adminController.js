@@ -1,17 +1,30 @@
-import AdminService from '../../service/adminService.js'
+import AdminService from '../../service/admin/adminService.js'
+import logger from '../../logger.js'
+import HTTP_STATUS from '../../constants/httpStatus.js'
 
 class AdminController {
 
     pageerror = async (req, res) => {
-        res.render('pageerror');
-    };
+        try {
+            res.render('pageerror');
+        } catch (error) {
+            logger.error('Error rendering 404 page: ', error);
+            res
+                .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+                .send(`Error loading ${HTTP_STATUS.BAD_REQUEST} page`);
+        }
+    }
+
 
     //get admin login page
+
     loadLogin = async (req, res) => {
-        if (req.session.admin) {
-            return res.redirect('/admin/dashboard');
+        try {
+            return res.render('admin-login');
+        } catch (error) {
+            logger.error('page not found', error);
+            return res.redirect('/pageerror');
         }
-        res.render('admin-login', { message: "" });
     };
 
     //post login page
@@ -33,49 +46,38 @@ class AdminController {
                 req.session.admin = admin._id;
                 return res.redirect('/admin/dashboard');
             } else {
-                return res.render('/admin/login', { message: 'Invalid password' });
+                return res.render('/admin-login', { message: 'Invalid password' });
             }
         } catch (error) {
-            console.log('login error', error);
+            logger.error('page not found', error);
             return res.redirect('/pageerror');
 
         }
     };
 
     loadDashboard = async (req, res) => {
-        if (req.session.admin) {
-            try {
-                return res.render('dashboard');
-            } catch (error) {
-                return res.render('pageerror');
-            }
-        } else {
-            return res.render('admin-login')
+        try {
+            return res.render('dashboard');
+        } catch (error) {
+            logger.error('page not found', error);
+            return res.redirect('/admin/pageerror');
         }
     };
 
     logout = async (req, res) => {
         try {
-            if (req.session.admin) {
-
-                delete req.session.admin;
-
-                req.session.save((err) => {
-                    if (err) {
-                        console.log('Error saving session during logout:', err);
-                        return res.redirect('/admin/pageerror');
-                    }
-                    return res.redirect('/admin/login');
-                });
-            } else {
-
-                return res.redirect('/admin/login');
-            }
+            req.session.destroy((err) => {
+                if (err) {
+                    logger.error('error in destroying session');
+                    return res.redirect('/admin/dashboard');
+                }
+            });
+            return res.redirect('/admin/login');
         } catch (error) {
-            console.log('Logout error:', error);
-            return res.redirect('/admin/pageerror');
+            logger.error('page not found', error);
+            return res.redirect('/admin/pageNotFound');
         }
-    }
+    };
 }
 
 export default new AdminController();

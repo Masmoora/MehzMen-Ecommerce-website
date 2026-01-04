@@ -92,7 +92,7 @@ class UserController {
         try {
             let { name, phone, email, password, cpassword } = req.body;
             console.log(req.body);
-            //email = email.trim().toLowerCase();
+            email = email.trim().toLowerCase();
 
             if (password !== cpassword) return res.render('signup', { message: 'Passwords do not match' });
 

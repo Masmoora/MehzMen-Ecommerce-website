@@ -1,14 +1,15 @@
 import mongoose from 'mongoose';
 import env from 'dotenv'
 env.config();
+import logger from '../logger.js'
 
 const connectDB=async ()=>{
   try{
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('DB connected');
+    logger.info('MongoDB connected successfully');
 
   }catch(error){
-    console.log('DB connection error',error.message);
+    logger.error('MongoDB connection error:', err.message);
     process.exit(1);
 
   }

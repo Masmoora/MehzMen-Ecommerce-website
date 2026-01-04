@@ -1,90 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Sidebar</title>
-
-<!-- Bootstrap Icons CDN -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<aside class="admin-sidebar">
+  <nav class="sidebar-nav">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link Active" href="">
+          <i class="bi bi-speedometer2 me-2"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-cart-check me-2"></i>
+          <span>Orders</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-box-seam me-2"></i>
+          <span>Products</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-graph-up me-2"></i>
+          <span>Sales Report</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/customers">
+          <i class="bi bi-people me-2"></i>
+          <span>Customers</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-ticket-perforated me-2"></i>
+          <span>Coupons</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-tags me-2"></i>
+          <span>Categories</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-arrow-left-right me-2"></i>
+          <span>Refund / Return</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-image me-2"></i>
+          <span>Banners</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-award me-2"></i>
+          <span>Brands</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-gift me-2"></i>
+          <span>Offers</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>
 
 <style>
-/* Sidebar Container */
-.sidebar {
-width: 230px;
-height: 100vh;
-background: #ffffff;
-border-right: 1px solid #ddd;
-padding: 20px 15px;
-position: fixed;
-left: 0;
-top: 0;
-}
+  .admin-sidebar {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    height: calc(100vh - 70px);
+    width: 260px;
+    background: #ffffff;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
+    z-index: 1020;
+    transition: all 0.3s ease;
+  }
 
-.sidebar h2 {
-font-size: 22px;
-text-align: center;
-margin-bottom: 25px;
-font-weight: 600;
-}
+  .sidebar-nav {
+    padding: 1.5rem 0;
+  }
 
-/* Menu List */
-.sidebar ul {
-list-style: none;
-padding: 0;
-margin: 0;
-}
+  .sidebar-nav .nav-link {
+    color: #495057;
+    padding: 0.875rem 1.5rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    text-decoration: none;
+  }
 
-.sidebar li {
-margin-bottom: 12px;
-}
+  .sidebar-nav .nav-link:hover {
+    background-color: #f8f9fa;
+    color: #667eea;
+    border-left-color: #667eea;
+    padding-left: 1.75rem;
+  }
 
-.sidebar a {
-display: flex;
-align-items: center;
-padding: 10px 12px;
-text-decoration: none;
-font-size: 15px;
-color: #333;
-border-radius: 8px;
-transition: 0.2s ease-in-out;
-font-weight: 500;
-}
+  .sidebar-nav .nav-link.active {
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+    color: #667eea;
+    font-weight: 600;
+    border-left-color: #667eea;
+  }
 
-/* Icons */
-.sidebar a i {
-font-size: 18px;
-margin-right: 12px;
-}
+  .sidebar-nav .nav-link i {
+    font-size: 1.1rem;
+    width: 24px;
+    text-align: center;
+  }
 
-/* Hover + Active effect */
-.sidebar a:hover,
-.sidebar a.active {
-background: #000;
-color: #fff;
-}
+  /* Responsive */
+  @media (max-width: 768px) {
+    .admin-sidebar {
+      transform: translateX(-100%);
+      width: 240px;
+    }
+
+    .admin-sidebar.show {
+      transform: translateX(0);
+    }
+  }
 </style>
-</head>
 
-<body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-
-<ul>
-<li><a class="active" href="#"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-<li><a href="#"><i class="bi bi-bag"></i> Orders</a></li>
-<li><a href="#"><i class="bi bi-box-seam"></i> Products</a></li>
-<li><a href="#"><i class="bi bi-bar-chart-line"></i> Sales report</a></li>
-<li><a href="#"><i class="bi bi-people"></i> Customer</a></li>
-<li><a href="#"><i class="bi bi-ticket"></i> Coupon</a></li>
-<li><a href="#"><i class="bi bi-grid"></i> Category</a></li>
-<li><a href="#"><i class="bi bi-arrow-repeat"></i> Refund/Return</a></li>
-<li><a href="#"><i class="bi bi-image"></i> Banners</a></li>
-<li><a href="#"><i class="bi bi-tags"></i> Brand</a></li>
-<li><a href="#"><i class="bi bi-gift"></i> Offers</a></li>
-</ul>
-</div>
-
-</body>
-</html>

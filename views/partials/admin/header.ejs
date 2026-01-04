@@ -1,127 +1,78 @@
-<header class="admin-header">
-<div class="header-left">
-<h2 class="logo">MehzMen</h2>
-</div>
-
-<div class="header-right">
-<div class="admin-menu">
-<button class="admin-btn" id="adminDropdownBtn">
-<img
-src="https://cdn-icons-png.flaticon.com/512/3177/3177440.png"
-class="admin-icon"
-alt="Admin"
-/>
-<span>Admin</span>
-<i class="arrow">&#9662;</i>
-</button>
-
-<ul class="dropdown" id="adminDropdown">
-<li><a href="/admin/profile">Profile</a></li>
-<li><a href="/admin/logout">Logout</a></li>
-</ul>
-</div>
-</div>
+<header class="admin-header fixed-top">
+  <div class="container-fluid">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <div class="d-flex align-items-center">
+          <h4 class="mb-0 me-3">MehzMen </h4>
+        </div>
+      </div>
+      <div class="col-md-6 text-end">
+        <div class="dropdown">
+          <button class="btn btn-link text-decoration-none dropdown-toggle admin-dropdown-btn" type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle fs-4"></i>Admin
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Admin</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </header>
 
-
 <style>
-/* ---------- HEADER ---------- */
-.admin-header {
-width: 100%;
-background: #fff;
-padding: 15px 25px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-border-bottom: 1px solid #ddd;
-font-family: Arial, sans-serif;
-}
+  .admin-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1030;
+  }
 
-.logo {
-font-size: 30px;
-font-weight: 900;
-margin: 0;
-}
+  .admin-header h4 {
+    color: white;
+    font-weight: 600;
+  }
 
-/* ---------- RIGHT SIDE ADMIN MENU ---------- */
-.header-right {
-display: flex;
-align-items: center;
-}
+  .admin-name {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+  }
 
-.admin-menu {
-position: relative;
-}
+  .admin-dropdown-btn {
+    color: white !important;
+    border: none;
+    padding: 0.5rem;
+  }
 
-.admin-btn {
-display: flex;
-align-items: center;
-gap: 8px;
-background: transparent;
-border: none;
-font-size: 15px;
-font-weight: 700;
-cursor: pointer;
-padding: 8px 12px;
-}
+  .admin-dropdown-btn:hover,
+  .admin-dropdown-btn:focus {
+    color: rgba(255, 255, 255, 0.8) !important;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+  }
 
-.admin-icon {
-width: 30px;
-height: 28px;
-border-radius: 50%;
-}
+  .dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 0.5rem;
+  }
 
-.arrow {
-font-size: 12px;
-}
+  .dropdown-item {
+    padding: 0.75rem 1.25rem;
+    transition: all 0.3s ease;
+  }
 
-/* ---------- DROPDOWN ---------- */
-.dropdown {
-position: absolute;
-top: 40px;
-right: 0;
-width: 150px;
-background: #fff;
-border: 1px solid #ddd;
-border-radius: 6px;
-list-style: none;
-padding: 10px 0;
-display: none;
-box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
+  .dropdown-item:hover {
+    background-color: #f8f9fa;
+    padding-left: 1.5rem;
+  }
 
-.dropdown li {
-width: 100%;
-}
-
-.dropdown li a {
-display: block;
-padding: 10px 15px;
-text-decoration: none;
-color: #333;
-transition: 0.2s;
-}
-
-.dropdown li a:hover {
-background: #f5f5f5;
-}
+  .dropdown-item i {
+    color: #667eea;
+  }
 </style>
 
-<script>
-// SIMPLE DROPDOWN TOGGLE
-document.addEventListener("DOMContentLoaded", () => {
-const btn = document.getElementById("adminDropdownBtn");
-const menu = document.getElementById("adminDropdown");
 
-btn.addEventListener("click", () => {
-menu.style.display = menu.style.display === "block" ? "none" : "block";
-});
-
-// Close dropdown when clicking outside
-document.addEventListener("click", (e) => {
-if (!btn.contains(e.target)) {
-menu.style.display = "none";
-}
-});
-});
-</script>
