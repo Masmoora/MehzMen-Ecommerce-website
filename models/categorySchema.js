@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { type } from 'os';
 const {Schema} = mongoose;
 
 const categorySchema = new Schema({
@@ -6,6 +7,10 @@ const categorySchema = new Schema({
     type:String,
     required:true,
     unique:true
+  },
+  image:{
+    type:String,
+    default:''
   },
   description:{
     type:String,

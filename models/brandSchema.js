@@ -2,12 +2,12 @@ import mongoose from 'mongoose';
 const {Schema} = mongoose;
 
 const brandSchema = new Schema({
-  brandName : {
+  name : {
     type : String,
     required : true
   },
-  brandLogo : {
-    type : [String],
+  logo : {
+    type : String,
     required :true
   },
   isListed : {
@@ -19,7 +19,7 @@ const brandSchema = new Schema({
     default : Date.now
   }
 
-});
+}, { timestamps: true });
 
 const Brand = mongoose.model('Brand',brandSchema);
 export default Brand;
