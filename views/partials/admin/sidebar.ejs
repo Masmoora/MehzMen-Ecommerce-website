@@ -14,7 +14,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="/admin/products">
           <i class="bi bi-box-seam me-2"></i>
           <span>Products</span>
         </a>
@@ -131,5 +131,40 @@
     }
   }
 </style>
-
+<script>
+  // Set active menu item based on current route
+  (function() {
+    const currentPath = window.location.pathname;
+    
+    // Find all nav links
+    const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
+    
+    navLinks.forEach(link => {
+      // Remove active class from all links
+      link.classList.remove('active');
+      
+      // Get the href from the link
+      const linkHref = link.getAttribute('href') || '';
+      
+      // Skip links with # or empty href
+      if (!linkHref || linkHref === '#') return;
+      
+      // Check if current path matches or starts with link href
+      // This handles sub-routes like /admin/products/add -> highlights Products
+      if (currentPath === linkHref || currentPath.startsWith(linkHref + '/')) {
+        link.classList.add('active');
+      }
+    });
+    
+    // Special case for dashboard (root /admin path)
+    if (currentPath === '/admin' || currentPath === '/admin/') {
+      const dashboardLink = document.querySelector('[data-route="dashboard"]');
+      if (dashboardLink) {
+        // Remove active from all first
+        navLinks.forEach(link => link.classList.remove('active'));
+        dashboardLink.classList.add('active');
+      }
+    }
+  })();
+</script>
 

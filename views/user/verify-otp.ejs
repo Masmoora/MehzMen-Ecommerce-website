@@ -102,8 +102,15 @@
 
         <h2>Confirm with OTP</h2>
         <p>Please check your email for the 6-digit code</p>
+        <h3 class="text-center">
+  <% if (purpose === "signup") { %>
+    <h3>Verify Your Account</h3>
+  <% } else { %>
+    <h5> OTP to Reset Password</h5>
+  <% } %>
+</h3>
 
-        <form id="otpForm" action="/verify-otp" method="POST" onsubmit="return validateOTPForm()">
+        <form id="otpForm" action="<%= purpose === 'signup' ? '/verify-otp' : '/forgot-password/verify-otp' %>" method="POST" onsubmit="return validateOTPForm()">
 
             <!-- Added: form-control -->
             <input type="text" maxlength="6" name="otp" id="otp" class="otp-input form-control text-center fs-5"

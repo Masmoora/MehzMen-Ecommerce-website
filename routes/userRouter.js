@@ -30,4 +30,15 @@ router.get('/login',AuthMiddleware.isLogin,userController.loadLogin);
 router.post('/login',userController.loginUser);
 router.get('/logout',userController.logout);
 
+router.get("/forgot-password", userController.getForgotPasswordPage)
+router.post("/forgot-password", userController.forgotPassword)
+
+
+// verify otp (forgot password)
+router.get("/forgot-password/verify-otp", userController.loadForgotOtpPage);
+//router.post("/forgot-password/verify-otp", userController.verifyForgotOtp);
+
+// reset password
+//router.get("/reset-password", userController.loadResetPasswordPage);
+//router.post("/reset-password", userController.resetPassword);
 export default router;

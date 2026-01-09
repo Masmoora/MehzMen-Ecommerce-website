@@ -61,6 +61,11 @@ class CategoryService {
             { new: true }
         );
     };
+    async getAllCategories() {
+    return await Category.find({ isListed: true }).lean();
+  }
+
+
 
 
 

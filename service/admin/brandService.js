@@ -47,6 +47,9 @@ class BrandService {
 
         return brand.isListed;
     }
+       async getAllBrands() {
+    return await Brand.find({ isListed: true }).lean();
+  }
 
 }
 

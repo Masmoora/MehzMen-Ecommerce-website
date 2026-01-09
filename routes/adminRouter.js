@@ -5,8 +5,10 @@ import AuthMiddleware from '../middlewares/auth.js';
 import customerController from '../controllers/admin/customerController.js'
 import categoryController from '../controllers/admin/categoryController.js'
 import brandController from '../controllers/admin/brandController.js'
+import productController from '../controllers/admin/productController.js'
 import categoryUpload from '../middlewares/multer.js';
 import brandUpload from '../middlewares/brandUpload.js';
+import productUpload from '../middlewares/productUploads.js';
 
 router.get('/pageerror',adminController.pageerror);
 //Login Management
@@ -41,6 +43,24 @@ router.patch(
   "/brands/toggle/:id",AuthMiddleware.adminAuth,
   brandController.toggleBrandStatus
 );
+//product Management
+
+router.get(
+  "/products",
+  AuthMiddleware.adminAuth,
+  productController.loadProductsPage
+);
+router.get(
+  "/addProducts",
+  AuthMiddleware.adminAuth,
+  productController.loadAddProduct
+);
+router.post(
+  "/addProducts",
+  AuthMiddleware.adminAuth,productUpload.any(),
+  productController.addProduct
+);
+
 
 
 export default router;

@@ -2,14 +2,14 @@ import mongoose from 'mongoose';
 const {Schema} = mongoose;
 
 const productSchema = new Schema({
-  productName:{
+  name:{
     type:String,
     required:true
   },
-  description:{
-    type:String,
-    required:true
-  },
+  //description:{
+   // type:String,
+   // required:true
+  //},
   brand: {
     type: Schema.Types.ObjectId,
     ref: 'Brand',
@@ -21,34 +21,18 @@ const productSchema = new Schema({
     required:true,
 
   },
-  regularPrice:{
+  price:{
     type:Number,
     required:true
   },
-  salesPrice:{
+  offerPrice:{
     type:Number,
-    required:true
+    default:null
   },
-  productOffer:{
-    type:Number,
-    default:0
-  },
-  quantity:{
-    type:Number,
-    default:true
-  },
-  color:{
-    type:String,
-    required:true
-  },
-  productImage:{
-    type:[String],
-    required:true
-  },
-  isBlocked:{
-    type:Boolean,
-    default:false
-  },
+  isBlocked: {
+      type: Boolean,
+      default: true
+    },
   status:{
     type:String,
     enum:['Available','Out of stock','Discontinued'],

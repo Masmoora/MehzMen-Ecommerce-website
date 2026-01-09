@@ -38,7 +38,7 @@ class AuthMiddleware {
                     return res.render('login', { message: 'Your account has been blocked by admin.' });
                 }
 
-                return res.redirect('/home');
+                return res.redirect('/');
             }
 
             next();
