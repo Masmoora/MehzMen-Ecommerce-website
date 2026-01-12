@@ -39,6 +39,6 @@ router.get("/forgot-password/verify-otp", userController.loadForgotOtpPage);
 //router.post("/forgot-password/verify-otp", userController.verifyForgotOtp);
 
 // reset password
-//router.get("/reset-password", userController.loadResetPasswordPage);
-//router.post("/reset-password", userController.resetPassword);
+router.get("/reset-password", userController.loadResetPasswordPage);
+router.post("/reset-password", userController.resetPassword);
 export default router;

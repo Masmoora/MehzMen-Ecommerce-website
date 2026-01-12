@@ -43,6 +43,15 @@ class UserService {
     async validatePassword(plainPassword, hashedPassword) {
         return await bcrypt.compare(plainPassword,hashedPassword);
     }
+
+    // update password
+async updatePasswordByEmail(email, password) {
+    return await User.findOneAndUpdate(
+        { email },
+        { password }
+    );
+}
+
 }
 
 export default new UserService();

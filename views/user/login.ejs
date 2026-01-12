@@ -151,8 +151,8 @@
             <div class="divider">— or —</div>
 
             <form action="/login" method="POST">
-                <input type="email" class="form-control" placeholder="Email" required>
-                <input type="password" class="form-control" placeholder="Password" required>
+                <input type="email" name="email" class="form-control" placeholder="Email" required>
+                <input type="password" name="password" class="form-control" placeholder="Password" required>
                 <!-- Error Message -->
                 <% if(locals.message && message.length> 0){ %>
                     <div class="alert alert-danger text-center mt-2">

@@ -302,7 +302,7 @@ forgotPassword = async (req, res) => {
         }
 
         const otp = this.generateOtp();
-        req.session.forgotOtp = otp;
+        req.session.userotp = otp;
         req.session.forgotEmail = email;
         req.session.otpPurpose = "forgot";
 
@@ -327,6 +327,70 @@ forgotPassword = async (req, res) => {
 loadForgotOtpPage = async (req, res) => {
     res.render("verify-otp", {purpose: "forgot", message: null },);
 };
+
+loadResetPasswordPage = async (req, res) => {
+    if (!req.session.isForgotOtpVerified) {
+        return res.redirect("/login");
+    }
+    res.render("resetPassword", { message: null });
+};
+
+resetPassword = async (req, res) => {
+    try {
+        const { password, confirmPassword } = req.body;
+
+        if (password !== confirmPassword) {
+            return res.render("resetPassword", {
+                message: "Passwords do not match"
+            });
+        }
+
+        const hashedPassword = await this.securePassword(password);
+
+        await UserService.updatePasswordByEmail(
+            req.session.forgotEmail,
+            hashedPassword
+        );
+
+        // clear session
+        req.session.userotp = null;
+        req.session.forgotEmail = null;
+        req.session.isOtpVerified = null;
+
+        res.redirect("/login");
+
+    } catch (error) {
+        console.log("Reset password error:", error);
+        res.render("resetPassword", {
+            message: "Password reset failed"
+        });
+    }
+};
+
+/*verifyForgotOtp = async (req, res) => {
+    try {
+        console.log(otp)
+        console.log(otpPurpose)
+        const { otp } = req.body;
+
+        if (!otp || otp !== req.session.userotp) {
+            return res.render("forgotOtp", {
+                message: "Invalid OTP"
+            });
+        }
+
+        req.session.isOtpVerified = true;
+        res.redirect("/reset-password");
+
+    } catch (error) {
+        console.log("Verify forgot OTP error:", error);
+        res.render("forgotOtp", {
+            message: "OTP verification failed"
+        });
+    }
+};*/
+
+
 
 }
 
