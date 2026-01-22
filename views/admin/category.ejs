@@ -159,6 +159,13 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+    .description-cell {
+  max-width: 300px;      /* adjust as needed */
+  white-space: normal;   /* allow wrapping */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -264,7 +271,7 @@
                       
                     </td>
                     <td>
-                      <span class="description-text" title="<%= category.description || 'No description' %>">
+                      <span class="description-text description-cell" title="<%= category.description || 'No description' %>">
                         <%= category.description || 'No description' %>
                       </span>
                     </td>

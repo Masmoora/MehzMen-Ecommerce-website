@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const productVariantSchema = new Schema({
@@ -16,12 +16,13 @@ const productVariantSchema = new Schema({
     required: true,
     trim: true
   },
+    price:{
+    type:Number,
+    required:true
+  },
   images: {
     type: [String],
-    validate: {
-      validator: v => v.length >= 3,
-      message: "Minimum 3 images required"
-    }
+    validate: [arr => arr.length >= 3, 'Each variant needs at least 3 images']
   },
   size: {
     type: String,

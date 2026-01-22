@@ -292,7 +292,6 @@
               <th>Product Name</th>
               <th>Brand</th>
               <th>Category</th>
-              <th>Price</th>
               <th>Offer Price</th>
               <th>Status</th>
               <th>Actions</th>
@@ -304,7 +303,7 @@
                 <td class="fw-semibold"><%= product.name %></td>
                 <td><%= product.brand ? product.brand.name : 'N/A' %></td>
                 <td><%= product.category ? product.category.name : 'N/A' %></td>
-                <td>₹<%= product.price %></td>
+              
                 <td>
                   <% if (product.offerPrice) { %>
                     <span class="text-success fw-bold">₹<%= product.offerPrice %></span>
@@ -325,9 +324,9 @@
                 </td>
 
                 <td>
-                <a href="/admin/products/<%= p._id %>/variants"
+                <a href="/admin/products/<%= product._id %>/variants"
                    class="btn btn-sm btn-info">
-                  View / Add
+                  View / Add Variants
                 </a>
               </td> 
 

@@ -26,9 +26,10 @@ class BrandController {
 
     addBrand = async (req, res) => {
         try {
+          console.log("FILE:", req.file);
             const { name ,isListed} = req.body;
-            const logo = req.file ? `/uploads/brands/${req.file.filename}` : null;
-
+            const logo = req.file ? req.file.location : null;
+console.log("FILE:", req.file);
             if (!name || !logo) {
                 return res.status(400).json({
                     success: false,
@@ -83,7 +84,7 @@ class BrandController {
 
     // new logo uploaded
     if (req.file) {
-      updateData.logo = `/uploads/brands/${req.file.filename}`;
+      updateData.logo = req.file.location;
     }
 
     await BrandService.updateBrand(id, updateData);

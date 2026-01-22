@@ -6,10 +6,10 @@ const productSchema = new Schema({
     type:String,
     required:true
   },
-  //description:{
-   // type:String,
-   // required:true
-  //},
+  description:{
+    type:String,
+    required:true
+  },
   brand: {
     type: Schema.Types.ObjectId,
     ref: 'Brand',
@@ -21,24 +21,16 @@ const productSchema = new Schema({
     required:true,
 
   },
-  price:{
-    type:Number,
-    required:true
-  },
-  offerPrice:{
-    type:Number,
-    default:null
-  },
   isBlocked: {
       type: Boolean,
       default: true
     },
-  status:{
-    type:String,
-    enum:['Available','Out of stock','Discontinued'],
-    required:true,
-    default:'Available'
-  }
+status: {
+  type: String,
+  enum: ['available', 'out_of_stock', 'discontinued'],
+  required: true,
+  default: 'available'
+}
 
 },{timestamps:true});
 

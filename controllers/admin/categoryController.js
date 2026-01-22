@@ -41,7 +41,7 @@ class CategoryController {
         try {
             const { name, description } = req.body;
             // Save relative path from public folder for serving static files
-            const image = req.file ? `/uploads/categories/${req.file.filename}` : '';
+            const image = req.file ? req.file.location:null;
             const isListed = req.body.isListed !== 'false'; // Default to true
 
             // Validate required fields

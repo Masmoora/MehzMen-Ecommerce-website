@@ -6,9 +6,8 @@ import customerController from '../controllers/admin/customerController.js'
 import categoryController from '../controllers/admin/categoryController.js'
 import brandController from '../controllers/admin/brandController.js'
 import productController from '../controllers/admin/productController.js'
-import categoryUpload from '../middlewares/multer.js';
-import brandUpload from '../middlewares/brandUpload.js';
-import productUpload from '../middlewares/productUploads.js';
+//import categoryUpload from '../middlewares/multer.js';
+import s3Upload from '../middlewares/multer.js';
 
 router.get('/pageerror',adminController.pageerror);
 //Login Management
@@ -22,8 +21,8 @@ router.get('/blockCustomer',AuthMiddleware.adminAuth,customerController.blockCus
 router.get('/unblockCustomer',AuthMiddleware.adminAuth,customerController.unblockCustomer)
 //Category management
 router.get('/category',AuthMiddleware.adminAuth,categoryController.loadCategories)
-router.post('/categories/addCategory',AuthMiddleware.adminAuth,categoryUpload.single("image"),categoryController.addCategory)
-router.post('/categories/editCategory',AuthMiddleware.adminAuth,categoryUpload.single("image"),categoryController.editCategory)
+router.post('/categories/addCategory',AuthMiddleware.adminAuth,s3Upload("categories").single("image"),categoryController.addCategory)
+router.post('/categories/editCategory',AuthMiddleware.adminAuth,s3Upload("categories").single("image"),categoryController.editCategory)
 router.post(
   '/categories/list',
   AuthMiddleware.adminAuth,
@@ -37,8 +36,8 @@ router.post(
 );
 //brand Management
 router.get('/brands',AuthMiddleware.adminAuth,brandController.loadBrands)
-router.post('/addBrand',AuthMiddleware.adminAuth,brandUpload.single("logo"),brandController.addBrand)
-router.post('/editBrand',AuthMiddleware.adminAuth,brandUpload.single("logo"),brandController.editBrand)
+router.post('/addBrand',AuthMiddleware.adminAuth,s3Upload('brands').single('logo'),brandController.addBrand)
+router.post('/editBrand',AuthMiddleware.adminAuth,s3Upload('brands').single('logo'),brandController.editBrand)
 router.patch(
   "/brands/toggle/:id",AuthMiddleware.adminAuth,
   brandController.toggleBrandStatus
@@ -50,6 +49,8 @@ router.get(
   AuthMiddleware.adminAuth,
   productController.loadProductsPage
 );
+// Toggle product block/unblock
+router.patch('/products/:id/block', productController.toggleProductBlock);
 router.get(
   "/addProducts",
   AuthMiddleware.adminAuth,
@@ -57,10 +58,47 @@ router.get(
 );
 router.post(
   "/addProducts",
-  AuthMiddleware.adminAuth,productUpload.any(),
+  AuthMiddleware.adminAuth, s3Upload("products").any(),
   productController.addProduct
 );
 
 
 
+router.get(
+  '/products/:id/variants',
+  AuthMiddleware.adminAuth,
+  productController.viewVariants
+);
+//edit variants
+router.get(
+  '/variants/:id/edit',
+  AuthMiddleware.adminAuth,
+  productController.editVariantPage
+);
+
+router.post(
+  '/variants/:id/edit',
+  AuthMiddleware.adminAuth,
+  s3Upload("products").any(),
+  productController.updateVariant
+);
+
+//
+router.get('/products/:id/edit',AuthMiddleware.adminAuth, productController.loadEditProduct);
+
+// Update product
+
+router.post('/products/update/:id',AuthMiddleware.adminAuth,s3Upload("products").any(), productController.updateProduct);
+
+// Delete variant image (AJAX endpoint)
+router.post('/products/variant/image/delete', AuthMiddleware.adminAuth,s3Upload("products").any(),productController.deleteVariantImage);
+// View variants page
+router.get('/products/:id/variants', productController.loadViewVariants);
+
+// Toggle variant status (AJAX endpoint)
+router.post('/products/variant/toggle-status', productController.toggleVariantStatus);
+
+// Update variant (AJAX endpoint)
+router.post('/products/variant/update',  AuthMiddleware.adminAuth,
+  s3Upload('products').any(),productController.updateVariant);
 export default router;
