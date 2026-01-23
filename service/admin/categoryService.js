@@ -6,7 +6,7 @@ class CategoryService {
         let skip = (page - 1) * limit;
 
         if (search) {
-            query = { name: { $regex: ".*" + search + ".*", $options: "i" } };
+            query = { name: { $regex: '.*' + search + '.*', $options: 'i' } };
         }
         const categories = await Category.find(query)
             .sort({ createdAt: -1 })
@@ -19,7 +19,7 @@ class CategoryService {
     // Add new category
     addCategory = async (categoryData) => {
         // Check duplicate category (case-insensitive)
-        const normalizedName = categoryData.name.trim().replace(/\s+/g, " ");
+        const normalizedName = categoryData.name.trim().replace(/\s+/g, ' ');
 
         const existing = await Category.findOne({
             name: new RegExp(`^${normalizedName}$`, 'i')
@@ -38,7 +38,7 @@ class CategoryService {
 
         await category.save();
         return { success: true };
-    }
+    };
 
     updateCategory = async (id, updateData) => {
         return await Category.findByIdAndUpdate(id, updateData, { new: true });
@@ -62,13 +62,8 @@ class CategoryService {
         );
     };
     async getAllCategories() {
-    return await Category.find({ isListed: true }).lean();
-  }
-
-
-
-
-
+        return await Category.find({ isListed: true }).lean();
+    }
 
 }
 

@@ -1,22 +1,21 @@
-import CategoryService from '../../service/admin/categoryService.js'
-import Category from '../../models/categorySchema.js';
-import logger from '../../logger.js'
-import HTTP_STATUS from '../../constants/httpStatus.js'
+import CategoryService from '../../service/admin/categoryService.js';
+import logger from '../../logger.js';
+
 
 class CategoryController {
     //get category page
     loadCategories = async (req, res) => {
         try {
-            let search = ""
+            let search = '';
             if (req.query.search) {
-                search = req.query.search
+                search = req.query.search;
             }
 
-            let page = 1
+            let page = 1;
             if (req.query.page) {
-                page = parseInt(req.query.page, 10)
+                page = parseInt(req.query.page, 10);
             }
-            let limit = 2
+            let limit = 2;
             let { categories, totalPages } = await CategoryService.listCategory(
                 search,
                 page,
@@ -28,21 +27,21 @@ class CategoryController {
                 totalPages,
                 success: req.query.success,
                 error: req.query.error
-            })
+            });
         } catch (error) {
             logger.error('page not found', error);
             return res.redirect('/pageerror');
 
         }
-    }
+    };
 
     // Add new category
     addCategory = async (req, res) => {
         try {
             const { name, description } = req.body;
             // Save relative path from public folder for serving static files
-            const image = req.file ? req.file.location:null;
-            const isListed = req.body.isListed !== 'false'; // Default to true
+            const image = req.file ? req.file.location : null;
+            const isListed = req.body.isListed !== 'false';
 
             // Validate required fields
             if (!name || !name.trim()) {
@@ -59,7 +58,7 @@ class CategoryController {
                 image,
                 isListed: req.body.isListed !== 'false'
             });
-            console.log("Saved image path",image)
+            console.log('Saved image path', image);
 
             if (!result.success && result.reason === 'exists') {
                 return res.redirect('/admin/category?error=exists');
@@ -135,7 +134,5 @@ class CategoryController {
         }
     };
 
-
-
 }
-export default new CategoryController()
+export default new CategoryController();

@@ -1,9 +1,5 @@
 import Product from '../../models/productSchema.js';
 import ProductVariant from '../../models/productVariantSchema.js';
-import BrandService from '../admin/brandService.js'
-import CategoryService from '../admin/categoryService.js'
-//import Brand from '../../models/brandSchema.js';
-//import Category from '../../models/categorySchema.js';
 
 class ProductService {
   // Get paginated products with filters
@@ -49,8 +45,6 @@ class ProductService {
     return { brands, categories };
   };*/
 
-
-
   createProduct = async (body, files) => {
     const { name, description, brand, category, status, variants } = body;
 
@@ -61,18 +55,18 @@ class ProductService {
     if (!variants || !Array.isArray(variants) || variants.length === 0) {
       throw new Error('At least one variant is required');
     }
-      // 2️⃣ Normalize product name
-  const normalizedName = name.trim().replace(/\s+/g, ' ');
+    //  Normalize product name
+    const normalizedName = name.trim().replace(/\s+/g, ' ');
 
-  // 3️⃣ Check for existing product (case-insensitive)
-  const existingProduct = await Product.findOne({
-    name: { $regex: `^${normalizedName}$`, $options: 'i' }
-  });
+    //  Check for existing product (case-insensitive)
+    const existingProduct = await Product.findOne({
+      name: { $regex: `^${normalizedName}$`, $options: 'i' }
+    });
 
-  if (existingProduct) {
-    throw new Error('Product already exists');
-  }
-    // 1️⃣ Create Product FIRST
+    if (existingProduct) {
+      throw new Error('Product already exists');
+    }
+    //  Create Product FIRST
     const product = await Product.create({
       name,
       description,
@@ -164,8 +158,7 @@ class ProductService {
     }
 
     return updated;
-  }
-
+  };
 
   // Get product by ID with populated fields
   getProductById = async (id) => {
@@ -183,7 +176,7 @@ class ProductService {
   // Get variants for a product
   getProductVariants = async (productId) => {
     try {
-      const variants = await ProductVariant.find({ productId})
+      const variants = await ProductVariant.find({ productId })
         .sort({ createdAt: -1 })
         .lean();
       return variants;
@@ -243,7 +236,7 @@ class ProductService {
   updateVariantFields = async (variantId, variantData) => {
     try {
       const variant = await ProductVariant.findById(variantId);
-      
+
       if (!variant) {
         throw new Error('Variant not found');
       }
@@ -251,7 +244,7 @@ class ProductService {
       // Update fields (excluding images - handled separately)
       const { images, ...fieldsToUpdate } = variantData;
       Object.assign(variant, fieldsToUpdate);
-      
+
       await variant.save();
       return variant;
     } catch (error) {
@@ -279,7 +272,7 @@ class ProductService {
   deleteVariantImage = async (variantId, imageUrl) => {
     try {
       const variant = await ProductVariant.findById(variantId);
-      
+
       if (!variant) {
         throw new Error('Variant not found');
       }
@@ -303,7 +296,7 @@ class ProductService {
   addVariantImages = async (variantId, newImageUrls) => {
     try {
       const variant = await ProductVariant.findById(variantId);
-      
+
       if (!variant) {
         throw new Error('Variant not found');
       }
@@ -317,7 +310,7 @@ class ProductService {
       throw error;
     }
   };
-    // Get variant by ID
+  // Get variant by ID
   getVariantById = async (variantId) => {
     try {
       const variant = await ProductVariant.findById(variantId).lean();

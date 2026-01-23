@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const offerSchema = new Schema({
   productId: {
     type: Schema.Types.ObjectId,
-    ref: "Product",
+    ref: 'Product',
     required: true,
     unique: true   // one offer per product
   },
@@ -14,7 +14,7 @@ const offerSchema = new Schema({
   },
   discountType: {
     type: String,
-    enum: ["PERCENTAGE", "FIXED"],
+    enum: ['PERCENTAGE', 'FIXED'],
     required: true
   },
   discountValue: {
@@ -25,8 +25,8 @@ const offerSchema = new Schema({
   endDate: Date,
   status: {
     type: String,
-    enum: ["active", "inactive"],
-    default: "active"
+    enum: ['active', 'inactive'],
+    default: 'active'
   },
   createdAt: { type: Date, default: Date.now },
 },{ timestamps: true });

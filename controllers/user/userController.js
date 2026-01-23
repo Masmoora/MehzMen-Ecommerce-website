@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
 import env from 'dotenv';
 env.config();
-import HTTP_STATUS from '../../constants/httpStatus.js'
+import HTTP_STATUS from '../../constants/httpStatus.js';
 
 class UserController {
     // ---------- PAGE LOAD FUNCTIONS ----------
@@ -123,15 +123,12 @@ class UserController {
             // Store temporary signup info in session
             req.session.userData = { name, phone, email, password };
             req.session.userotp = otp;
-            req.session.otpPurpose = "signup";
+            req.session.otpPurpose = 'signup';
             console.log(' session otp sent', req.session.userotp);
 
             res.render('verify-otp', {
-                purpose: "signup"
+                purpose: 'signup'
             });
-
-
-
 
             console.log('otp sent', otp);
 
@@ -156,12 +153,12 @@ class UserController {
             if (!otp || otp !== req.session.userotp) {
                 return res.status(400).json({
                     success: false,
-                    message: "Invalid OTP"
+                    message: 'Invalid OTP'
                 });
             }
 
-            // 🔥 CHECK PURPOSE
-            if (req.session.otpPurpose === "signup") {
+            // CHECK PURPOSE
+            if (req.session.otpPurpose === 'signup') {
 
                 const newUser = req.session.userData;
                 const hashedPassword = await this.securePassword(newUser.password);
@@ -182,12 +179,12 @@ class UserController {
 
                 return res.json({
                     success: true,
-                    redirectUrl: "/login"
+                    redirectUrl: '/login'
                 });
             }
 
-            // 🔥 FORGOT PASSWORD FLOW
-            if (req.session.otpPurpose === "forgot") {
+            //  FORGOT PASSWORD FLOW
+            if (req.session.otpPurpose === 'forgot') {
 
                 req.session.isForgotOtpVerified = true;
 
@@ -196,15 +193,15 @@ class UserController {
 
                 return res.json({
                     success: true,
-                    redirectUrl: "/reset-password"
+                    redirectUrl: '/reset-password'
                 });
             }
 
         } catch (error) {
-            console.error("OTP verify error:", error);
+            console.error('OTP verify error:', error);
             return res.status(500).json({
                 success: false,
-                message: "Server error"
+                message: 'Server error'
             });
         }
     };
@@ -215,18 +212,18 @@ class UserController {
         try {
             let email;
 
-            if (req.session.otpPurpose === "signup") {
+            if (req.session.otpPurpose === 'signup') {
                 email = req.session.userData?.email;
             }
 
-            if (req.session.otpPurpose === "forgot") {
+            if (req.session.otpPurpose === 'forgot') {
                 email = req.session.forgotEmail;
             }
 
             if (!email) {
                 return res.status(400).json({
                     success: false,
-                    message: "Email not found"
+                    message: 'Email not found'
                 });
             }
 
@@ -238,24 +235,23 @@ class UserController {
             if (emailSent) {
                 return res.json({
                     success: true,
-                    message: "OTP resent successfully"
+                    message: 'OTP resent successfully'
                 });
             }
 
             res.status(500).json({
                 success: false,
-                message: "Failed to resend OTP"
+                message: 'Failed to resend OTP'
             });
 
         } catch (error) {
-            console.error("Resend OTP error:", error);
+            console.error('Resend OTP error:', error);
             res.status(500).json({
                 success: false,
-                message: "Internal Server Error"
+                message: 'Internal Server Error'
             });
         }
     };
-
 
     // ---------- LOGIN ----------
 
@@ -302,7 +298,7 @@ class UserController {
     };
     //show forgot password
     getForgotPasswordPage = (req, res) => {
-        res.render("forgotPassword", { message: null });
+        res.render('forgotPassword', { message: null });
     };
 
     forgotPassword = async (req, res) => {
@@ -311,43 +307,42 @@ class UserController {
 
             const user = await UserService.findUserByEmail(email);
             if (!user) {
-                return res.render("forgotPassword", {
-                    message: "Email not registered"
+                return res.render('forgotPassword', {
+                    message: 'Email not registered'
                 });
             }
 
             const otp = this.generateOtp();
             req.session.userotp = otp;
             req.session.forgotEmail = email;
-            req.session.otpPurpose = "forgot";
-
+            req.session.otpPurpose = 'forgot';
 
             const emailSent = await this.sendVarificationMail(email, otp);
             if (!emailSent) {
-                return res.render("forgotPassword", {
-                    message: "Failed to send OTP"
+                return res.render('forgotPassword', {
+                    message: 'Failed to send OTP'
                 });
             }
 
-            res.redirect("/forgot-password/verify-otp");
+            res.redirect('/forgot-password/verify-otp');
 
         } catch (error) {
-            console.log("Forgot password error:", error);
-            res.render("forgotPassword", {
-                message: "Something went wrong"
+            console.log('Forgot password error:', error);
+            res.render('forgotPassword', {
+                message: 'Something went wrong'
             });
         }
     };
 
     loadForgotOtpPage = async (req, res) => {
-        res.render("verify-otp", { purpose: "forgot", message: null },);
+        res.render('verify-otp', { purpose: 'forgot', message: null },);
     };
 
     loadResetPasswordPage = async (req, res) => {
         if (!req.session.isForgotOtpVerified) {
-            return res.redirect("/login");
+            return res.redirect('/login');
         }
-        res.render("resetPassword", { message: null });
+        res.render('resetPassword', { message: null });
     };
 
     resetPassword = async (req, res) => {
@@ -355,8 +350,8 @@ class UserController {
             const { password, confirmPassword } = req.body;
 
             if (password !== confirmPassword) {
-                return res.render("resetPassword", {
-                    message: "Passwords do not match"
+                return res.render('resetPassword', {
+                    message: 'Passwords do not match'
                 });
             }
 
@@ -372,42 +367,16 @@ class UserController {
             req.session.forgotEmail = null;
             req.session.isOtpVerified = null;
 
-            res.redirect("/login");
+            res.redirect('/login');
 
         } catch (error) {
-            console.log("Reset password error:", error);
-            res.render("resetPassword", {
-                message: "Password reset failed"
+            console.log('Reset password error:', error);
+            res.render('resetPassword', {
+                message: 'Password reset failed'
             });
         }
     };
 
-    /*verifyForgotOtp = async (req, res) => {
-        try {
-            console.log(otp)
-            console.log(otpPurpose)
-            const { otp } = req.body;
-    
-            if (!otp || otp !== req.session.userotp) {
-                return res.render("forgotOtp", {
-                    message: "Invalid OTP"
-                });
-            }
-    
-            req.session.isOtpVerified = true;
-            res.redirect("/reset-password");
-    
-        } catch (error) {
-            console.log("Verify forgot OTP error:", error);
-            res.render("forgotOtp", {
-                message: "OTP verification failed"
-            });
-        }
-    };*/
-
-
-
 }
-
 
 export default new UserController();

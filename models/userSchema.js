@@ -67,7 +67,7 @@ const userSchema = new Schema({
   },
 redeemedUsers: [{
   type: Schema.Types.ObjectId,
-  ref: "User"
+  ref: 'User'
 }],
   searchHistory:[{
     category:{

@@ -215,7 +215,15 @@
 
 <script>
   const variants = JSON.parse(document.getElementById('variantData').textContent);
-  let selectedVariant = variants[0];
+  const params = new URLSearchParams(window.location.search);
+  const initialVariantId = params.get('variant');
+
+  const initialVariant =
+    variants.find(v => v._id === initialVariantId) || variants[0];
+
+  let selectedVariant = initialVariant;
+  let selectedColor = selectedVariant ? selectedVariant.color : null;
+  let selectedSize = selectedVariant ? selectedVariant.size : null;
 
   const mainImage = document.getElementById('mainImage');
   const zoomLens = document.getElementById('zoomLens');
@@ -251,37 +259,48 @@
   }
 
   function renderOptions() {
-    const sizes = [...new Set(variants.map(v => v.size))];
     const colors = [...new Set(variants.map(v => v.color))];
-
-    sizeOptions.innerHTML = '';
-    sizes.forEach(size => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'variant-btn' + (size === selectedVariant.size ? ' active' : '');
-      btn.textContent = size;
-      btn.addEventListener('click', () => updateVariant({ size }));
-      sizeOptions.appendChild(btn);
-    });
+    const sizesForColor = variants
+      .filter(v => v.color === selectedColor)
+      .map(v => v.size);
+    const sizes = [...new Set(sizesForColor)];
 
     colorOptions.innerHTML = '';
     colors.forEach(color => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'variant-btn' + (color === selectedVariant.color ? ' active' : '');
+      btn.className = 'variant-btn' + (color === selectedColor ? ' active' : '');
       btn.textContent = color;
       btn.addEventListener('click', () => updateVariant({ color }));
       colorOptions.appendChild(btn);
     });
+
+    sizeOptions.innerHTML = '';
+    sizes.forEach(size => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'variant-btn' + (size === selectedSize ? ' active' : '');
+      btn.textContent = size;
+      btn.addEventListener('click', () => updateVariant({ size }));
+      sizeOptions.appendChild(btn);
+    });
   }
 
   function updateVariant(change) {
-    const next = variants.find(v =>
-      (change.size ? v.size === change.size : v.size === selectedVariant.size) &&
-      (change.color ? v.color === change.color : v.color === selectedVariant.color)
-    );
+    if (change.color) {
+      selectedColor = change.color;
+      // reset size to the first available size for this color
+      const firstSize = variants.find(v => v.color === selectedColor)?.size;
+      selectedSize = firstSize || selectedSize;
+    }
 
+    if (change.size) {
+      selectedSize = change.size;
+    }
+
+    const next = variants.find(v => v.color === selectedColor && v.size === selectedSize);
     if (!next) return;
+
     selectedVariant = next;
     applyVariant();
   }
@@ -375,3 +394,6 @@
 
 </body>
 </html>
+
+
+

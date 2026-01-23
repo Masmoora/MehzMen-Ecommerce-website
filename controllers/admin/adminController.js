@@ -1,6 +1,6 @@
-import AdminService from '../../service/admin/adminService.js'
-import logger from '../../logger.js'
-import HTTP_STATUS from '../../constants/httpStatus.js'
+import AdminService from '../../service/admin/adminService.js';
+import logger from '../../logger.js';
+import HTTP_STATUS from '../../constants/httpStatus.js';
 
 class AdminController {
 
@@ -13,8 +13,7 @@ class AdminController {
                 .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
                 .send(`Error loading ${HTTP_STATUS.BAD_REQUEST} page`);
         }
-    }
-
+    };
 
     //get admin login page
 

@@ -1,14 +1,14 @@
-import CustomerService from '../../service/admin/customerService.js'
-import logger from '../../logger.js'
-import HTTP_STATUS from '../../constants/httpStatus.js'
+import CustomerService from '../../service/admin/customerService.js';
+import logger from '../../logger.js';
+import HTTP_STATUS from '../../constants/httpStatus.js';
 
 class CustomerController {
     loadCustomers = async (req, res) => {
         try {
             let search = req.query.search || '';
-            let page = 1
+            let page = 1;
             if (req.query.page) {
-                page = req.query.page
+                page = req.query.page;
             }
             const limit = 1;
 
@@ -17,14 +17,14 @@ class CustomerController {
                 page,
                 limit,
             );
-            res.render('customer', { users, search, page, totalPages })
+            res.render('customer', { users, search, page, totalPages });
 
         } catch (error) {
             logger.error('page not found', error);
             return res.redirect('/pageerror');
 
         }
-    }
+    };
 
     blockCustomer = async (req, res) => {
         try {
@@ -38,7 +38,7 @@ class CustomerController {
             logger.error('page not found', error);
             res.redirect('/admin/pageerror');
         }
-    }
+    };
 
     unblockCustomer = async (req, res) => {
         try {
@@ -52,10 +52,8 @@ class CustomerController {
             logger.error('page not found', error);
             res.redirect('admin/pageerror');
         }
-    }
-
-
+    };
 
 }
 
-export default new CustomerController()
+export default new CustomerController();

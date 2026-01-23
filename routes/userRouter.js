@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import passport from '../config/passport.js'
+import passport from '../config/passport.js';
 import userController from '../controllers/user/userController.js';
 import AuthMiddleware from '../middlewares/auth.js';
 import AllProductsController from '../controllers/user/allProductsController.js';
@@ -19,7 +19,7 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 
     //  store user id in express-session manually
     req.session.user = req.user._id;
-    
+
     res.redirect('/');
   } catch (error) {
     console.log('Google login error:', error);
@@ -31,17 +31,16 @@ router.get('/login',AuthMiddleware.isLogin,userController.loadLogin);
 router.post('/login',userController.loginUser);
 router.get('/logout',userController.logout);
 
-router.get("/forgot-password", userController.getForgotPasswordPage)
-router.post("/forgot-password", userController.forgotPassword)
-
+router.get('/forgot-password', userController.getForgotPasswordPage);
+router.post('/forgot-password', userController.forgotPassword);
 
 // verify otp (forgot password)
-router.get("/forgot-password/verify-otp", userController.loadForgotOtpPage);
+router.get('/forgot-password/verify-otp', userController.loadForgotOtpPage);
 //router.post("/forgot-password/verify-otp", userController.verifyForgotOtp);
 
 // reset password
-router.get("/reset-password", userController.loadResetPasswordPage);
-router.post("/reset-password", userController.resetPassword);
+router.get('/reset-password', userController.loadResetPasswordPage);
+router.post('/reset-password', userController.resetPassword);
 
 // User-side product listing
 router.get('/allProducts', AllProductsController.loadAllProducts);

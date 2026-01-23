@@ -6,7 +6,7 @@ class BrandService {
     getBrands = async (search, page, limit) => {
         const skip = (page - 1) * limit;
 
-        const query = { $or: [{ name: { $regex: ".*" + search + ".*", $options: "i" } }] }
+        const query = { $or: [{ name: { $regex: '.*' + search + '.*', $options: 'i' } }] };
 
         const brands = await Brand.find(query)
             .skip(skip)
@@ -19,7 +19,6 @@ class BrandService {
         return { brands, totalPages };
     };
 
-
     createBrand = async (data) => {
         return await Brand.create(data);
     };
@@ -27,8 +26,8 @@ class BrandService {
     async findbrandByName(name) {
         return await Brand.findOne({
 
-            name: { $regex: `^${name}$`, $options: "i" }
-        })
+            name: { $regex: `^${name}$`, $options: 'i' }
+        });
     }
 
     async updateBrand(id, updateData) {
@@ -39,7 +38,7 @@ class BrandService {
         const brand = await Brand.findById(brandId);
 
         if (!brand) {
-            throw new Error("Brand not found");
+            throw new Error('Brand not found');
         }
 
         brand.isListed = !brand.isListed;
@@ -47,13 +46,10 @@ class BrandService {
 
         return brand.isListed;
     }
-       async getAllBrands() {
-    return await Brand.find({ isListed: true }).lean();
-  }
+    async getAllBrands() {
+        return await Brand.find({ isListed: true }).lean();
+    }
 
 }
-
-
-
 
 export default new BrandService();

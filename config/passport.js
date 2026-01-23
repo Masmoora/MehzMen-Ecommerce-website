@@ -1,5 +1,5 @@
 import passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import UserService from '../service/user/userService.js';
 import env from 'dotenv';
 env.config();
@@ -34,6 +34,5 @@ passport.deserializeUser(async (id, done) => {
         done(err, null);
     }
 });
-
 
 export default passport;

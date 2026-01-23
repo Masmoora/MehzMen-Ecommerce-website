@@ -4,13 +4,13 @@ import bcrypt from 'bcrypt';
 
 class CustomerService {
     async getUsers(search, page, limit) {
-        page = parseInt(page)
+        page = parseInt(page);
         let query = { isAdmin: false };
         // Search filter
         if (search) {
             query.$or = [
-                { name: { $regex: ".*" + search + ".*", $options: 'i' } },
-                { email: { $regex: ".*" + search + ".*", $options: 'i' } },
+                { name: { $regex: '.*' + search + '.*', $options: 'i' } },
+                { email: { $regex: '.*' + search + '.*', $options: 'i' } },
             ];
         }
         const skip = (page - 1) * limit;

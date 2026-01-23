@@ -41,71 +41,70 @@ class UserService {
     }
 
     async findUserByEmail(email) {
-        return await User.findOne({email,isAdmin:0});
+        return await User.findOne({ email, isAdmin: 0 });
     }
 
     async validatePassword(plainPassword, hashedPassword) {
-        return await bcrypt.compare(plainPassword,hashedPassword);
+        return await bcrypt.compare(plainPassword, hashedPassword);
     }
 
     // update password
-async updatePasswordByEmail(email, password) {
-    return await User.findOneAndUpdate(
-        { email },
-        { password }
-    );
-}
-
-  // Get newest products with cheapest active variant
-  getNewArrivals = async (limit = 12) => {
-    const products = await Product.find({ isBlocked: false })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .populate('brand', 'name')
-      .lean();
-
-    const cards = [];
-
-    for (const product of products) {
-      const variants = await ProductVariant.find({
-        productId: product._id,
-        isActive: true,
-        stock: { $gt: 0 }
-      }).lean();
-
-      if (!variants.length) continue;
-
-      variants.sort((a, b) => a.price - b.price);
-      const cheapest = variants[0];
-
-      cards.push({
-        _id: product._id,
-        name: product.name,
-        brandName: product.brand?.name || 'N/A',
-        image: cheapest.images?.[0] || '',
-        price: cheapest.price || 0
-      });
+    async updatePasswordByEmail(email, password) {
+        return await User.findOneAndUpdate(
+            { email },
+            { password }
+        );
     }
 
-    return cards;
-  };
+    // Get newest products with cheapest active variant
+    getNewArrivals = async (limit = 12) => {
+        const products = await Product.find({ isBlocked: false })
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .populate('brand', 'name')
+            .lean();
 
-  // Get categories for "Shop by Category"
-  getCategories = async (limit = 6) => {
-    return Category.find({ isListed: true })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .lean();
-  };
+        const cards = [];
 
-  // Get brands for "Top Brands"
-  getBrands = async (limit = 8) => {
-    // If your brand schema uses a different active field, update here.
-    return Brand.find({ isListed: true })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .lean();
-  };
+        for (const product of products) {
+            const variants = await ProductVariant.find({
+                productId: product._id,
+                isActive: true,
+                stock: { $gt: 0 }
+            }).lean();
+
+            if (!variants.length) continue;
+
+            variants.sort((a, b) => a.price - b.price);
+            const cheapest = variants[0];
+
+            cards.push({
+                _id: product._id,
+                name: product.name,
+                brandName: product.brand?.name || 'N/A',
+                image: cheapest.images?.[0] || '',
+                price: cheapest.price || 0
+            });
+        }
+
+        return cards;
+    };
+
+    // Get categories for "Shop by Category"
+    getCategories = async (limit = 6) => {
+        return Category.find({ isListed: true })
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .lean();
+    };
+
+    // Get brands for "Top Brands"
+    getBrands = async (limit = 8) => {
+        return Brand.find({ isListed: true })
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .lean();
+    };
 
 }
 

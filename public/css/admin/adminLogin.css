@@ -1,0 +1,64 @@
+ body {
+     background-color: #f7f5f2;
+     height: 100vh;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     font-family: "Inter", sans-serif;
+ }
+
+ .login-card {
+     background: white;
+     padding: 40px;
+     width: 380px;
+     border-radius: 14px;
+     box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.08);
+ }
+
+ .logo-text {
+     font-family: "Nanum Myeongjo", serif;
+     font-size: 2rem;
+     text-align: center;
+     margin-bottom: 25px;
+     font-weight: bold;
+     color: #000;
+ }
+
+ .form-control {
+     height: 48px;
+     border-radius: 8px;
+ }
+
+ .btn-login {
+     background: #000;
+     color: #fff;
+     width: 100%;
+     padding: 12px;
+     border-radius: 8px;
+     font-size: 1rem;
+     margin-top: 10px;
+ }
+
+ .btn-login:hover {
+     background: #333;
+ }
+
+ .forgot-link {
+     float: right;
+     font-size: 0.9rem;
+     color: #6c757d;
+     text-decoration: none;
+ }
+
+ .password-box {
+     position: relative;
+ }
+
+ .toggle-icon {
+     position: absolute;
+     right: 12px;
+     top: 50%;
+     transform: translateY(-50%);
+     cursor: pointer;
+     color: #777;
+ }

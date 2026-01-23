@@ -1,9 +1,7 @@
 import ProductService from '../../service/admin/productService.js';
-import BrandService from '../../service/admin/brandService.js'
-import CategoryService from '../../service/admin/categoryService.js'
-import logger from '../../logger.js'
-
-
+import BrandService from '../../service/admin/brandService.js';
+import CategoryService from '../../service/admin/categoryService.js';
+import logger from '../../logger.js';
 
 class ProductController {
   // Load products list page
@@ -48,7 +46,7 @@ class ProductController {
     try {
       const categories = await CategoryService.getAllCategories();
       const brands = await BrandService.getAllBrands();
-      res.render("addProduct", { brands, categories });
+      res.render('addProduct', { brands, categories });
     } catch {
       logger.error('Error loading products page:', error);
       res.redirect('/admin/pageerror');
@@ -114,26 +112,26 @@ class ProductController {
   };
 
   editProductPage = async (req, res) => {
-  try {
-    const productId = req.params.id;
+    try {
+      const productId = req.params.id;
 
-    const data = await ProductService.getEditProductData(productId);
-console.log("PRODUCT BRAND:", data.product.brand);
-console.log("ALL BRANDS:", data.brands);
+      const data = await ProductService.getEditProductData(productId);
+      console.log('PRODUCT BRAND:', data.product.brand);
+      console.log('ALL BRANDS:', data.brands);
 
-   res.render("editProduct", {
-  product: data.product,
-  variants: data.variants,
-  brands: data.brands,
-  categories: data.categories
-});
-  } catch (error) {
-    console.error("Edit Page Error:", error);
-    res.redirect("/admin/pageerror");
-  }
-};
+      res.render('editProduct', {
+        product: data.product,
+        variants: data.variants,
+        brands: data.brands,
+        categories: data.categories
+      });
+    } catch (error) {
+      console.error('Edit Page Error:', error);
+      res.redirect('/admin/pageerror');
+    }
+  };
 
-    // Load edit product page
+  // Load edit product page
   loadEditProduct = async (req, res) => {
     try {
       const { id } = req.params;
@@ -154,10 +152,10 @@ console.log("ALL BRANDS:", data.brands);
 
       // Get brands and categories for dropdowns
 
-    const [brands, categories] = await Promise.all([
-      BrandService.getAllBrands(),
-      CategoryService.getAllCategories()
-    ]);
+      const [brands, categories] = await Promise.all([
+        BrandService.getAllBrands(),
+        CategoryService.getAllCategories()
+      ]);
 
       res.render('editProduct', {
         product,
@@ -172,9 +170,8 @@ console.log("ALL BRANDS:", data.brands);
   };
 
   // Update product
-  // NOTE: This assumes multer-s3 middleware is used in routes
-  // Images will be available in req.files as an array
- updateProduct = async (req, res) => {
+
+  updateProduct = async (req, res) => {
     try {
       const { id } = req.params;
       const { name, description, brand, category, status } = req.body;
@@ -201,7 +198,7 @@ console.log("ALL BRANDS:", data.brands);
       // Parse variants from request body
       // Variants come as arrays: variants[0][size], variants[0][color], etc.
       //const variants = req.body.variants || [];
-       const variantMap = {};
+      const variantMap = {};
 
       if (req.body.variants) {
         if (Array.isArray(req.body.variants)) {
@@ -252,7 +249,7 @@ console.log("ALL BRANDS:", data.brands);
           // Handle new images for this variant (from req.files)
           // Images are uploaded via multer-s3 and available in req.files
           // Format: req.files['variants[0][images]'] or similar
-          // This depends on your multer-s3 configuration
+          // This depends on  multer-s3 configuration
           const newImageUrls = [];
           if (req.files) {
             const variantImages = req.files.filter(file => {
@@ -270,7 +267,7 @@ console.log("ALL BRANDS:", data.brands);
           }
 
           // Append new images to existing ones
-           // Validate final image count (existing + new)
+          // Validate final image count (existing + new)
           const existingVariant = await ProductService.getVariantById(variantId);
           const existingCount = existingVariant?.images?.length || 0;
           const finalCount = existingCount + newImageUrls.length;
@@ -338,7 +335,7 @@ console.log("ALL BRANDS:", data.brands);
       });
     }
   };
-   // Toggle product block/unblock
+  // Toggle product block/unblock
   toggleProductBlock = async (req, res) => {
     try {
       const { id } = req.params;
@@ -434,7 +431,7 @@ console.log("ALL BRANDS:", data.brands);
       }
 
       const variant = await ProductService.getVariantById(variantId);
-      
+
       if (!variant) {
         return res.status(404).json({
           success: false,
@@ -529,4 +526,4 @@ console.log("ALL BRANDS:", data.brands);
   };
 }
 
-export default new ProductController()
+export default new ProductController();
