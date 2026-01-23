@@ -7,7 +7,12 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app"
+    "start": "nodemon app",
+    "lint:js": "eslint .",
+    "lint:css": "stylelint \"public/css/*/.css\"",
+    "lint:ejs": "ejs-lint \"views/*/.ejs\"",
+
+    "lint": "npm run lint:js && npm run lint:css && npm run lint:ejs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.967.0",

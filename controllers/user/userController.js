@@ -1,4 +1,4 @@
-import UserService from '../../service/userService.js';
+import UserService from '../../service/user/userService.js';
 import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
 import env from 'dotenv';
@@ -18,12 +18,27 @@ class UserController {
 
     loadHomepage = async (req, res) => {
         try {
+            const [ newArrivals, categories, brands] = await Promise.all([
+                UserService.getNewArrivals(),
+                UserService.getCategories(),
+                UserService.getBrands()
+            ]);
             const userId = req.session.user;
             if (userId) {
                 const userData = await UserService.getUserById(userId);
-                res.render('home', { user: userData });
+                res.render('home', {
+                    user: userData,
+                    newArrivals,
+                    categories,
+                    brands
+                });
             } else {
-                return res.render('home', { user: null });
+                return res.render('home', {
+                    user: null,
+                    newArrivals,
+                    categories,
+                    brands
+                });
             }
         } catch (error) {
             console.log('Home page not found', error);
@@ -111,9 +126,9 @@ class UserController {
             req.session.otpPurpose = "signup";
             console.log(' session otp sent', req.session.userotp);
 
-            res.render('verify-otp',{
-    purpose: "signup"
-});
+            res.render('verify-otp', {
+                purpose: "signup"
+            });
 
 
 
@@ -135,111 +150,111 @@ class UserController {
     // ---------- VERIFY OTP ----------
 
     verifyOtp = async (req, res) => {
-    try {
-        const { otp } = req.body;
+        try {
+            const { otp } = req.body;
 
-        if (!otp || otp !== req.session.userotp) {
-            return res.status(400).json({
+            if (!otp || otp !== req.session.userotp) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid OTP"
+                });
+            }
+
+            // 🔥 CHECK PURPOSE
+            if (req.session.otpPurpose === "signup") {
+
+                const newUser = req.session.userData;
+                const hashedPassword = await this.securePassword(newUser.password);
+
+                const saveUser = await UserService.createUser({
+                    name: newUser.name,
+                    email: newUser.email,
+                    phone: newUser.phone,
+                    password: hashedPassword
+                });
+
+                req.session.user = saveUser._id;
+
+                // cleanup
+                req.session.userData = null;
+                req.session.userotp = null;
+                req.session.otpPurpose = null;
+
+                return res.json({
+                    success: true,
+                    redirectUrl: "/login"
+                });
+            }
+
+            // 🔥 FORGOT PASSWORD FLOW
+            if (req.session.otpPurpose === "forgot") {
+
+                req.session.isForgotOtpVerified = true;
+
+                req.session.userotp = null;
+                req.session.otpPurpose = null;
+
+                return res.json({
+                    success: true,
+                    redirectUrl: "/reset-password"
+                });
+            }
+
+        } catch (error) {
+            console.error("OTP verify error:", error);
+            return res.status(500).json({
                 success: false,
-                message: "Invalid OTP"
+                message: "Server error"
             });
         }
-
-        // 🔥 CHECK PURPOSE
-        if (req.session.otpPurpose === "signup") {
-
-            const newUser = req.session.userData;
-            const hashedPassword = await this.securePassword(newUser.password);
-
-            const saveUser = await UserService.createUser({
-                name: newUser.name,
-                email: newUser.email,
-                phone: newUser.phone,
-                password: hashedPassword
-            });
-
-            req.session.user = saveUser._id;
-
-            // cleanup
-            req.session.userData = null;
-            req.session.userotp = null;
-            req.session.otpPurpose = null;
-
-            return res.json({
-                success: true,
-                redirectUrl: "/login"
-            });
-        }
-
-        // 🔥 FORGOT PASSWORD FLOW
-        if (req.session.otpPurpose === "forgot") {
-
-            req.session.isForgotOtpVerified = true;
-
-            req.session.userotp = null;
-            req.session.otpPurpose = null;
-
-            return res.json({
-                success: true,
-                redirectUrl: "/reset-password"
-            });
-        }
-
-    } catch (error) {
-        console.error("OTP verify error:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
-    }
-};
+    };
 
     // ---------- RESEND OTP ----------
 
     resend_otp = async (req, res) => {
-    try {
-        let email;
+        try {
+            let email;
 
-        if (req.session.otpPurpose === "signup") {
-            email = req.session.userData?.email;
-        }
+            if (req.session.otpPurpose === "signup") {
+                email = req.session.userData?.email;
+            }
 
-        if (req.session.otpPurpose === "forgot") {
-            email = req.session.forgotEmail;
-        }
+            if (req.session.otpPurpose === "forgot") {
+                email = req.session.forgotEmail;
+            }
 
-        if (!email) {
-            return res.status(400).json({
+            if (!email) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Email not found"
+                });
+            }
+
+            const otp = this.generateOtp();
+            req.session.userotp = otp;
+
+            const emailSent = await this.sendVarificationMail(email, otp);
+
+            if (emailSent) {
+                return res.json({
+                    success: true,
+                    message: "OTP resent successfully"
+                });
+            }
+
+            res.status(500).json({
                 success: false,
-                message: "Email not found"
+                message: "Failed to resend OTP"
+            });
+
+        } catch (error) {
+            console.error("Resend OTP error:", error);
+            res.status(500).json({
+                success: false,
+                message: "Internal Server Error"
             });
         }
-
-        const otp = this.generateOtp();
-        req.session.userotp = otp;
-
-        const emailSent = await this.sendVarificationMail(email, otp);
-
-        if (emailSent) {
-            return res.json({
-                success: true,
-                message: "OTP resent successfully"
-            });
-        }
-
-        res.status(500).json({
-            success: false,
-            message: "Failed to resend OTP"
-        });
-
-    } catch (error) {
-        console.error("Resend OTP error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error"
-        });
-    }
-};
+    };
 
 
     // ---------- LOGIN ----------
@@ -285,110 +300,110 @@ class UserController {
             res.redirect('/pageNotFound');
         }
     };
-     //show forgot password
+    //show forgot password
     getForgotPasswordPage = (req, res) => {
-  res.render("forgotPassword", { message: null });
-};
+        res.render("forgotPassword", { message: null });
+    };
 
-forgotPassword = async (req, res) => {
-    try {
-        const { email } = req.body;
+    forgotPassword = async (req, res) => {
+        try {
+            const { email } = req.body;
 
-        const user = await UserService.findUserByEmail(email);
-        if (!user) {
-            return res.render("forgotPassword", {
-                message: "Email not registered"
+            const user = await UserService.findUserByEmail(email);
+            if (!user) {
+                return res.render("forgotPassword", {
+                    message: "Email not registered"
+                });
+            }
+
+            const otp = this.generateOtp();
+            req.session.userotp = otp;
+            req.session.forgotEmail = email;
+            req.session.otpPurpose = "forgot";
+
+
+            const emailSent = await this.sendVarificationMail(email, otp);
+            if (!emailSent) {
+                return res.render("forgotPassword", {
+                    message: "Failed to send OTP"
+                });
+            }
+
+            res.redirect("/forgot-password/verify-otp");
+
+        } catch (error) {
+            console.log("Forgot password error:", error);
+            res.render("forgotPassword", {
+                message: "Something went wrong"
             });
         }
+    };
 
-        const otp = this.generateOtp();
-        req.session.userotp = otp;
-        req.session.forgotEmail = email;
-        req.session.otpPurpose = "forgot";
+    loadForgotOtpPage = async (req, res) => {
+        res.render("verify-otp", { purpose: "forgot", message: null },);
+    };
 
+    loadResetPasswordPage = async (req, res) => {
+        if (!req.session.isForgotOtpVerified) {
+            return res.redirect("/login");
+        }
+        res.render("resetPassword", { message: null });
+    };
 
-        const emailSent = await this.sendVarificationMail(email, otp);
-        if (!emailSent) {
-            return res.render("forgotPassword", {
-                message: "Failed to send OTP"
+    resetPassword = async (req, res) => {
+        try {
+            const { password, confirmPassword } = req.body;
+
+            if (password !== confirmPassword) {
+                return res.render("resetPassword", {
+                    message: "Passwords do not match"
+                });
+            }
+
+            const hashedPassword = await this.securePassword(password);
+
+            await UserService.updatePasswordByEmail(
+                req.session.forgotEmail,
+                hashedPassword
+            );
+
+            // clear session
+            req.session.userotp = null;
+            req.session.forgotEmail = null;
+            req.session.isOtpVerified = null;
+
+            res.redirect("/login");
+
+        } catch (error) {
+            console.log("Reset password error:", error);
+            res.render("resetPassword", {
+                message: "Password reset failed"
             });
         }
+    };
 
-        res.redirect("/forgot-password/verify-otp");
-
-    } catch (error) {
-        console.log("Forgot password error:", error);
-        res.render("forgotPassword", {
-            message: "Something went wrong"
-        });
-    }
-};
-
-loadForgotOtpPage = async (req, res) => {
-    res.render("verify-otp", {purpose: "forgot", message: null },);
-};
-
-loadResetPasswordPage = async (req, res) => {
-    if (!req.session.isForgotOtpVerified) {
-        return res.redirect("/login");
-    }
-    res.render("resetPassword", { message: null });
-};
-
-resetPassword = async (req, res) => {
-    try {
-        const { password, confirmPassword } = req.body;
-
-        if (password !== confirmPassword) {
-            return res.render("resetPassword", {
-                message: "Passwords do not match"
+    /*verifyForgotOtp = async (req, res) => {
+        try {
+            console.log(otp)
+            console.log(otpPurpose)
+            const { otp } = req.body;
+    
+            if (!otp || otp !== req.session.userotp) {
+                return res.render("forgotOtp", {
+                    message: "Invalid OTP"
+                });
+            }
+    
+            req.session.isOtpVerified = true;
+            res.redirect("/reset-password");
+    
+        } catch (error) {
+            console.log("Verify forgot OTP error:", error);
+            res.render("forgotOtp", {
+                message: "OTP verification failed"
             });
         }
-
-        const hashedPassword = await this.securePassword(password);
-
-        await UserService.updatePasswordByEmail(
-            req.session.forgotEmail,
-            hashedPassword
-        );
-
-        // clear session
-        req.session.userotp = null;
-        req.session.forgotEmail = null;
-        req.session.isOtpVerified = null;
-
-        res.redirect("/login");
-
-    } catch (error) {
-        console.log("Reset password error:", error);
-        res.render("resetPassword", {
-            message: "Password reset failed"
-        });
-    }
-};
-
-/*verifyForgotOtp = async (req, res) => {
-    try {
-        console.log(otp)
-        console.log(otpPurpose)
-        const { otp } = req.body;
-
-        if (!otp || otp !== req.session.userotp) {
-            return res.render("forgotOtp", {
-                message: "Invalid OTP"
-            });
-        }
-
-        req.session.isOtpVerified = true;
-        res.redirect("/reset-password");
-
-    } catch (error) {
-        console.log("Verify forgot OTP error:", error);
-        res.render("forgotOtp", {
-            message: "OTP verification failed"
-        });
-    }
-};*/
+    };*/
 
 
 

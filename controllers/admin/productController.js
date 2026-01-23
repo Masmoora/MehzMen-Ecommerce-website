@@ -153,8 +153,7 @@ console.log("ALL BRANDS:", data.brands);
       const variants = await ProductService.getProductVariants(id);
 
       // Get brands and categories for dropdowns
-      // TODO: Replace with your Brand model/service - adjust based on your structure
-    // Dropdown data (SERVICE BASED)
+
     const [brands, categories] = await Promise.all([
       BrandService.getAllBrands(),
       CategoryService.getAllCategories()

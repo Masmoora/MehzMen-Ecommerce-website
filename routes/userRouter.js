@@ -3,6 +3,7 @@ const router = express.Router();
 import passport from '../config/passport.js'
 import userController from '../controllers/user/userController.js';
 import AuthMiddleware from '../middlewares/auth.js';
+import AllProductsController from '../controllers/user/allProductsController.js';
 
 router.get('/',userController.loadHomepage);
 router.get('/pageNotFound',userController.pageNotFound);
@@ -41,4 +42,11 @@ router.get("/forgot-password/verify-otp", userController.loadForgotOtpPage);
 // reset password
 router.get("/reset-password", userController.loadResetPasswordPage);
 router.post("/reset-password", userController.resetPassword);
+
+// User-side product listing
+router.get('/allProducts', AllProductsController.loadAllProducts);
+
+// Product details page
+router.get('/productDetails/:id', AllProductsController.loadProductDetails);
+
 export default router;
