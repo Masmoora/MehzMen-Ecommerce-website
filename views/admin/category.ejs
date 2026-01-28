@@ -216,11 +216,12 @@
               <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="/admin/categories/addCategory" method="POST" enctype="multipart/form-data">
+            <form id="addCategoryForm" action="/admin/categories/addCategory" method="POST" enctype="multipart/form-data">
               <div class="modal-body">
                 <div class="mb-3">
                   <label for="categoryName" class="form-label">Category Name <span class="text-danger">*</span></label>
-                  <input type="text" class="form-control" id="categoryName" name="name" required>
+                  <input type="text" class="form-control" id="categoryName" name="name">
+                  <small id="nameError" class="text-danger"></small>
                 </div>
                 <div class="mb-3">
                   <label for="categoryDescription" class="form-label">Description</label>
@@ -230,6 +231,7 @@
                   <label for="categoryImage" class="form-label">Category Image</label>
                   <input type="file" class="form-control" id="categoryImage" name="image" accept="image/*">
                   <small class="form-text text-muted">Allowed: JPG, PNG, GIF, WEBP (Max 5MB)</small>
+                  <small id="imageError" class="text-danger"></small>
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Status</label>
@@ -268,7 +270,7 @@
               <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <form action="/admin/categories/editCategory" method="POST" enctype="multipart/form-data">
+            <form id="editCategoryForm" action="/admin/categories/editCategory" method="POST" enctype="multipart/form-data">
               <div class="modal-body">
 
                 <!-- hidden id -->
@@ -277,6 +279,7 @@
                 <div class="mb-3">
                   <label class="form-label">Category Name</label>
                   <input type="text" class="form-control" name="name" id="editCategoryName" required>
+                  <small id="editNameError" class="text-danger"></small>
                 </div>
 
                 <div class="mb-3">
@@ -291,7 +294,8 @@
 
                 <div class="mb-3">
                   <label class="form-label">Change Image</label>
-                  <input type="file" class="form-control" name="image">
+                  <input type="file" class="form-control" name="image" id="editCategoryImage">
+                  <small id="editImageError" class="text-danger"></small>
                 </div>
 
                 <div class="mb-3">
@@ -367,12 +371,6 @@
             Swal.fire('Error', 'Failed to add category', 'error');
           }
 
-          if (error === 'name_required') {
-            Swal.fire('Error', 'Category name is required', 'error');
-          }
-          if (error === 'image_required') {
-            Swal.fire('Error', 'Category image is required', 'error');
-          }
           if (success === 'updated') {
             Swal.fire('Success', 'Category updated successfully', 'success');
           }
@@ -402,6 +400,71 @@
           }
 
 
+        </script>
+        <script>
+          const addCategoryForm = document.getElementById('addCategoryForm');
+          const editCategoryForm = document.getElementById('editCategoryForm');
+
+          const nameInput = document.getElementById('categoryName');
+          const imageInput = document.getElementById('categoryImage');
+          const editNameInput = document.getElementById('editCategoryName');
+
+          const nameError = document.getElementById('nameError');
+          const imageError = document.getElementById('imageError');
+          const editNameError = document.getElementById('editNameError');
+          const editImageError = document.getElementById('editImageError');
+
+          const clearInlineErrors = () => {
+            if (nameError) nameError.textContent = '';
+            if (imageError) imageError.textContent = '';
+            if (editNameError) editNameError.textContent = '';
+            if (editImageError) editImageError.textContent = '';
+          };
+
+          const validateAddForm = () => {
+            clearInlineErrors();
+            let valid = true;
+
+            if (!nameInput.value.trim()) {
+              nameError.textContent = 'Category name is required.';
+              valid = false;
+            }
+
+            if (!imageInput.files.length) {
+              imageError.textContent = 'Category image is required.';
+              valid = false;
+            }
+
+            return valid;
+          };
+
+          const validateEditForm = () => {
+            clearInlineErrors();
+            let valid = true;
+
+            if (editNameInput && !editNameInput.value.trim()) {
+              editNameError.textContent = 'Category name is required.';
+              valid = false;
+            }
+
+            return valid;
+          };
+
+          if (addCategoryForm) {
+            addCategoryForm.addEventListener('submit', (event) => {
+              if (!validateAddForm()) {
+                event.preventDefault();
+              }
+            });
+          }
+
+          if (editCategoryForm) {
+            editCategoryForm.addEventListener('submit', (event) => {
+              if (!validateEditForm()) {
+                event.preventDefault();
+              }
+            });
+          }
         </script>
 
 </body>

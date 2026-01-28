@@ -2,6 +2,7 @@
 import AllProductsService from '../../service/user/allProductService.js';
 import logger from '../../logger.js';
 
+
 class AllProductsController {
     // List all products page
     loadAllProducts = async (req, res) => {
@@ -71,8 +72,9 @@ class AllProductsController {
 
             const relatedProducts = await AllProductsService.getRelatedProducts(
                 product._id,
-                product.category
-            );
+               product.category._id 
+           );
+
 
             const user = req.session?.user || null;
 

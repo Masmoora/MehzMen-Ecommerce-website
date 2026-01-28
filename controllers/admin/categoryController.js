@@ -47,6 +47,12 @@ class CategoryController {
             if (!name || !name.trim()) {
                 return res.redirect('/admin/category?error=name_required');
             }
+            const trimmedName = name.trim();
+      const existingCategory = await CategoryService.getCategoryByNameInsensitive(trimmedName);
+      if (existingCategory) {
+        return res.redirect('/admin/category?error=exists');
+      }
+
 
             if (!image) {
                 return res.redirect('/admin/category?error=image_required');
@@ -76,6 +82,22 @@ class CategoryController {
     editCategory = async (req, res) => {
         try {
             const { id, name, description, isListed } = req.body;
+                  if (!id) {
+        return res.redirect('/admin/category?error=edit_failed');
+      }
+
+      if (!name || !name.trim()) {
+        return res.redirect('/admin/category?error=edit_failed');
+      }
+
+      const trimmedName = name.trim();
+      const existingCategory = await CategoryService.getCategoryByNameInsensitive(
+        trimmedName,
+        id
+      );
+      if (existingCategory) {
+        return res.redirect('/admin/category?error=exists');
+      }
 
             const updateData = {
                 name: name.trim(),

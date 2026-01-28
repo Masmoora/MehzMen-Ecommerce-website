@@ -1,6 +1,7 @@
 import Product from '../../models/productSchema.js';
 import ProductVariant from '../../models/productVariantSchema.js';
 import Category from '../../models/categorySchema.js';
+import { populate } from 'dotenv';
 
 class AllProductsService {
     // Get products for listing page with filters, sorting, and pagination
@@ -154,10 +155,11 @@ class AllProductsService {
             .lean();
 
         const related = [];
+console.log('CATEGORY:', categoryId);
 
         for (const product of products) {
             const variants = await ProductVariant.find({
-                product: product._id,
+                productId: product._id,
                 isActive: true
             }).lean();
 

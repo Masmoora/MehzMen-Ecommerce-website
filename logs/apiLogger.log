@@ -841,3 +841,65 @@
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-23 18:35:31"}
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-23 18:35:47"}
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-23 18:36:10"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-23 19:25:51"}
+{"level":"error","message":"Error deleting variant image: Cannot delete image. Each variant must have at least 3 images","stack":"Error: Cannot delete image. Each variant must have at least 3 images\n    at ProductService.deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/service/admin/productService.js:282:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/productController.js:377:7)","timestamp":"2026-01-23 20:18:20"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-23 20:24:05"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-23 20:35:06"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-26 07:24:45"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 09:08:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 11:42:07"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 11:42:16"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 11:42:18"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 11:51:17"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 11:54:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 11:56:05"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 18:21:30"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 18:28:21"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 18:28:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 18:28:46"}
+{"level":"error","message":"Error loading product details: Product is not defined","stack":"ReferenceError: Product is not defined\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:76:45)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-01-28 18:28:59"}
+{"level":"error","message":"Error loading product details: Product is not defined","stack":"ReferenceError: Product is not defined\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:76:45)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-01-28 18:29:01"}
+{"level":"error","message":"Error loading product details: Product is not defined","stack":"ReferenceError: Product is not defined\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:76:45)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-01-28 18:29:03"}
+{"level":"error","message":"Error loading product details: Product is not defined","stack":"ReferenceError: Product is not defined\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:76:45)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-01-28 18:29:05"}
+{"level":"error","message":"Error loading product details: Product is not defined","stack":"ReferenceError: Product is not defined\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:76:45)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-01-28 18:29:09"}
+{"level":"error","message":"Error loading product details: Product is not defined","stack":"ReferenceError: Product is not defined\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:76:45)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-01-28 18:29:11"}
+{"level":"error","message":"Error loading product details: Product is not defined","stack":"ReferenceError: Product is not defined\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:76:45)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-01-28 18:29:17"}
+{"level":"error","message":"Error loading product details: Product is not defined","stack":"ReferenceError: Product is not defined\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:76:45)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-01-28 18:29:18"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 18:29:55"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 18:54:07"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 18:56:30"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:01:38"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:18:39"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:19:17"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:19:21"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:19:28"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:26:05"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:26:09"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:26:11"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:27:35"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:27:37"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:28:57"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:29:08"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:29:13"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:29:43"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:29:46"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:31:09"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:31:10"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:31:18"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:31:23"}
+{"code":"OBJECT_REQUIRED","level":"error","message":"Error loading product details: OBJECT_REQUIRED: Please check the processEnv argument being passed to populate","stack":"Error: OBJECT_REQUIRED: Please check the processEnv argument being passed to populate\n    at populate (C:\\MehzMen Ecommerce Website\\node_modules\\dotenv\\lib\\main.js:387:17)\n    at AllProductsService.getRelatedProducts (file:///C:/MehzMen%20Ecommerce%20Website/service/user/allProductService.js:154:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:73:37)","timestamp":"2026-01-28 19:31:30"}
+{"code":"OBJECT_REQUIRED","level":"error","message":"Error loading product details: OBJECT_REQUIRED: Please check the processEnv argument being passed to populate","stack":"Error: OBJECT_REQUIRED: Please check the processEnv argument being passed to populate\n    at populate (C:\\MehzMen Ecommerce Website\\node_modules\\dotenv\\lib\\main.js:387:17)\n    at AllProductsService.getRelatedProducts (file:///C:/MehzMen%20Ecommerce%20Website/service/user/allProductService.js:154:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:73:37)","timestamp":"2026-01-28 19:31:34"}
+{"code":"OBJECT_REQUIRED","level":"error","message":"Error loading product details: OBJECT_REQUIRED: Please check the processEnv argument being passed to populate","stack":"Error: OBJECT_REQUIRED: Please check the processEnv argument being passed to populate\n    at populate (C:\\MehzMen Ecommerce Website\\node_modules\\dotenv\\lib\\main.js:387:17)\n    at AllProductsService.getRelatedProducts (file:///C:/MehzMen%20Ecommerce%20Website/service/user/allProductService.js:154:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:73:37)","timestamp":"2026-01-28 19:31:37"}
+{"code":"OBJECT_REQUIRED","level":"error","message":"Error loading product details: OBJECT_REQUIRED: Please check the processEnv argument being passed to populate","stack":"Error: OBJECT_REQUIRED: Please check the processEnv argument being passed to populate\n    at populate (C:\\MehzMen Ecommerce Website\\node_modules\\dotenv\\lib\\main.js:387:17)\n    at AllProductsService.getRelatedProducts (file:///C:/MehzMen%20Ecommerce%20Website/service/user/allProductService.js:154:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:73:37)","timestamp":"2026-01-28 19:31:38"}
+{"code":"OBJECT_REQUIRED","level":"error","message":"Error loading product details: OBJECT_REQUIRED: Please check the processEnv argument being passed to populate","stack":"Error: OBJECT_REQUIRED: Please check the processEnv argument being passed to populate\n    at populate (C:\\MehzMen Ecommerce Website\\node_modules\\dotenv\\lib\\main.js:387:17)\n    at AllProductsService.getRelatedProducts (file:///C:/MehzMen%20Ecommerce%20Website/service/user/allProductService.js:154:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:73:37)","timestamp":"2026-01-28 19:31:39"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:31:50"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 19:32:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 23:55:53"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 23:56:20"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-28 23:56:23"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-29 00:03:22"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-29 00:09:40"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-29 00:09:57"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-29 00:10:00"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-29 00:10:09"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-01-29 00:10:25"}

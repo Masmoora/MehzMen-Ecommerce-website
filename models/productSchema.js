@@ -23,7 +23,7 @@ const productSchema = new Schema({
   },
   isBlocked: {
       type: Boolean,
-      default: true
+      default: false
     },
 status: {
   type: String,

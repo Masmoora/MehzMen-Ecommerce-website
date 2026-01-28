@@ -39,6 +39,21 @@ class CategoryService {
         await category.save();
         return { success: true };
     };
+    // Get category by name (case-insensitive)
+  getCategoryByNameInsensitive = async (name, excludeId = null) => {
+    try {
+      const filter = {
+        name: { $regex: `^${name}$`, $options: 'i' }
+      };
+      if (excludeId) {
+        filter._id = { $ne: excludeId };
+      }
+      const category = await Category.findOne(filter);
+      return category;
+    } catch (error) {
+      throw error;
+    }
+}
 
     updateCategory = async (id, updateData) => {
         return await Category.findByIdAndUpdate(id, updateData, { new: true });
