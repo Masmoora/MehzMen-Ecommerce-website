@@ -15,26 +15,43 @@ class UserService {
     async createUser(data) {
         return await User.create(data);
     }
-    //find user by googleid or email
-    async findOrCreateGoogleUser(profile) {
-        const filter = {
+     async findOrCreateGoogleUser(profile) {
+        const email = profile.emails[0].value.toLowerCase();
+
+        // 1️⃣ Find user by googleId OR email
+        let user = await User.findOne({
             $or: [
                 { googleId: profile.id },
-                { email: profile.emails[0].value.toLowerCase() }
+                { email }
             ]
-        };
+        });
 
-        const update = {
+        // 2️⃣ If user exists and is BLOCKED → STOP LOGIN
+        if (user && user.isBlocked) {
+            return null;
+        }
+
+        // 3️⃣ If user exists and not blocked → attach googleId if missing
+        if (user) {
+            if (!user.googleId) {
+                user.googleId = profile.id;
+                await user.save();
+            }
+            return user;
+        }
+
+        // 4️⃣ Create NEW user
+        user = new User({
             name: profile.displayName,
-            email: profile.emails[0].value.toLowerCase(),
+            email,
             googleId: profile.id,
-        };
+            isBlocked: false
+        });
 
-        const options = { new: true, upsert: true };
-
-        const user = await User.findOneAndUpdate(filter, update, options);
+        await user.save();
         return user;
     }
+
 
     async getUserById(id) {
         return await User.findById(id);
@@ -52,7 +69,7 @@ class UserService {
     async updatePasswordByEmail(email, password) {
         return await User.findOneAndUpdate(
             { email },
-            { password }
+            { $set: { password: password } }
         );
     }
 

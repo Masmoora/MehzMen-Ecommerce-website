@@ -11,11 +11,12 @@
 </head>
 
 <body>
+
 <%- include("../partials/user/header") %>
 
 <%
   function buildQuery(newParams) {
-    const current = { page, search, category: selectedCategory, brand: selectedBrand, minPrice, maxPrice, sort };
+    const current = { page, search, category: selectedCategory, brand: selectedBrand, color: selectedColor, minPrice, maxPrice, sort };
     const merged = { ...current, ...newParams };
 
     return Object.entries(merged)
@@ -32,6 +33,7 @@
       <input type="hidden" name="page" value="1">
       <input type="hidden" name="category" value="<%= selectedCategory || '' %>">
       <input type="hidden" name="brand" value="<%= selectedBrand || '' %>">
+      <input type="hidden" name="color" value="<%= selectedColor || '' %>">
       <input type="hidden" name="minPrice" value="<%= minPrice || '' %>">
       <input type="hidden" name="maxPrice" value="<%= maxPrice || '' %>">
       <input type="hidden" name="sort" value="<%= sort || '' %>">
@@ -45,51 +47,66 @@
     <!-- Sidebar -->
     <div class="col-12 col-lg-3">
       <div class="sidebar-box">
-        <h6 class="mb-2">Browse Categories</h6>
-        <ul class="filter-list">
-          <li>
-            <a
-              href="/allProducts?<%= buildQuery({ category: '', page: 1 }) %>"
-              class="filter-link <%= !selectedCategory ? 'active' : '' %>"
-            >
-              All
-            </a>
-          </li>
-          <% categories.forEach(cat => { %>
-            <li>
-              <a
-                href="/allProducts?<%= buildQuery({ category: cat._id, page: 1 }) %>"
-                class="filter-link <%= selectedCategory === cat._id.toString() ? 'active' : '' %>"
-              >
+        <h6 class="mb-2">Category</h6>
+        <form method="GET" action="/allProducts">
+          <input type="hidden" name="page" value="1">
+          <input type="hidden" name="search" value="<%= search || '' %>">
+          <input type="hidden" name="brand" value="<%= selectedBrand || '' %>">
+          <input type="hidden" name="color" value="<%= selectedColor || '' %>">
+          <input type="hidden" name="minPrice" value="<%= minPrice || '' %>">
+          <input type="hidden" name="maxPrice" value="<%= maxPrice || '' %>">
+          <input type="hidden" name="sort" value="<%= sort || '' %>">
+          <select class="form-select" name="category" onchange="this.form.submit()">
+            <option value="" <%= !selectedCategory ? 'selected' : '' %>>All</option>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat._id %>" <%= selectedCategory === cat._id.toString() ? 'selected' : '' %>>
                 <%= cat.name %>
-              </a>
-            </li>
-          <% }) %>
-        </ul>
+              </option>
+            <% }) %>
+          </select>
+        </form>
       </div>
 
       <div class="sidebar-box">
-        <h6 class="mb-2">Browse Brands</h6>
-        <ul class="filter-list">
-          <li>
-            <a
-              href="/allProducts?<%= buildQuery({ brand: '', page: 1 }) %>"
-              class="filter-link <%= !selectedBrand ? 'active' : '' %>"
-            >
-              All
-            </a>
-          </li>
-          <% brands.forEach(br => { %>
-            <li>
-              <a
-                href="/allProducts?<%= buildQuery({ brand: br._id, page: 1 }) %>"
-                class="filter-link <%= selectedBrand === br._id.toString() ? 'active' : '' %>"
-              >
+        <h6 class="mb-2">Brand</h6>
+        <form method="GET" action="/allProducts">
+          <input type="hidden" name="page" value="1">
+          <input type="hidden" name="search" value="<%= search || '' %>">
+          <input type="hidden" name="category" value="<%= selectedCategory || '' %>">
+          <input type="hidden" name="color" value="<%= selectedColor || '' %>">
+          <input type="hidden" name="minPrice" value="<%= minPrice || '' %>">
+          <input type="hidden" name="maxPrice" value="<%= maxPrice || '' %>">
+          <input type="hidden" name="sort" value="<%= sort || '' %>">
+          <select class="form-select" name="brand" onchange="this.form.submit()">
+            <option value="" <%= !selectedBrand ? 'selected' : '' %>>All</option>
+            <% brands.forEach(br => { %>
+              <option value="<%= br._id %>" <%= selectedBrand === br._id.toString() ? 'selected' : '' %>>
                 <%= br.name %>
-              </a>
-            </li>
-          <% }) %>
-        </ul>
+              </option>
+            <% }) %>
+          </select>
+        </form>
+      </div>
+
+      <div class="sidebar-box">
+        <h6 class="mb-2">Color</h6>
+        <form method="GET" action="/allProducts">
+          <input type="hidden" name="page" value="1">
+          <input type="hidden" name="search" value="<%= search || '' %>">
+          <input type="hidden" name="category" value="<%= selectedCategory || '' %>">
+          <input type="hidden" name="brand" value="<%= selectedBrand || '' %>">
+          <input type="hidden" name="minPrice" value="<%= minPrice || '' %>">
+          <input type="hidden" name="maxPrice" value="<%= maxPrice || '' %>">
+          <input type="hidden" name="sort" value="<%= sort || '' %>">
+          <select class="form-select" name="color" onchange="this.form.submit()">
+            <option value="" <%= !selectedColor ? 'selected' : '' %>>All</option>
+            <% colors.forEach(color => { %>
+              <option value="<%= color %>" <%= selectedColor && selectedColor.toLowerCase() === color.toLowerCase() ? 'selected' : '' %>>
+                <%= color %>
+              </option>
+            <% }) %>
+          </select>
+        </form>
       </div>
 
       <div class="sidebar-box">
@@ -99,6 +116,7 @@
           <input type="hidden" name="search" value="<%= search || '' %>">
           <input type="hidden" name="category" value="<%= selectedCategory || '' %>">
           <input type="hidden" name="brand" value="<%= selectedBrand || '' %>">
+          <input type="hidden" name="color" value="<%= selectedColor || '' %>">
           <input type="hidden" name="sort" value="<%= sort || '' %>">
           <div class="d-flex gap-2">
             <input class="form-control" type="number" name="minPrice" placeholder="Min" value="<%= minPrice || '' %>">
@@ -114,6 +132,7 @@
       <form method="GET" class="mb-3">
         <input type="hidden" name="category" value="<%= selectedCategory || '' %>">
         <input type="hidden" name="brand" value="<%= selectedBrand || '' %>">
+        <input type="hidden" name="color" value="<%= selectedColor || '' %>">
         <input type="hidden" name="minPrice" value="<%= minPrice || '' %>">
         <input type="hidden" name="maxPrice" value="<%= maxPrice || '' %>">
         <input type="hidden" name="search" value="<%= search || '' %>">
@@ -167,7 +186,5 @@
 
 <%- include("../partials/user/footer") %>
 
-
 </body>
-
 </html>

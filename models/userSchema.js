@@ -53,10 +53,7 @@ const userSchema = new Schema({
     type:Schema.Types.ObjectId,
     ref:'Order'
   }],
-  createdOn:{
-    type:Date,
-    default:Date.now
-  },
+
   referralCode:{
     type:String,
     //  required:true
@@ -65,6 +62,10 @@ const userSchema = new Schema({
     type:Boolean,
     //   required:true
   },
+  profileImage: {
+  type: String,   // S3 image URL
+  default: null
+},
 redeemedUsers: [{
   type: Schema.Types.ObjectId,
   ref: 'User'
@@ -85,7 +86,8 @@ redeemedUsers: [{
 
   }]
 
-});
+},{ timestamps: true } // ✅ adds createdAt & updatedAt
+);
 //create the model(collection)
 const User = mongoose.model('User',userSchema);
 export default User;

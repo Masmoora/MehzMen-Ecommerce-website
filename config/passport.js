@@ -14,6 +14,14 @@ passport.use(
         async (accessToken, refreshToken, profile, done) => {
             try {
                 const user = await UserService.findOrCreateGoogleUser(profile);
+                
+//  Blocked user
+                if (!user) {
+                    return done(null, false, {
+                        message: 'Your account has been blocked by admin'
+                    });
+                }
+
                 return done(null, user);
             } catch (error) {
                 return done(error, null);
@@ -29,6 +37,7 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
     try {
         const user = await UserService.getUserById(id);
+        
         done(null, user);
     } catch (err) {
         done(err, null);

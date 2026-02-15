@@ -4,6 +4,8 @@ import passport from '../config/passport.js';
 import userController from '../controllers/user/userController.js';
 import AuthMiddleware from '../middlewares/auth.js';
 import AllProductsController from '../controllers/user/allProductsController.js';
+import ProfileController from '../controllers/user/profileController.js';
+import s3Upload from '../middlewares/multer.js';
 
 router.get('/',userController.loadHomepage);
 router.get('/pageNotFound',userController.pageNotFound);
@@ -13,7 +15,7 @@ router.post('/verify-otp',userController.verifyOtp);
 router.post('/resend-otp',userController.resend_otp);
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup' }), async (req, res) => {
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup?error=blocked' }), async (req, res) => {
   try {
     // Successful authentication
 
@@ -47,5 +49,22 @@ router.get('/allProducts', AllProductsController.loadAllProducts);
 
 // Product details page
 router.get('/productDetails/:id', AllProductsController.loadProductDetails);
+//profile management
+router.get('/userProfile', ProfileController.loadUserProfile)
+router.get('/edit-userProfile', ProfileController.loadEditProfile)
+router.post('/edit-userProfile',s3Upload('userProfile').single('profileImage'), ProfileController.updateProfile)
+router.get('/change-email', ProfileController.getChangeEmail)
+router.post('/change-email', ProfileController.changeEmail)
+router.get('/verify-email-otp',  ProfileController.getVerifyEmailOtp)
+router.post('/verify-email-otp', ProfileController.verifyEmailOtp)
+router.post('/resend-change-Email-otp', (req,res,next)=>{
+   console.log("ROUTE HIT");
+   next()},ProfileController.resendChangeEmailOtp)
+router.post('/change-password', ProfileController.changePassword)
+//user address management
+router.get('/address',ProfileController.loadAddressPage);
+router.post('/add-address', ProfileController.addAddress);
+router.post('/edit-address/:id', ProfileController.editAddress);
+router.post('/delete-address/:id', ProfileController.deleteAddress);
 
 export default router;

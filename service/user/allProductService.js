@@ -13,7 +13,8 @@ class AllProductsService {
         brand,
         minPrice,
         maxPrice,
-        sort
+        sort,
+        color
     }) => {
         //  Build a simple product query
         const productQuery = { isBlocked: false };
@@ -48,6 +49,13 @@ class AllProductsService {
             }).lean();
 
             if (!variants.length) continue;
+             // 4) Apply color filter on variants
+      if (color) {
+        const normalizedColor = color.toLowerCase();
+        variants = variants.filter(v => (v.color || '').toLowerCase() === normalizedColor);
+      }
+
+      if (!variants.length) continue;
 
             // 4) Apply price filter on variants
             const min = minPrice ? Number(minPrice) : null;
@@ -125,6 +133,19 @@ class AllProductsService {
 
         return Array.from(map.values());
     };
+     // Get colors list from active variants
+  getColors = async () => {
+    const colors = await ProductVariant.distinct('color', {
+      isActive: true,
+      stock: { $gt: 0 }
+    });
+    return colors
+      .filter(Boolean)
+      .map(color => color.trim())
+      .filter(color => color.length > 0)
+      .sort((a, b) => a.localeCompare(b));
+  };
+
 
     // Get a product with its active variants (for product details page)
     getProductDetails = async (productId) => {

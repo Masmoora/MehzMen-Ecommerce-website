@@ -8,11 +8,11 @@ const addressSchema = new Schema({
     required:true
   },
   address:[{
-    addressType:{
+    name:{
       type:String,
       required:true
     },
-    name:{
+    houseNo:{
       type:String,
       required:true
     },
@@ -28,6 +28,7 @@ const addressSchema = new Schema({
       type:String,
       required:true
     },
+    country: { type: String, required: true, trim: true },
     pincode:{
       type:Number,
       required:true
@@ -36,10 +37,7 @@ const addressSchema = new Schema({
       type:String,
       required:true
     },
-    altPhone:{
-      type:String,
-      required:true
-    },
+
     isDefault:{
       type:Boolean,
       default:false

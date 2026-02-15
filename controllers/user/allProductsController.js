@@ -15,6 +15,7 @@ class AllProductsController {
             const minPrice = req.query.minPrice || '';
             const maxPrice = req.query.maxPrice || '';
             const sort = req.query.sort || '';
+            const color = req.query.color || '';
 
             const { products, totalPages } = await AllProductsService.getAllProducts({
                 page,
@@ -24,12 +25,14 @@ class AllProductsController {
                 brand,
                 minPrice,
                 maxPrice,
-                sort
+                sort,
+                color
             });
 
-            const [categories, brands] = await Promise.all([
+            const [categories, brands,colors] = await Promise.all([
                 AllProductsService.getCategories(),
-                AllProductsService.getBrands()
+                AllProductsService.getBrands(),
+                AllProductsService.getColors()
             ]);
 
             const user = req.session?.user || null;
@@ -39,11 +42,13 @@ class AllProductsController {
                 products,
                 categories,
                 brands,
+                 colors, 
                 page,
                 totalPages,
                 search,
                 selectedCategory: category,
                 selectedBrand: brand,
+                selectedColor: color,
                 minPrice,
                 maxPrice,
                 sort
