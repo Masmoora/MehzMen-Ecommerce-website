@@ -154,6 +154,7 @@
 
       <div class="mb-3">
         <button id="addToCartBtn" class="btn btn-dark">Add to Cart</button>
+        <button id="addToWishlistBtn" class="btn btn-dark">Add to Wishlist</button>
         <p id="unavailableMsg" class="text-danger mt-2 d-none">This product is currently unavailable.</p>
       </div>
 
@@ -212,7 +213,7 @@
 <script type="application/json" id="variantData">
   <%- JSON.stringify(variants) %>
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   const variants = JSON.parse(document.getElementById('variantData').textContent);
   const params = new URLSearchParams(window.location.search);
@@ -235,6 +236,7 @@
   const priceText = document.getElementById('priceText');
   const stockBadge = document.getElementById('stockBadge');
   const addToCartBtn = document.getElementById('addToCartBtn');
+  const addToWishlistBtn = document.getElementById('addToWishlistBtn');
   const unavailableMsg = document.getElementById('unavailableMsg');
   let zoomLocked = false;
 
@@ -387,6 +389,43 @@
 
   mainImage.addEventListener('load', () => {
     zoomIcon.style.display = 'flex';
+  });
+   // Add to cart with selected variant
+  addToCartBtn.addEventListener('click', async () => {
+    if (!selectedVariant) return;
+
+    const res = await fetch('/cart/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        productId: '<%= product._id %>',
+        variantId: selectedVariant._id,
+        quantity: 1
+      })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      await Swal.fire('Success', 'Added to cart', 'success');
+      window.location.href = '/cart';
+    } else {
+      Swal.fire('Error', data.message || 'Failed to add cart', 'error');
+    }
+  });
+    // Add product to wishlist
+  addToWishlistBtn.addEventListener('click', async () => {
+    const res = await fetch('/wishlist/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId: '<%= product._id %>' })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      Swal.fire('Success', data.message || 'Added to wishlist', 'success');
+    } else {
+      Swal.fire('Error', data.message || 'Failed to add wishlist', 'error');
+    }
   });
 
   applyVariant();

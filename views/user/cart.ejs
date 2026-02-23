@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cart</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f6f7fb; padding-top: 60px; }
+    .cart-img { width: 90px; height: 90px; object-fit: cover; border-radius: 8px; }
+    .row-disabled { opacity: 0.55; }
+  </style>
+</head>
+<body>
+  <%- include("../partials/user/header") %>
+
+  <main class="container py-4">
+    <h3 class="mb-4">My Cart</h3>
+
+    <% if (!cartItems || cartItems.length === 0) { %>
+      <div class="alert alert-warning">Your cart is empty.</div>
+    <% } else { %>
+      <div class="row g-4">
+        <!-- Left side: cart items -->
+        <div class="col-12 col-lg-8">
+          <% cartItems.forEach((item) => { %>
+            <div class="card mb-3 <%= item.outOfStock ? 'row-disabled' : '' %>" data-item-id="<%= item._id %>">
+              <div class="card-body">
+                <div class="d-flex gap-3">
+                  <div class="d-flex align-items-start pt-1">
+                    <input
+                      class="form-check-input item-checkbox"
+                      type="checkbox"
+                      data-item-id="<%= item._id %>"
+                      data-price="<%= item.price %>"
+                      data-qty="<%= item.quantity %>"
+                      data-out-of-stock="<%= item.outOfStock ? '1' : '0' %>"
+                      <%= item.outOfStock ? 'disabled' : 'checked' %>
+                    >
+                  </div>
+
+                  <img
+                    src="<%= item.image || 'https://via.placeholder.com/90x90?text=No+Image' %>"
+                    alt="<%= item.productName %>"
+                    class="cart-img"
+                  >
+
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1"><%= item.productName %></h6>
+                    <div class="small text-muted mb-1">Color: <%= item.color %> | Size: <%= item.size %></div>
+                    <div class="fw-bold mb-2">₹<%= item.price %></div>
+
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                                           <button
+                        class="btn btn-sm btn-outline-secondary"
+                        onclick="changeQty('<%= item._id %>', -1)"
+                        title="<%= item.outOfStock ? 'Out of stock' : 'Decrease quantity' %>"
+                        <%= item.outOfStock ? 'disabled' : '' %>
+                      >-</button>
+                      <span id="qty-<%= item._id %>" class="px-2"><%= item.quantity %></span>
+                      <button class="btn btn-sm btn-outline-secondary" onclick="changeQty('<%= item._id %>', 1)">+</button>
+                    </div>
+
+                    <button class="btn btn-sm btn-outline-danger" onclick="removeItem('<%= item._id %>')">
+                      Remove
+                    </button>
+
+                    <% if (item.outOfStock) { %>
+                      <div class="text-danger small mt-2">Out of stock</div>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+
+        <!-- Right side: order summary -->
+        <div class="col-12 col-lg-4">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="mb-3">Order Summary</h5>
+
+              <div class="d-flex justify-content-between mb-2">
+                <span>Total selected items</span>
+                <span id="sumItems">0</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal</span>
+                <span id="sumSubtotal">₹0</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Discount</span>
+                <span id="sumDiscount">₹0</span>
+              </div>
+              <div class="d-flex justify-content-between mb-3">
+                <span>Shipping</span>
+                <span id="sumShipping">₹50</span>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between fw-bold fs-5">
+                <span>Final Total</span>
+                <span id="sumFinal">₹0</span>
+              </div>
+
+              <button id="checkoutBtn" class="btn btn-dark w-100 mt-3" disabled>
+                Proceed to Checkout
+              </button>
+              <div id="checkoutNote" class="small text-muted mt-2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </main>
+
+  <%- include("../partials/user/footer") %>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const SHIPPING = 50;
+
+    function getItemCheckboxes() {
+      return Array.from(document.querySelectorAll('.item-checkbox'));
+    }
+
+    // Recalculate summary using selected checkboxes
+    function updateSummary() {
+      const boxes = getItemCheckboxes();
+      let totalSelectedQty = 0;
+      let subtotal = 0;
+      let hasSelectedOutOfStock = false;
+      let selectedCount = 0;
+
+      boxes.forEach((box) => {
+        if (!box.checked) return;
+        selectedCount += 1;
+        const qty = Number(box.getAttribute('data-qty')) || 0;
+        const price = Number(box.getAttribute('data-price')) || 0;
+        const outOfStock = box.getAttribute('data-out-of-stock') === '1';
+        if (outOfStock) hasSelectedOutOfStock = true;
+        totalSelectedQty += qty;
+        subtotal += qty * price;
+      });
+
+      const discount = 0;
+      const finalTotal = selectedCount > 0 ? subtotal - discount + SHIPPING : 0;
+
+      document.getElementById('sumItems').textContent = totalSelectedQty;
+      document.getElementById('sumSubtotal').textContent = `₹${subtotal}`;
+      document.getElementById('sumDiscount').textContent = `₹${discount}`;
+      document.getElementById('sumShipping').textContent = selectedCount > 0 ? `₹${SHIPPING}` : '₹0';
+      document.getElementById('sumFinal').textContent = `₹${finalTotal}`;
+
+      const checkoutBtn = document.getElementById('checkoutBtn');
+      const note = document.getElementById('checkoutNote');
+
+      if (selectedCount === 0) {
+        checkoutBtn.disabled = true;
+        note.textContent = 'Select at least one item to continue.';
+      } else if (hasSelectedOutOfStock) {
+        checkoutBtn.disabled = true;
+        note.textContent = 'Selected items contain out-of-stock products.';
+      } else {
+        checkoutBtn.disabled = false;
+        note.textContent = '';
+      }
+    }
+
+    async function changeQty(itemId, delta) {
+      const qtyEl = document.getElementById(`qty-${itemId}`);
+      const currentQty = Number(qtyEl.textContent) || 1;
+      const newQty = currentQty + delta;
+
+      if (newQty < 1) {
+        Swal.fire('Info', 'Minimum quantity is 1', 'info');
+        return;
+      }
+
+      try {
+        const res = await fetch('/cart/update-quantity', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ itemId, quantity: newQty })
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          Swal.fire('Error', data.message || 'Failed to update quantity', 'error');
+          return;
+        }
+
+        // Update quantity in UI + checkbox data for summary
+        qtyEl.textContent = newQty;
+        const checkbox = document.querySelector(`.item-checkbox[data-item-id="${itemId}"]`);
+        if (checkbox) checkbox.setAttribute('data-qty', String(newQty));
+        updateSummary();
+      } catch (error) {
+        Swal.fire('Error', 'Something went wrong', 'error');
+      }
+    }
+
+    async function removeItem(itemId) {
+      const confirm = await Swal.fire({
+        title: 'Remove item?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, remove'
+      });
+      if (!confirm.isConfirmed) return;
+
+      try {
+        const res = await fetch(`/cart/remove/${itemId}`, { method: 'DELETE' });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          await Swal.fire('Removed', data.message || 'Item removed', 'success');
+          location.reload();
+        } else {
+          Swal.fire('Error', data.message || 'Failed to remove item', 'error');
+        }
+      } catch (error) {
+        Swal.fire('Error', 'Something went wrong', 'error');
+      }
+    }
+
+    document.querySelectorAll('.item-checkbox').forEach((checkbox) => {
+      checkbox.addEventListener('change', updateSummary);
+    });
+
+    document.getElementById('checkoutBtn')?.addEventListener('click', () => {
+      Swal.fire('Info', 'Checkout flow will be added next.', 'info');
+    });
+
+    updateSummary();
+  </script>
+</body>
+</html>

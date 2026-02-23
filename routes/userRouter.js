@@ -5,7 +5,9 @@ import userController from '../controllers/user/userController.js';
 import AuthMiddleware from '../middlewares/auth.js';
 import AllProductsController from '../controllers/user/allProductsController.js';
 import ProfileController from '../controllers/user/profileController.js';
+import WishlistController from '../controllers/user/wishlistController.js';
 import s3Upload from '../middlewares/multer.js';
+import CartController from '../controllers/user/cartController.js';
 
 router.get('/',userController.loadHomepage);
 router.get('/pageNotFound',userController.pageNotFound);
@@ -66,5 +68,19 @@ router.get('/address',ProfileController.loadAddressPage);
 router.post('/add-address', ProfileController.addAddress);
 router.post('/edit-address/:id', ProfileController.editAddress);
 router.post('/delete-address/:id', ProfileController.deleteAddress);
+//user wishlist management
+router.get('/wishlist',  WishlistController.loadWishlist);
+router.post('/wishlist/add', WishlistController.addToWishlist);
+router.delete('/wishlist/remove/:productId',  WishlistController.removeFromWishlist);
 
+// Used by wishlist modal to fetch active variants
+router.get('/wishlist/variants/:productId', WishlistController.getVariantsForModal);
+
+// Cart
+router.get('/cart',  CartController.loadCart)
+router.post('/cart/add', CartController.addToCart)
+router.patch('/cart/update-quantity',  CartController.updateQuantity);
+//router.patch('/cart/item/:itemId/decrease',  CartController.decreaseQuantity)
+//router.delete('/cart/item/:itemId',  CartController.removeItem)
+router.delete('/cart/remove/:itemId', CartController.removeItem);
 export default router;

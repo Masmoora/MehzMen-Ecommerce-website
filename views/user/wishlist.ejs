@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Wishlist</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f6f7fb; padding-top: 60px; }
+    .wishlist-image { height: 220px; object-fit: cover; background: #f1f3f5; }
+    .variant-chip {
+      border: 1px solid #ced4da;
+      border-radius: 999px;
+      background: #fff;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .variant-chip.active { background: #111; color: #fff; border-color: #111; }
+    .variant-chip:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <%- include("../partials/user/header") %>
+
+  <main class="container py-4">
+    <h3 class="mb-4">My Wishlist</h3>
+
+    <% if (!wishlistCards || wishlistCards.length === 0) { %>
+      <div class="alert alert-warning">Your wishlist is empty.</div>
+    <% } else { %>
+      <div class="row g-4">
+        <% wishlistCards.forEach((item) => { %>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+              <img src="<%= item.image || 'https://via.placeholder.com/500x400?text=No+Image' %>" class="card-img-top wishlist-image" alt="<%= item.name %>">
+              <div class="card-body d-flex flex-column">
+                <h6 class="mb-2"><%= item.name %></h6>
+                <div class="fw-bold mb-3">₹<%= item.price %></div>
+                <div class="d-flex gap-2 mt-auto">
+                  <button
+                    class="btn btn-sm <%= item.hasStock ? 'btn-dark' : 'btn-secondary' %>"
+                    data-product-id="<%= item.productId %>"
+                    onclick="openVariantModal(event)"
+                    <%= item.hasStock ? '' : 'disabled' %>
+                  >
+                    <%= item.hasStock ? 'Add to Cart' : 'Out of Stock' %>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    data-product-id="<%= item.productId %>"
+                    onclick="removeFromWishlist(event)"
+                  >Remove</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+
+  <div class="modal fade" id="variantModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Select Variant</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex gap-3 mb-3">
+            <img id="vmImage" src="" alt="Variant image" width="90" height="90" style="object-fit:cover;border-radius:8px;">
+            <div>
+              <p class="mb-1 fw-semibold" id="vmProductName">Product</p>
+              <p class="mb-1">Price: <span class="fw-bold" id="vmPrice">-</span></p>
+              <p class="mb-0 text-muted small" id="vmStock">Status: -</p>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <h6 class="mb-2">Color</h6>
+            <div id="vmColors" class="d-flex flex-wrap gap-2"></div>
+          </div>
+
+          <div class="mb-3">
+            <h6 class="mb-2">Size</h6>
+            <div id="vmSizes" class="d-flex flex-wrap gap-2"></div>
+          </div>
+
+          <div>
+            <h6 class="mb-2">Quantity</h6>
+            <input id="vmQty" type="number" class="form-control" min="1" max="5" value="1">
+            <div class="small text-muted mt-1" id="vmQtyHint">Max 5 per variant</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-dark w-100" id="vmDoneBtn" disabled>Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include("../partials/user/footer") %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const modal = new bootstrap.Modal(document.getElementById('variantModal'));
+    let activeProductId = '';
+    let activeProductName = '';
+    let variants = [];
+    let selectedColor = '';
+    let selectedSize = '';
+    let selectedVariant = null;
+
+    const uniqueValues = (items, key) => [...new Set(items.map((item) => item[key]))];
+    const getFilteredVariants = () => variants.filter((v) => (!selectedColor || v.color === selectedColor));
+
+    function getStockStatusText(stock) {
+      if (stock > 5) return 'In Stock';
+      if (stock > 0) return 'Only few left';
+      return 'Out of Stock';
+    }
+
+    function updateModalUI() {
+      const colorsBox = document.getElementById('vmColors');
+      const sizesBox = document.getElementById('vmSizes');
+      colorsBox.innerHTML = '';
+      sizesBox.innerHTML = '';
+
+      uniqueValues(variants, 'color').forEach((color) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `variant-chip ${selectedColor === color ? 'active' : ''}`;
+        btn.textContent = color;
+        btn.onclick = () => {
+          selectedColor = color;
+          selectedSize = '';
+          selectedVariant = null;
+          updateModalUI();
+          updateSelectedVariantView();
+          updateDoneState();
+        };
+        colorsBox.appendChild(btn);
+      });
+
+      const sizeMap = new Map();
+      getFilteredVariants().forEach((variant) => {
+        if (!sizeMap.has(variant.size)) sizeMap.set(variant.size, variant);
+      });
+
+      sizeMap.forEach((variant, size) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `variant-chip ${selectedSize === size ? 'active' : ''}`;
+        btn.textContent = size;
+        if (variant.stock === 0) {
+          btn.disabled = true;
+          btn.title = 'Out of Stock';
+        } else {
+          btn.onclick = () => {
+            selectedSize = size;
+            selectedVariant = variant;
+            updateSelectedVariantView();
+            updateDoneState();
+            updateModalUI();
+          };
+        }
+        sizesBox.appendChild(btn);
+      });
+    }
+
+    function updateSelectedVariantView() {
+      const qtyInput = document.getElementById('vmQty');
+      const priceEl = document.getElementById('vmPrice');
+      const stockEl = document.getElementById('vmStock');
+      const imageEl = document.getElementById('vmImage');
+      const hintEl = document.getElementById('vmQtyHint');
+
+      if (!selectedVariant) {
+        priceEl.textContent = '-';
+        stockEl.textContent = 'Status: -';
+        imageEl.src = 'https://via.placeholder.com/90x90?text=No+Image';
+        qtyInput.value = 1;
+        qtyInput.disabled = true;
+        hintEl.textContent = 'Select color and size first';
+        return;
+      }
+
+      const maxAllowed = Math.min(5, selectedVariant.stock);
+      priceEl.textContent = `₹${selectedVariant.price}`;
+      stockEl.textContent = `Status: ${getStockStatusText(selectedVariant.stock)}`;
+      imageEl.src = selectedVariant.image || 'https://via.placeholder.com/90x90?text=No+Image';
+
+      if (maxAllowed <= 0) {
+        qtyInput.value = 1;
+        qtyInput.disabled = true;
+        hintEl.textContent = 'This variant is out of stock';
+        return;
+      }
+
+      qtyInput.disabled = false;
+      qtyInput.min = 1;
+      qtyInput.max = maxAllowed;
+      qtyInput.value = 1;
+      hintEl.textContent = `Max ${maxAllowed} for this variant`;
+    }
+
+    function updateDoneState() {
+      const doneBtn = document.getElementById('vmDoneBtn');
+      const qty = Number(document.getElementById('vmQty').value);
+      const maxAllowed = selectedVariant ? Math.min(5, selectedVariant.stock) : 0;
+      doneBtn.disabled = !(selectedVariant && maxAllowed > 0 && qty >= 1 && qty <= maxAllowed);
+    }
+
+    async function openVariantModal(event) {
+      event.stopPropagation();
+      const productId = event.currentTarget.getAttribute('data-product-id');
+      const card = event.currentTarget.closest('.card');
+      const nameEl = card?.querySelector('h6');
+      activeProductId = productId;
+      activeProductName = nameEl ? nameEl.textContent.trim() : 'Product';
+
+      try {
+        const res = await fetch(`/wishlist/variants/${productId}`);
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          Swal.fire('Error', data.message || 'Failed to load variants', 'error');
+          return;
+        }
+
+        variants = data.variants || [];
+        if (!variants.length) {
+          Swal.fire('Info', 'No active variants available', 'info');
+          return;
+        }
+
+        selectedColor = '';
+        selectedSize = '';
+        selectedVariant = null;
+        document.getElementById('vmProductName').textContent = activeProductName;
+        updateModalUI();
+        updateSelectedVariantView();
+        updateDoneState();
+        modal.show();
+      } catch (error) {
+        Swal.fire('Error', 'Failed to load variants', 'error');
+      }
+    }
+
+    document.getElementById('vmQty').addEventListener('input', () => {
+      if (!selectedVariant) return;
+      const qtyInput = document.getElementById('vmQty');
+      const raw = Number(qtyInput.value);
+      const maxAllowed = Math.min(5, selectedVariant.stock);
+      if (!Number.isInteger(raw) || raw < 1) qtyInput.value = 1;
+      if (raw > maxAllowed) qtyInput.value = maxAllowed;
+      updateDoneState();
+    });
+
+    document.getElementById('vmDoneBtn').addEventListener('click', async () => {
+      if (!selectedVariant || !activeProductId) return;
+      const quantity = Number(document.getElementById('vmQty').value);
+
+      try {
+        const res = await fetch('/cart/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            productId: activeProductId,
+            variantId: selectedVariant._id,
+            quantity
+          })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          await Swal.fire('Success', data.message || 'Added to cart', 'success');
+          modal.hide();
+          location.reload();
+        } else {
+          Swal.fire('Error', data.message || 'Failed to add cart', 'error');
+        }
+      } catch (error) {
+        Swal.fire('Error', 'Something went wrong', 'error');
+      }
+    });
+
+    async function removeFromWishlist(event) {
+      event.stopPropagation();
+      const productId = event.currentTarget.getAttribute('data-product-id');
+      const confirm = await Swal.fire({
+        title: 'Remove product?',
+        text: 'Do you want to remove this product from wishlist?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, remove'
+      });
+      if (!confirm.isConfirmed) return;
+
+      try {
+        const res = await fetch(`/wishlist/remove/${productId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          await Swal.fire('Removed', data.message || 'Removed from wishlist', 'success');
+          location.reload();
+        } else {
+          Swal.fire('Error', data.message || 'Failed to remove', 'error');
+        }
+      } catch (error) {
+        Swal.fire('Error', 'Something went wrong', 'error');
+      }
+    }
+  </script>
+</body>
+</html>
+
+
+
