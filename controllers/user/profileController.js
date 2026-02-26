@@ -3,6 +3,7 @@ import ProfileService from '../../service/user/profileService.js';
 import logger from '../../logger.js';
 import UserController from '../../controllers/user/userController.js'
 import userController from '../../controllers/user/userController.js';
+
 class ProfileController{
 //user profile page
  loadUserProfile = async (req, res) => {

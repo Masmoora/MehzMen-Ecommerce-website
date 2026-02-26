@@ -1,0 +1,115 @@
+import UserService from '../../service/user/userService.js';
+import CheckoutService from '../../service/user/checkoutService.js';
+import logger from '../../logger.js';
+class CheckoutController{
+    loadCheckout = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.redirect('/login');
+
+      const user = await UserService.getUserById(userId);
+      if (!user) return res.redirect('/pageNotFound');
+
+      const data = await CheckoutService.getCheckoutPageData(userId);
+
+      return res.render('checkout', {
+        user,
+        checkoutItems: data.items,
+        addresses: data.addresses,
+        defaultAddressId: data.defaultAddressId,
+        summary: data.summary
+      });
+    } catch (error) {
+      logger.error('Error loading checkout page:', error);
+      return res.status(500).render('page-404');
+    }
+  };
+
+  removeCheckoutItem = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.status(401).json({ success: false, message: 'Login required' });
+
+      const { itemId } = req.params || {};
+      if (!itemId) {
+        return res.status(400).json({ success: false, message: 'Item id is required' });
+      }
+
+      const data = await CheckoutService.removeCheckoutItem(userId, itemId);
+      return res.json({ success: true, message: 'Item removed', checkout: data });
+    } catch (error) {
+      logger.error('Error removing checkout item:', error);
+      return res.status(400).json({ success: false, message: error.message || 'Failed to remove item' });
+    }
+  };
+
+  addAddress = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.status(401).json({ success: false, message: 'Login required' });
+
+      const addressData = req.body || {};
+      await CheckoutService.addAddress(userId, addressData);
+      return res.status(201).json({ success: true, message: 'Address added successfully' });
+    } catch (error) {
+      logger.error('Error adding checkout address:', error);
+      return res.status(400).json({ success: false, message: error.message || 'Failed to add address' });
+    }
+  };
+
+  updateAddress = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.status(401).json({ success: false, message: 'Login required' });
+
+      const { addressId } = req.params || {};
+      if (!addressId) {
+        return res.status(400).json({ success: false, message: 'Address id is required' });
+      }
+
+      const addressData = req.body || {};
+      await CheckoutService.updateAddress(userId, addressId, addressData);
+      return res.json({ success: true, message: 'Address updated successfully' });
+    } catch (error) {
+      logger.error('Error updating checkout address:', error);
+      return res.status(400).json({ success: false, message: error.message || 'Failed to update address' });
+    }
+  };
+
+  deleteAddress = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.status(401).json({ success: false, message: 'Login required' });
+
+      const { addressId } = req.params || {};
+      if (!addressId) {
+        return res.status(400).json({ success: false, message: 'Address id is required' });
+      }
+
+      await CheckoutService.deleteAddress(userId, addressId);
+      return res.json({ success: true, message: 'Address deleted successfully' });
+    } catch (error) {
+      logger.error('Error deleting checkout address:', error);
+      return res.status(400).json({ success: false, message: error.message || 'Failed to delete address' });
+    }
+  };
+
+  placeOrder = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.status(401).json({ success: false, message: 'Login required' });
+
+      const orderData = req.body || {};
+      const result = await CheckoutService.placeOrder(userId, orderData);
+      return res.json({
+        success: true,
+        message: 'Order placed successfully',
+        orderId: result.orderId
+      });
+    } catch (error) {
+      logger.error('Error placing order:', error);
+      return res.status(400).json({ success: false, message: error.message || 'Failed to place order' });
+    }
+  };
+}
+export default new CheckoutController()

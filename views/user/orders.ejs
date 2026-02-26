@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f6f7fb; padding-top: 52px; }
+    .card-clean { border: 1px solid #e9ecef; border-radius: 10px; background: #fff; }
+  </style>
+</head>
+<body>
+  <%- include("../partials/user/header") %>
+
+  <main class="container py-3">
+    <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+      <h4 class="mb-0">My Orders</h4>
+      <form class="d-flex gap-2" method="GET" action="/orders">
+        <input
+          type="text"
+          class="form-control"
+          name="search"
+          placeholder="Search by Order staus"
+          value="<%= search || '' %>"
+        >
+        <button class="btn btn-dark" type="submit">Search</button>
+      </form>
+    </div>
+
+    <% if (!orders || !orders.length) { %>
+      <div class="card-clean p-4 text-center">
+        <h5 class="mb-2">No orders found</h5>
+        <p class="text-muted mb-3">Try another search or place a new order.</p>
+        <a href="/shop" class="btn btn-primary">Continue Shopping</a>
+      </div>
+    <% } else { %>
+      <div class="row g-3">
+        <% orders.forEach((order) => { %>
+          <div class="col-12">
+            <div class="card-clean p-3">
+              <div class="row align-items-center">
+                <div class="col-md-3">
+                  <div><strong>Order ID:</strong> <%= order.orderId %></div>
+                  <div class="small text-muted"><%= new Date(order.createdAt).toLocaleString() %></div>
+                </div>
+                <div class="col-md-2">
+                  <div><strong>Status:</strong></div>
+                  <div><%= order.orderStatus %></div>
+                </div>
+                <div class="col-md-2">
+                  <div><strong>Payment:</strong></div>
+                  <div><%= order.paymentStatus %></div>
+                </div>
+                <div class="col-md-2">
+                  <div><strong>Total:</strong></div>
+                  <div>₹<%= order.pricing?.finalAmount || 0 %></div>
+                </div>
+                <div class="col-md-3 text-md-end mt-2 mt-md-0 d-flex gap-2 justify-content-md-end flex-wrap">
+                  <a href="/orders/<%= order.orderId %>" class="btn btn-sm btn-outline-dark">View Details</a>
+                  <% if (['Pending', 'Placed', 'Processing'].includes(order.orderStatus)) { %>
+                    <button class="btn btn-sm btn-outline-danger" onclick="cancelOrder('<%= order.orderId %>')">Cancel Order</button>
+                  <% } %>
+                  <% if (order.orderStatus === 'Delivered') { %>
+                    <button class="btn btn-sm btn-outline-warning" onclick="returnOrder('<%= order.orderId %>')">Return Order</button>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item <%= pagination.hasPrev ? '' : 'disabled' %>">
+            <a class="page-link" href="/orders?page=<%= pagination.page - 1 %>&search=<%= search || '' %>">Previous</a>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link">Page <%= pagination.page %> of <%= pagination.totalPages %></span>
+          </li>
+          <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
+            <a class="page-link" href="/orders?page=<%= pagination.page + 1 %>&search=<%= search || '' %>">Next</a>
+          </li>
+        </ul>
+      </nav>
+    <% } %>
+  </main>
+
+  <%- include("../partials/user/footer") %>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    async function cancelOrder(orderId) {
+      const reasonPrompt = await Swal.fire({
+        title: 'Cancel this order?',
+        text: 'Reason is optional',
+        input: 'text',
+        inputPlaceholder: 'Optional reason',
+        showCancelButton: true,
+        confirmButtonText: 'Cancel Order'
+      });
+      if (!reasonPrompt.isConfirmed) return;
+
+      const res = await fetch(`/orders/${orderId}/cancel`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cancelReason: reasonPrompt.value || '' })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        Swal.fire('Error', data.message || 'Failed to cancel order', 'error');
+        return;
+      }
+
+      await Swal.fire('Success', data.message || 'Order cancelled', 'success');
+      location.reload();
+    }
+
+    async function returnOrder(orderId) {
+      const reasonPrompt = await Swal.fire({
+        title: 'Return this order?',
+        text: 'Reason is required',
+        input: 'text',
+        inputPlaceholder: 'Enter return reason',
+        showCancelButton: true,
+        confirmButtonText: 'Submit Return',
+        preConfirm: (value) => {
+          if (!value || !value.trim()) {
+            Swal.showValidationMessage('Return reason is required');
+            return false;
+          }
+          return value.trim();
+        }
+      });
+      if (!reasonPrompt.isConfirmed) return;
+
+      const res = await fetch(`/orders/${orderId}/return`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ returnReason: reasonPrompt.value })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        Swal.fire('Error', data.message || 'Failed to request return', 'error');
+        return;
+      }
+
+      await Swal.fire('Success', data.message || 'Return request submitted', 'success');
+      location.reload();
+    }
+  </script>
+</body>
+</html>

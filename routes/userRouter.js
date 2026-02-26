@@ -8,6 +8,8 @@ import ProfileController from '../controllers/user/profileController.js';
 import WishlistController from '../controllers/user/wishlistController.js';
 import s3Upload from '../middlewares/multer.js';
 import CartController from '../controllers/user/cartController.js';
+import CheckoutController from '../controllers/user/checkoutController.js';
+import OrderController from '../controllers/user/orderController.js';
 
 router.get('/',userController.loadHomepage);
 router.get('/pageNotFound',userController.pageNotFound);
@@ -83,4 +85,21 @@ router.patch('/cart/update-quantity',  CartController.updateQuantity);
 //router.patch('/cart/item/:itemId/decrease',  CartController.decreaseQuantity)
 //router.delete('/cart/item/:itemId',  CartController.removeItem)
 router.delete('/cart/remove/:itemId', CartController.removeItem);
+
+//checkout management
+router.get('/checkout',  CheckoutController.loadCheckout);
+router.delete('/checkout/item/:itemId',  CheckoutController.removeCheckoutItem);
+router.post('/checkout/address',  CheckoutController.addAddress);
+router.patch('/checkout/address/:addressId',  CheckoutController.updateAddress);
+router.delete('/checkout/address/:addressId',CheckoutController.deleteAddress);
+router.post('/checkout/place-order',  CheckoutController.placeOrder);
+
+//order management
+router.get('/orders',  OrderController.loadOrders);
+router.get('/orders/:orderId',  OrderController.loadOrderDetails);
+router.patch('/orders/:orderId/items/:itemId/cancel',  OrderController.cancelSingleItem);
+router.patch('/orders/:orderId/cancel',  OrderController.cancelEntireOrder);
+router.patch('/orders/:orderId/return',  OrderController.requestReturnOrder);
+router.get('/orders/:orderId/invoice', OrderController.downloadInvoice);
+
 export default router;
