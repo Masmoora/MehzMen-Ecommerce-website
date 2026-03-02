@@ -14,6 +14,9 @@
   <%- include("../partials/user/header") %>
 
   <main class="container py-3">
+    <% const normalize = (value) => String(value || '').trim().toLowerCase().replace(/\s+/g, '_'); %>
+    <% const isCancellable = (value) => ['pending', 'placed', 'processing', 'confirmed'].includes(normalize(value)); %>
+    <% const isDeliverableForReturn = (value) => normalize(value) === 'delivered'; %>
     <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
       <h4 class="mb-0">My Orders</h4>
       <form class="d-flex gap-2" method="GET" action="/orders">
@@ -21,7 +24,7 @@
           type="text"
           class="form-control"
           name="search"
-          placeholder="Search by Order staus"
+          placeholder="Search by order status (e.g. Processing, Delivered)"
           value="<%= search || '' %>"
         >
         <button class="btn btn-dark" type="submit">Search</button>
@@ -56,13 +59,24 @@
                   <div><strong>Total:</strong></div>
                   <div>₹<%= order.pricing?.finalAmount || 0 %></div>
                 </div>
+                <% const returnRequestedItem = (order.items || []).find((item) => {
+                  const itemStatus = normalize(item.itemStatus);
+                  const returnStatus = normalize(item.returnStatus || '');
+                  return returnStatus === 'requested' || itemStatus === 'return_requested';
+                }); %>
                 <div class="col-md-3 text-md-end mt-2 mt-md-0 d-flex gap-2 justify-content-md-end flex-wrap">
                   <a href="/orders/<%= order.orderId %>" class="btn btn-sm btn-outline-dark">View Details</a>
-                  <% if (['Pending', 'Placed', 'Processing'].includes(order.orderStatus)) { %>
+                  <% if (isCancellable(order.orderStatus)) { %>
                     <button class="btn btn-sm btn-outline-danger" onclick="cancelOrder('<%= order.orderId %>')">Cancel Order</button>
                   <% } %>
-                  <% if (order.orderStatus === 'Delivered') { %>
-                    <button class="btn btn-sm btn-outline-warning" onclick="returnOrder('<%= order.orderId %>')">Return Order</button>
+                  <% if (isDeliverableForReturn(order.orderStatus)) { %>
+                    <a class="btn btn-sm btn-outline-warning" href="/orders/<%= order.orderId %>">Manage Return</a>
+                  <% } %>
+                  <% if (returnRequestedItem) { %>
+                    <button
+                      class="btn btn-sm btn-danger"
+                      onclick="cancelItemReturnRequestFromList('<%= order.orderId %>', '<%= returnRequestedItem._id %>')"
+                    >Cancel Return Request</button>
                   <% } %>
                 </div>
               </div>
@@ -116,38 +130,28 @@
       location.reload();
     }
 
-    async function returnOrder(orderId) {
-      const reasonPrompt = await Swal.fire({
-        title: 'Return this order?',
-        text: 'Reason is required',
-        input: 'text',
-        inputPlaceholder: 'Enter return reason',
+    async function cancelItemReturnRequestFromList(orderId, itemId) {
+      const ask = await Swal.fire({
+        title: 'Cancel return request?',
+        icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Submit Return',
-        preConfirm: (value) => {
-          if (!value || !value.trim()) {
-            Swal.showValidationMessage('Return reason is required');
-            return false;
-          }
-          return value.trim();
-        }
+        confirmButtonText: 'Yes, cancel'
       });
-      if (!reasonPrompt.isConfirmed) return;
+      if (!ask.isConfirmed) return;
 
-      const res = await fetch(`/orders/${orderId}/return`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ returnReason: reasonPrompt.value })
+      const res = await fetch(`/orders/${orderId}/items/${itemId}/cancel-return-request`, {
+        method: 'PATCH'
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        Swal.fire('Error', data.message || 'Failed to request return', 'error');
+        Swal.fire('Error', data.message || 'Failed to cancel return request', 'error');
         return;
       }
-
-      await Swal.fire('Success', data.message || 'Return request submitted', 'success');
+      await Swal.fire('Success', data.message || 'Return request cancelled', 'success');
       location.reload();
     }
+
   </script>
 </body>
 </html>
+

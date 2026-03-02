@@ -8,59 +8,39 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-class OrderService{
-   
-  generateInvoiceForOrder = async (userId, orderId) => {
-    let browser;
+class OrderService {
+  normalizeStatus = (value) => String(value || '').trim().toLowerCase().replace(/\s+/g, '_');
 
-    try {
-      const order = await Order.findOne({ orderId, userId });
-      if (!order) {
-        const err = new Error('Order not found');
-        err.statusCode = 404;
-        throw err;
-      }
+  refreshOrderStatusFromItems = (orderDoc) => {
+    const statuses = orderDoc.items.map((item) => this.normalizeStatus(item.itemStatus));
+    const activeStatuses = statuses.filter((status) => !['cancelled', 'returned'].includes(status));
 
-      if (order.orderStatus == 'Delivered') {
-        const err = new Error('Invoice is only available for delivered orders.');
-        err.statusCode = 400;
-        throw err;
-      }
+    if (statuses.length && statuses.every((status) => status === 'cancelled')) {
+      orderDoc.orderStatus = 'cancelled';
+      return;
+    }
 
-      if (!order.invoiceDate) {
-        order.invoiceDate = new Date();
-        await order.save();
-      }
+    if (statuses.length && statuses.every((status) => status === 'returned')) {
+      orderDoc.orderStatus = 'returned';
+      return;
+    }
 
-      browser = await puppeteer.launch({ headless: true });
-      const page = await browser.newPage();
+    if (activeStatuses.length && activeStatuses.every((status) => status === 'delivered')) {
+      orderDoc.orderStatus = 'delivered';
+      return;
+    }
 
-      const invoiceTemplatePath = path.join(__dirname, '../../views/user/invoice.ejs');
-      const html = await ejs.renderFile(invoiceTemplatePath, { order });
+    if (activeStatuses.some((status) => status === 'delivered')) {
+      orderDoc.orderStatus = 'partially_delivered';
+      return;
+    }
 
-      await page.setContent(html, { waitUntil: 'networkidle0' });
-
-      const invoiceDir = path.join(__dirname, '../../public/invoices');
-      if (!fs.existsSync(invoiceDir)) {
-        fs.mkdirSync(invoiceDir, { recursive: true });
-      }
-
-      const fileName = `invoice-${order.orderId}.pdf`;
-      const filePath = path.join(invoiceDir, fileName);
-
-      await page.pdf({
-        path: filePath,
-        format: 'A4',
-        printBackground: true,
-        margin: { top: '20px', right: '20px', bottom: '20px', left: '20px' }
-      });
-
-      return { fileName, filePath };
-    } finally {
-      if (browser) await browser.close();
+    if (statuses.some((status) => status === 'return_requested')) {
+      orderDoc.orderStatus = 'return_requested';
     }
   };
- getOrdersForUser = async (userId, queryData = {}) => {
+
+  getOrdersForUser = async (userId, queryData = {}) => {
     const page = Math.max(1, Number(queryData.page) || 1);
     const limit = Math.max(1, Math.min(20, Number(queryData.limit) || 8));
     const search = String(queryData.search || '').trim();
@@ -108,7 +88,9 @@ class OrderService{
   };
 
   recalculatePricing = (orderDoc) => {
-    const activeItems = orderDoc.items.filter((item) => item.itemStatus !== 'Cancelled');
+    const activeItems = orderDoc.items.filter(
+      (item) => this.normalizeStatus(item.itemStatus) !== 'cancelled'
+    );
     const subtotal = activeItems.reduce((sum, item) => sum + item.itemTotal, 0);
     const shippingCharge = activeItems.length > 0 ? Number(orderDoc.pricing.shippingCharge || 0) : 0;
     const discount = Number(orderDoc.pricing.couponDiscount || 0);
@@ -120,14 +102,19 @@ class OrderService{
     orderDoc.pricing.shippingCharge = shippingCharge;
     orderDoc.pricing.finalAmount = finalAmount;
 
-    const allCancelled = orderDoc.items.every((item) => item.itemStatus === 'Cancelled');
+    const allCancelled = orderDoc.items.every(
+      (item) => this.normalizeStatus(item.itemStatus) === 'cancelled'
+    );
     if (allCancelled) {
-      orderDoc.orderStatus = 'Cancelled';
+      orderDoc.orderStatus = 'cancelled';
       return;
     }
 
-    const hasCancelled = orderDoc.items.some((item) => item.itemStatus === 'Cancelled');
-    orderDoc.orderStatus = hasCancelled ? 'Partially Cancelled' : orderDoc.orderStatus;
+    const hasCancelled = orderDoc.items.some(
+      (item) => this.normalizeStatus(item.itemStatus) === 'cancelled'
+    );
+    orderDoc.orderStatus = hasCancelled ? 'partially_cancelled' : orderDoc.orderStatus;
+
   };
 
   cancelSingleItem = async (userId, orderId, itemId, cancelReason = '') => {
@@ -137,13 +124,14 @@ class OrderService{
     const item = order.items.id(itemId);
     if (!item) throw new Error('Order item not found');
 
-    if (item.itemStatus !== 'Processing') {
+    if (!['processing', 'pending', 'confirmed'].includes(this.normalizeStatus(item.itemStatus))) {
       throw new Error('Only processing items can be cancelled');
     }
 
-    item.itemStatus = 'Cancelled';
+    item.itemStatus = 'cancelled';
     item.cancelReason = String(cancelReason || '').trim() || 'Cancelled by user';
     item.returnReason = '';
+    item.returnDescription = '';
 
     // Return stock back to inventory after cancellation
     await ProductVariant.updateOne(
@@ -161,17 +149,18 @@ class OrderService{
     const order = await Order.findOne({ userId, orderId });
     if (!order) throw new Error('Order not found');
 
-    const cancellableStatuses = ['Pending', 'Placed', 'Processing'];
-    if (!cancellableStatuses.includes(order.orderStatus)) {
+    const cancellableStatuses = ['pending', 'placed', 'processing', 'confirmed'];
+    if (!cancellableStatuses.includes(this.normalizeStatus(order.orderStatus))) {
       throw new Error('This order cannot be cancelled now');
     }
 
     const cancelledNow = [];
     order.items.forEach((item) => {
-      if (item.itemStatus === 'Processing') {
-        item.itemStatus = 'Cancelled';
+      if (['processing', 'pending', 'confirmed'].includes(this.normalizeStatus(item.itemStatus))) {
+        item.itemStatus = 'cancelled';
         item.cancelReason = String(cancelReason || '').trim() || 'Cancelled by user';
         item.returnReason = '';
+        item.returnDescription = '';
         cancelledNow.push({ variantId: item.variantId, quantity: item.quantity });
       }
     });
@@ -189,37 +178,93 @@ class OrderService{
     }
 
     this.recalculatePricing(order);
-    order.orderStatus = 'Cancelled';
+    order.orderStatus = 'cancelled';
     await order.save();
 
     return { orderId: order.orderId, orderStatus: order.orderStatus };
   };
 
-  requestReturnOrder = async (userId, orderId, returnReason = '') => {
+  requestReturnOrder = async (userId, orderId, returnReason = '', returnDescription = '') => {
     const order = await Order.findOne({ userId, orderId });
     if (!order) throw new Error('Order not found');
-
-    if (order.orderStatus !== 'Delivered') {
-      throw new Error('Return is allowed only after order is delivered');
-    }
 
     const reason = String(returnReason || '').trim();
     if (!reason) throw new Error('Return reason is required');
 
+    const hasDeliveredItems = order.items.some(
+      (item) => this.normalizeStatus(item.itemStatus) === 'delivered'
+    );
+    if (!hasDeliveredItems) {
+      throw new Error('Return is allowed only for delivered items');
+    }
+
     order.items.forEach((item) => {
-      // Only non-cancelled items are considered for return
-      if (item.itemStatus !== 'Cancelled') {
-        item.itemStatus = 'Return Requested';
+      // Only delivered items are considered for return
+      if (this.normalizeStatus(item.itemStatus) === 'delivered') {
+        item.itemStatus = 'return_requested';
+        item.returnStatus = 'requested';
         item.returnReason = reason;
+        item.returnDescription = String(returnDescription || '').trim();
       }
     });
 
-    order.orderStatus = 'Return Requested';
+    this.refreshOrderStatusFromItems(order);
     order.returnReason = reason;
     await order.save();
 
     return { orderId: order.orderId, orderStatus: order.orderStatus };
   };
 
+  requestItemReturn = async (
+    userId,
+    orderId,
+    itemId,
+    returnReason = '',
+    returnDescription = '',
+    returnImages = []
+  ) => {
+    const order = await Order.findOne({ userId, orderId });
+    if (!order) throw new Error('Order not found');
+
+    const item = order.items.id(itemId);
+    if (!item) throw new Error('Order item not found');
+    if (this.normalizeStatus(item.itemStatus) !== 'delivered') {
+      throw new Error('Return is allowed only for delivered items');
+    }
+
+    const reason = String(returnReason || '').trim();
+    if (!reason) throw new Error('Return reason is required');
+
+    item.itemStatus = 'return_requested';
+    item.returnStatus = 'requested';
+    item.returnReason = reason;
+    item.returnDescription = String(returnDescription || '').trim();
+    item.returnImages = (Array.isArray(returnImages) ? returnImages : []).slice(0, 3);
+    item.returnRejectionReason = '';
+
+    this.refreshOrderStatusFromItems(order);
+    await order.save();
+    return { orderId: order.orderId, orderStatus: order.orderStatus };
+  };
+
+  cancelItemReturnRequest = async (userId, orderId, itemId) => {
+    const order = await Order.findOne({ userId, orderId });
+    if (!order) throw new Error('Order not found');
+
+    const item = order.items.id(itemId);
+    if (!item) throw new Error('Order item not found');
+    if (item.returnStatus !== 'requested') {
+      throw new Error('No active return request found for this item');
+    }
+
+    item.returnStatus = 'cancelled_by_user';
+    item.itemStatus = 'delivered';
+    item.returnRejectionReason = '';
+
+    this.refreshOrderStatusFromItems(order);
+    await order.save();
+    return { orderId: order.orderId, orderStatus: order.orderStatus };
+  };
 }
-export default new OrderService()
+
+export default new OrderService();

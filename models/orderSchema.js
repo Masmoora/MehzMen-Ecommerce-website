@@ -67,12 +67,22 @@ const orderItemSchema = new Schema({
   itemStatus: {
     type: String,
     enum: [
+      'pending',
+      'confirmed',
+      'shipped',
+      'out_for_delivery',
+      'delivered',
+      'processing',
+      'cancelled',
+      'returned',
+      'return_requested',
+      'return_approved',
       'Processing',
       'Cancelled',
       'Returned',
       'Return Requested'
     ],
-    default: 'Processing'
+    default: 'processing'
   },
 
   cancelReason: {
@@ -81,6 +91,31 @@ const orderItemSchema = new Schema({
   },
 
   returnReason: {
+    type: String,
+    default: ''
+  },
+
+  returnDescription: {
+    type: String,
+    default: ''
+  },
+
+  returnStatus: {
+    type: String,
+    enum: ['none', 'requested', 'cancelled_by_user', 'approved', 'rejected', 'returned'],
+    default: 'none'
+  },
+
+  returnImages: {
+    type: [String],
+    default: [],
+    validate: {
+      validator: (arr) => arr.length <= 3,
+      message: 'You can upload up to 3 return images only'
+    }
+  },
+
+  returnRejectionReason: {
     type: String,
     default: ''
   }
@@ -199,6 +234,16 @@ const orderSchema = new Schema({
   orderStatus: {
     type: String,
     enum: [
+      'pending',
+      'confirmed',
+      'shipped',
+      'out_for_delivery',
+      'delivered',
+      'partially_delivered',
+      'cancelled',
+      'returned',
+      'partially_returned',
+      'return_requested',
       'Pending',
       'Placed',
       'Processing',
@@ -237,3 +282,4 @@ const orderSchema = new Schema({
 const Order = mongoose.model('Order', orderSchema);
 
 export default Order;
+

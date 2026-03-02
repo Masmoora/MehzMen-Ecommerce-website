@@ -6,6 +6,7 @@ import customerController from '../controllers/admin/customerController.js';
 import categoryController from '../controllers/admin/categoryController.js';
 import brandController from '../controllers/admin/brandController.js';
 import productController from '../controllers/admin/productController.js';
+import AdminOrderController from '../controllers/admin/orderController.js'
 //import categoryUpload from '../middlewares/multer.js';
 import s3Upload from '../middlewares/multer.js';
 
@@ -99,4 +100,15 @@ router.post('/products/variant/toggle-status', productController.toggleVariantSt
 // Update variant (AJAX endpoint)
 router.post('/products/variant/update',  AuthMiddleware.adminAuth,
   s3Upload('products').any(),productController.updateVariant);
+//order Management
+router.get('/orders', AdminOrderController.loadOrders);
+router.get('/orders/:orderId', AdminOrderController.loadOrderDetails);
+router.patch('/orders/:orderId/status', AdminOrderController.updateOrderStatus);
+router.patch('/orders/:orderId/cancel', AdminOrderController.cancelOrder);
+router.patch('/orders/:orderId/items/:itemId/status', AdminOrderController.updateItemStatus);
+router.patch('/orders/:orderId/items/:itemId/cancel', AdminOrderController.cancelItem);
+router.patch('/orders/:orderId/items/:itemId/approve-return', AdminOrderController.approveReturn);
+router.patch('/orders/:orderId/items/:itemId/reject-return', AdminOrderController.rejectReturn);
+router.patch('/orders/:orderId/items/:itemId/mark-returned', AdminOrderController.markReturned);
+router.get('/orders/:orderId/invoice', AdminOrderController.downloadInvoice);
 export default router;
