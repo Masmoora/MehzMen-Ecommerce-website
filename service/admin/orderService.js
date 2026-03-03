@@ -1,6 +1,10 @@
 import Order from '../../models/orderSchema.js';
 import User from '../../models/userSchema.js';
 import ProductVariant from '../../models/productVariantSchema.js';
+import path from 'path';
+import fs from 'fs';
+import puppeteer from 'puppeteer';
+import ejs from 'ejs';
 
 class AdminOrderService {
   normalize = (value) => String(value || '').trim().toLowerCase().replace(/\s+/g, '_');
@@ -26,17 +30,54 @@ class AdminOrderService {
   };
 
   calculateOrderStatus = (orderDoc) => {
-    const statuses = (orderDoc.items || []).map((item) => this.normalize(item.itemStatus));
-    const activeStatuses = statuses.filter((status) => !['cancelled', 'returned'].includes(status));
+  const statuses = (orderDoc.items || []).map((item) =>
+    this.normalize(item.itemStatus)
+  );
 
-    if (statuses.length && statuses.every((status) => status === 'cancelled')) return 'cancelled';
-    if (statuses.length && statuses.every((status) => status === 'returned')) return 'returned';
-    if (activeStatuses.length && activeStatuses.every((status) => status === 'delivered')) return 'delivered';
-    if (activeStatuses.some((status) => status === 'delivered')) return 'partially_delivered';
-    if (statuses.some((status) => status === 'return_requested')) return 'return_requested';
-    if (statuses.some((status) => status === 'returned')) return 'partially_returned';
-    return orderDoc.orderStatus || 'pending';
-  };
+  const activeStatuses = statuses.filter(
+    (status) => !['cancelled', 'returned'].includes(status)
+  );
+
+  // All cancelled
+  if (statuses.length && statuses.every((status) => status === 'cancelled')) {
+    return 'cancelled';
+  }
+
+  // All returned
+  if (statuses.length && statuses.every((status) => status === 'returned')) {
+    return 'returned';
+  }
+
+  // Any return requested or approved
+  if (
+    statuses.some((status) =>
+      ['return_requested', 'return_approved'].includes(status)
+    )
+  ) {
+    return 'return_requested';
+  }
+
+  // Some returned
+  if (statuses.some((status) => status === 'returned')) {
+    return 'partially_returned';
+  }
+
+  // All active delivered
+  if (
+    activeStatuses.length &&
+    activeStatuses.every((status) => status === 'delivered')
+  ) {
+    return 'delivered';
+  }
+
+  // Some delivered
+  if (activeStatuses.some((status) => status === 'delivered')) {
+    return 'partially_delivered';
+  }
+
+  //return orderDoc.orderStatus || 'pending';
+  return 'processing'
+};
 
   buildFilter = async ({ search = '', status = '' }) => {
     const filter = {};
@@ -113,15 +154,40 @@ class AdminOrderService {
     if (!order) throw new Error('Order not found');
     return order;
   };
+getHighestItemFlowIndex(order) {
+  let highestIndex = -1;
 
+  for (const item of order.items || []) {
+    const normalized = this.normalize(item.itemStatus);
+    const index = this.orderFlow.indexOf(normalized);
+
+    if (index > highestIndex) {
+      highestIndex = index;
+    }
+  }
+
+  return highestIndex;
+}
   updateOrderStatus = async (orderId, nextStatus) => {
     const order = await Order.findOne({ orderId });
     if (!order) throw new Error('Order not found');
 
     const currentStatus = this.normalize(order.orderStatus);
     const targetStatus = this.normalize(nextStatus);
+    const highestItemIndex = this.getHighestItemFlowIndex(order);
+const targetIndex = this.orderFlow.indexOf(targetStatus);
 
-    if (!this.orderFlow.includes(targetStatus)) throw new Error('Invalid status');
+// 🚫 Prevent downgrade below any delivered/shipped item
+if (targetIndex < highestItemIndex) {
+  throw new Error(
+    `Cannot downgrade order below existing item progress.`
+  );
+}
+    if (['returned', 'cancelled'].includes(currentStatus)) {
+  throw new Error('Cannot update returned or cancelled order');
+}
+
+    //if (!this.orderFlow.includes(targetStatus)) throw new Error('Invalid status');
     if (currentStatus === 'cancelled') throw new Error('Cannot update cancelled order');
     if (this.orderFlow.indexOf(targetStatus) <= this.orderFlow.indexOf(currentStatus)) {
       throw new Error('Cannot move status backward');
@@ -177,6 +243,10 @@ class AdminOrderService {
 
     const currentStatus = this.normalize(item.itemStatus);
     const targetStatus = this.normalize(nextStatus);
+
+  if (['returned', 'cancelled'].includes(currentStatus)) {
+    throw new Error('Cannot update a returned or cancelled item');
+  }
 
     if (!this.orderFlow.includes(targetStatus)) throw new Error('Invalid status');
     if (currentStatus === 'cancelled') throw new Error('Cannot update cancelled item');
@@ -280,6 +350,68 @@ class AdminOrderService {
     await order.save();
     return order;
   };
+   async generateInvoiceForAdmin(orderId) {
+
+    // 1️⃣ Find order (NO userId check for admin)
+    const order = await Order.findOne({ orderId });
+
+    if (!order) {
+      const error = new Error('Order not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // 2️⃣ Optional: Allow invoice only if delivered
+    if (order.orderStatus !== 'delivered') {
+      const error = new Error('Invoice available only for delivered orders');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // 3️⃣ Add invoice date if not exists
+    if (!order.invoiceDate) {
+      order.invoiceDate = new Date();
+      await order.save();
+    }
+
+    // 4️⃣ Create invoices folder
+    const invoiceDir = path.join(process.cwd(), 'public', 'invoices');
+
+    if (!fs.existsSync(invoiceDir)) {
+      fs.mkdirSync(invoiceDir, { recursive: true });
+    }
+
+    const fileName = `invoice-${order.orderId}.pdf`;
+    const filePath = path.join(invoiceDir, fileName);
+
+    // 5️⃣ Use SAME invoice.ejs (no need separate file)
+    const templatePath = path.join(
+      process.cwd(),
+      'views',
+      'user',
+      'invoice.ejs'
+    );
+
+    const html = await ejs.renderFile(templatePath, { order });
+
+    // 6️⃣ Generate PDF
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+
+    await page.pdf({
+      path: filePath,
+      format: 'A4',
+      printBackground: true
+    });
+
+    await browser.close();
+
+    return { fileName, filePath };
+  }
+
+  
 }
 
 export default new AdminOrderService();

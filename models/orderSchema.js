@@ -67,22 +67,17 @@ const orderItemSchema = new Schema({
   itemStatus: {
     type: String,
     enum: [
-      'pending',
-      'confirmed',
-      'shipped',
-      'out_for_delivery',
-      'delivered',
-      'processing',
-      'cancelled',
-      'returned',
-      'return_requested',
-      'return_approved',
-      'Processing',
-      'Cancelled',
-      'Returned',
-      'Return Requested'
-    ],
-    default: 'processing'
+  'processing',
+  'confirmed',
+  'shipped',
+  'out_for_delivery',
+  'delivered',
+  'cancelled',
+  'return_requested',
+  'return_approved',
+  'returned'
+],
+default: 'processing'
   },
 
   cancelReason: {
@@ -234,29 +229,19 @@ const orderSchema = new Schema({
   orderStatus: {
     type: String,
     enum: [
-      'pending',
-      'confirmed',
-      'shipped',
-      'out_for_delivery',
-      'delivered',
-      'partially_delivered',
-      'cancelled',
-      'returned',
-      'partially_returned',
-      'return_requested',
-      'Pending',
-      'Placed',
-      'Processing',
-      'Shipped',
-      'Out for Delivery',
-      'Delivered',
-      'Return Requested',
-      'Cancelled',
-      'Partially Cancelled',
-      'Returned',
-      'Partially Returned'
-    ],
-    default: 'Placed'
+  'processing',
+  'confirmed',
+  'shipped',
+  'out_for_delivery',
+  'delivered',
+  'partially_delivered',
+  'cancelled',
+  'partially_cancelled',
+  'return_requested',
+  'returned',
+  'partially_returned'
+],
+default: 'processing'
   },
 
   invoiceDate: {
@@ -282,4 +267,5 @@ const orderSchema = new Schema({
 const Order = mongoose.model('Order', orderSchema);
 
 export default Order;
+
 

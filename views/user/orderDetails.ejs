@@ -63,14 +63,13 @@
                   <div class="small text-muted">Size: <%= item.size %> | Qty: <%= item.quantity %></div>
                   <div class="small text-muted">Price: ₹<%= item.price %></div>
                   <div class="small mt-1"><strong>Status:</strong> <%= item.itemStatus %></div>
-                  <% if (normalizedItemStatus === 'return_requested') { %>
-                    <div class="small mt-1"><strong>Return Reason:</strong> <%= item.returnReason || 'N/A' %></div>
-                    <div class="small"><strong>Return Description:</strong> <%= item.returnDescription || 'N/A' %></div>
-                  <% } %>
                   <% if (normalizedReturnStatus && normalizedReturnStatus !== 'none') { %>
                     <div class="small mt-2"><strong>Return Status:</strong> <%= normalizedReturnStatus.replace(/_/g, ' ').toUpperCase() %></div>
                     <% if (item.returnReason) { %>
                       <div class="small"><strong>Return Reason:</strong> <%= item.returnReason %></div>
+                    <% } %>
+                    <% if (item.returnDescription) { %>
+                      <div class="small"><strong>Return Description:</strong> <%= item.returnDescription %></div>
                     <% } %>
                     <% if (normalizedReturnStatus === 'requested') { %>
                       <div class="alert alert-secondary py-2 mt-2 mb-2">Your return request is under review.</div>
@@ -102,7 +101,7 @@
                       onclick="cancelSingleItem('<%= order.orderId %>', '<%= item._id %>')"
                     >Cancel Item</button>
                   <% } %>
-                  <% if (normalizedItemStatus === 'delivered' && ['none', '', 'cancelled_by_user', 'rejected'].includes(normalizedReturnStatus)) { %>
+                  <% if (normalizedItemStatus === 'delivered' && ['none', '', 'cancelled_by_user'].includes(normalizedReturnStatus)) { %>
                     <button
                       class="btn btn-sm btn-outline-warning mt-2"
                       onclick="requestItemReturn('<%= order.orderId %>', '<%= item._id %>')"
@@ -146,7 +145,17 @@
       <% if (canCancelEntireOrder) { %>
         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">Cancel Order</button>
       <% } %>
-      <% if (normalize(order.orderStatus) === 'delivered') { %>
+      <% const hasDeliveredItemsForReturn = order.items.some((item) => {
+        const itemStatus = normalize(item.itemStatus);
+        const returnStatus = normalize(item.returnStatus || '');
+        return itemStatus === 'delivered' && returnStatus !== 'rejected';
+      }); %>
+      <% const hasActiveReturn = order.items.some((item) => {
+        const itemStatus = normalize(item.itemStatus);
+        const returnStatus = normalize(item.returnStatus || '');
+        return ['requested', 'approved'].includes(returnStatus) || ['return_requested', 'return_approved'].includes(itemStatus);
+      }); %>
+      <% if (normalize(order.orderStatus) === 'delivered' && hasDeliveredItemsForReturn && !hasActiveReturn) { %>
         <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#returnOrderModal">Return Order</button>
       <% } %>
       <a class="btn btn-dark" href="/orders/<%= order.orderId %>/invoice">Download Invoice</a>

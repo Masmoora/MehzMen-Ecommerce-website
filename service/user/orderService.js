@@ -94,8 +94,8 @@ class OrderService {
     const subtotal = activeItems.reduce((sum, item) => sum + item.itemTotal, 0);
     const shippingCharge = activeItems.length > 0 ? Number(orderDoc.pricing.shippingCharge || 0) : 0;
     const discount = Number(orderDoc.pricing.couponDiscount || 0);
-    const tax = Number(orderDoc.pricing.tax || 0);
-    const finalAmount = Math.max(0, subtotal + shippingCharge + tax - discount);
+   // const tax = Number(orderDoc.pricing.tax || 0);
+    const finalAmount = Math.max(0, subtotal + shippingCharge  - discount);
 
     orderDoc.pricing.totalItems = activeItems.reduce((sum, item) => sum + item.quantity, 0);
     orderDoc.pricing.subtotal = subtotal;
@@ -178,7 +178,7 @@ class OrderService {
     }
 
     this.recalculatePricing(order);
-    order.orderStatus = 'cancelled';
+    //order.orderStatus = 'cancelled';
     await order.save();
 
     return { orderId: order.orderId, orderStatus: order.orderStatus };
@@ -265,6 +265,60 @@ class OrderService {
     await order.save();
     return { orderId: order.orderId, orderStatus: order.orderStatus };
   };
+  async generateInvoiceForOrder(userId, orderId) {
+
+  const order = await Order.findOne({ orderId, userId });
+
+  if (!order) {
+    const error = new Error('Order not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (order.orderStatus !== 'delivered') {
+    const error = new Error('Invoice available only for delivered orders');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (!order.invoiceDate) {
+    order.invoiceDate = new Date();
+    await order.save();
+  }
+
+  const invoiceDir = path.join(process.cwd(), 'public', 'invoices');
+
+  if (!fs.existsSync(invoiceDir)) {
+    fs.mkdirSync(invoiceDir, { recursive: true });
+  }
+
+  const fileName = `invoice-${order.orderId}.pdf`;
+  const filePath = path.join(invoiceDir, fileName);
+
+  const invoiceTemplatePath = path.join(
+    process.cwd(),
+    'views',
+    'user',
+    'invoice.ejs'
+  );
+
+  const html = await ejs.renderFile(invoiceTemplatePath, { order });
+
+  const browser = await puppeteer.launch({ headless: 'new' });
+  const page = await browser.newPage();
+
+  await page.setContent(html, { waitUntil: 'networkidle0' });
+
+  await page.pdf({
+    path: filePath,
+    format: 'A4',
+    printBackground: true
+  });
+
+  await browser.close();
+
+  return { fileName, filePath };
+}
 }
 
 export default new OrderService();

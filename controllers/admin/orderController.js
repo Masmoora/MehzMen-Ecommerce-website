@@ -1,5 +1,5 @@
 import AdminOrderService from '../../service/admin/orderService.js';
-import PDFDocument from 'pdfkit';
+
 
 class AdminOrderController {
   loadOrders = async (req, res) => {
@@ -97,44 +97,19 @@ class AdminOrderController {
     }
   };
 
-  downloadInvoice = async (req, res) => {
+ async downloadInvoice(req, res, next) {
     try {
-      const { orderId } = req.params || {};
-      const order = await AdminOrderService.getOrderDetails(orderId);
+      const { orderId } = req.params;
 
-      const doc = new PDFDocument({ margin: 40, size: 'A4' });
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.orderId}.pdf`);
-      doc.pipe(res);
+      const { fileName, filePath } =
+        await AdminOrderService.generateInvoiceForAdmin(orderId);
 
-      doc.fontSize(18).text('INVOICE', { align: 'center' });
-      doc.moveDown();
-      doc.fontSize(11).text(`Order ID: ${order.orderId}`);
-      doc.text(`Date: ${new Date(order.createdAt).toLocaleString()}`);
-      doc.text(`Customer: ${order.userId?.name || 'N/A'}`);
-      doc.text(`Payment: ${String(order.paymentMethod || '').toUpperCase()} (${order.paymentStatus})`);
-      doc.text(`Order Status: ${order.orderStatus}`);
-      doc.moveDown();
+      return res.download(filePath, fileName);
 
-      doc.fontSize(13).text('Items');
-      doc.moveDown(0.5);
-      order.items.forEach((item, index) => {
-        doc.fontSize(11).text(
-          `${index + 1}. ${item.productName} | Qty: ${item.quantity} | Price: ₹${item.price} | Total: ₹${item.itemTotal} | Status: ${item.itemStatus}`
-        );
-      });
-
-      doc.moveDown();
-      doc.fontSize(12).text(`Subtotal: ₹${order.pricing?.subtotal || 0}`);
-      doc.text(`Shipping: ₹${order.pricing?.shippingCharge || 0}`);
-      doc.text(`Discount: ₹${order.pricing?.couponDiscount || 0}`);
-      doc.text(`Grand Total: ₹${order.pricing?.finalAmount || 0}`);
-
-      doc.end();
     } catch (error) {
-      return res.status(400).send('Failed to generate invoice');
+      next(error);
     }
-  };
+  }
 }
 
 export default new AdminOrderController();

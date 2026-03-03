@@ -40,10 +40,16 @@ class CheckoutService {
   };
 
   getCartItemsForCheckout = async (userId) => {
-    const cart = await Cart.findOne({ userId })
-      .populate('items.productId')
-      .populate('items.variantId')
-      .lean();
+const cart = await Cart.findOne({ userId })
+  .populate({
+    path: 'items.productId',
+    populate: {
+      path: 'brand',
+      select: 'name'
+    }
+  })
+  .populate('items.variantId')
+  .lean();
 
     if (!cart || !cart.items?.length) return [];
 
@@ -301,7 +307,7 @@ class CheckoutService {
           couponDiscount: summary.discount,
           finalAmount: summary.finalTotal
         },
-        orderStatus: 'Processing',
+        orderStatus: 'processing',
         paymentMethod,
         paymentStatus: 'Pending',
         invoiceDate: new Date()
