@@ -17,7 +17,8 @@ class CheckoutController{
         checkoutItems: data.items,
         addresses: data.addresses,
         defaultAddressId: data.defaultAddressId,
-        summary: data.summary
+        summary: data.summary,
+        walletBalance: data.walletBalance ?? 0
       });
     } catch (error) {
       logger.error('Error loading checkout page:', error);
@@ -104,11 +105,60 @@ class CheckoutController{
       return res.json({
         success: true,
         message: 'Order placed successfully',
-        orderId: result.orderId
+        orderId: result.orderId,
+        redirectUrl: `/orders/success?orderId=${encodeURIComponent(result.orderId)}`
       });
     } catch (error) {
       logger.error('Error placing order:', error);
       return res.status(400).json({ success: false, message: error.message || 'Failed to place order' });
+    }
+  };
+createRazorpayOrder = async (req, res) => {
+  try {
+    const userId = req.session?.user;
+    if (!userId) return res.status(401).json({ success: false, message: 'Login required' });
+
+    const { addressId } = req.body || {};
+    if (!addressId) {
+      return res.status(400).json({ success: false, message: 'Address is required' });
+    }
+
+    const data = await CheckoutService.createRazorpayOrderForCheckout(userId, addressId);
+
+    return res.json({
+      success: true,
+      razorpayOrderId: data.razorpayOrderId,
+      amount: data.amount,
+      currency: data.currency,
+      keyId: data.keyId
+    });
+
+  } catch (error) {
+    logger.error('Error creating Razorpay order:', error);
+    return res.status(400).json({ success: false, message: error.message });
+  }
+};
+    verifyPayment = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.redirect('/login');
+
+      const { addressId, razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body || {};
+      if (!addressId || !razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+        return res.redirect('/orders/failure');
+      }
+
+      const result = await CheckoutService.verifyAndPlaceOrder(userId, {
+        addressId,
+        razorpayOrderId,
+        razorpayPaymentId,
+        razorpaySignature,
+        
+      });
+      return res.redirect(`/orders/success?orderId=${encodeURIComponent(result.orderId)}`);
+    } catch (error) {
+      logger.error('Error verifying payment:', error);
+      return res.redirect('/orders/failure');
     }
   };
 }

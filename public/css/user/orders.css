@@ -1,0 +1,10 @@
+    body {
+      background: #f6f7fb;
+      padding-top: 52px;
+    }
+
+    .card-clean {
+      border: 1px solid #e9ecef;
+      border-radius: 10px;
+      background: #fff;
+    }

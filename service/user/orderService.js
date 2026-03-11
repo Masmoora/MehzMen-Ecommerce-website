@@ -7,9 +7,23 @@ import puppeteer from 'puppeteer';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+import walletService from "./walletService.js";
 
 class OrderService {
   normalizeStatus = (value) => String(value || '').trim().toLowerCase().replace(/\s+/g, '_');
+    isOrderPaid = (order) => {
+    const method = this.normalizeStatus(order.paymentMethod || '');
+    const status = this.normalizeStatus(order.paymentStatus || '');
+    return (method === 'wallet' || method === 'razorpay') && status === 'completed';
+  };
+
+  /** Proportional refund for one item: (itemTotal / subtotal) * finalAmount */
+  getProportionalRefund = (order, item) => {
+    const subtotal = Number(order.pricing?.subtotal || 0);
+    const finalAmount = Number(order.pricing?.finalAmount || 0);
+    if (subtotal <= 0) return 0;
+    return Math.round((Number(item.itemTotal || 0) / subtotal) * finalAmount);
+  };
 
   refreshOrderStatusFromItems = (orderDoc) => {
     const statuses = orderDoc.items.map((item) => this.normalizeStatus(item.itemStatus));
@@ -127,6 +141,13 @@ class OrderService {
     if (!['processing', 'pending', 'confirmed'].includes(this.normalizeStatus(item.itemStatus))) {
       throw new Error('Only processing items can be cancelled');
     }
+     // Refund to wallet for paid orders (cancel = direct refund)
+    if (this.isOrderPaid(order)) {
+      const refundAmount = this.getProportionalRefund(order, item);
+      if (refundAmount > 0) {
+        await walletService.refundToWallet(userId, refundAmount, order.orderId, 'Order item cancelled');
+      }
+    }
 
     item.itemStatus = 'cancelled';
     item.cancelReason = String(cancelReason || '').trim() || 'Cancelled by user';
@@ -167,6 +188,13 @@ class OrderService {
 
     if (!cancelledNow.length) {
       throw new Error('No processing items available to cancel');
+    }
+    // Refund full order amount to wallet for paid orders (cancel = direct refund)
+    if (this.isOrderPaid(order)) {
+      const refundAmount = Number(order.pricing?.finalAmount || 0);
+      if (refundAmount > 0) {
+        await walletService.refundToWallet(userId, refundAmount, order.orderId, 'Order cancelled');
+      }
     }
 
     // Increase stock for every item that got cancelled now
@@ -265,6 +293,7 @@ class OrderService {
     await order.save();
     return { orderId: order.orderId, orderStatus: order.orderStatus };
   };
+
   async generateInvoiceForOrder(userId, orderId) {
 
   const order = await Order.findOne({ orderId, userId });

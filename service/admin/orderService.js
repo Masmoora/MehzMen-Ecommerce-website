@@ -83,9 +83,8 @@ class AdminOrderService {
     const filter = {};
     const keyword = String(search || '').trim();
     const statusValue = String(status || '').trim();
-
     if (statusValue) {
-      filter.orderStatus = { $regex: `^${statusValue}$`, $options: 'i' };
+      filter.orderStatus = { $regex: `${statusValue}`, $options: 'i' };
     }
 
     if (!keyword) return filter;
@@ -115,6 +114,7 @@ class AdminOrderService {
     };
 
     const filter = await this.buildFilter({ search, status });
+    
 
     const [orders, totalOrders] = await Promise.all([
       Order.find(filter)

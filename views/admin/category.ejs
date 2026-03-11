@@ -15,9 +15,6 @@
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <style>
-    
-  </style>
 </head>
 
 <body>
@@ -75,8 +72,8 @@
                   %>
                   <tr>
                     <td>
-                        <%= startIndex + index + 1 %>
-                      </td>
+                      <%= startIndex + index + 1 %>
+                    </td>
                     <td>
                       <% if (category.image) { %>
                         <img src="<%= category.image %>" alt="<%= category.name %>" class="category-image"
@@ -89,12 +86,13 @@
                           <% } %>
                     </td>
                     <td>
-                      
-                        <%= category.name %>
-                      
+
+                      <%= category.name %>
+
                     </td>
                     <td>
-                      <span class="description-text description-cell" title="<%= category.description || 'No description' %>">
+                      <span class="description-text description-cell"
+                        title="<%= category.description || 'No description' %>">
                         <%= category.description || 'No description' %>
                       </span>
                     </td>
@@ -216,7 +214,8 @@
               <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="addCategoryForm" action="/admin/categories/addCategory" method="POST" enctype="multipart/form-data">
+            <form id="addCategoryForm" action="/admin/categories/addCategory" method="POST"
+              enctype="multipart/form-data">
               <div class="modal-body">
                 <div class="mb-3">
                   <label for="categoryName" class="form-label">Category Name <span class="text-danger">*</span></label>
@@ -270,7 +269,8 @@
               <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <form id="editCategoryForm" action="/admin/categories/editCategory" method="POST" enctype="multipart/form-data">
+            <form id="editCategoryForm" action="/admin/categories/editCategory" method="POST"
+              enctype="multipart/form-data">
               <div class="modal-body">
 
                 <!-- hidden id -->
@@ -328,16 +328,16 @@
         <!-- JavaScript -->
         <script>
 
-            // Search form reset
-            const searchForm = document.getElementById('searchForm');
-            if (searchForm) {
-              searchForm.addEventListener('submit', function () {
-                const pageInput = this.querySelector('input[name="page"]');
-                if (pageInput) {
-                  pageInput.value = '1';
-                }
-              });
-            }
+          // Search form reset
+          const searchForm = document.getElementById('searchForm');
+          if (searchForm) {
+            searchForm.addEventListener('submit', function () {
+              const pageInput = this.querySelector('input[name="page"]');
+              if (pageInput) {
+                pageInput.value = '1';
+              }
+            });
+          }
 
         </script>
         <script>

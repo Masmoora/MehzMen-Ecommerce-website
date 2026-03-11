@@ -2,6 +2,8 @@ import Address from "../../models/addressSchema.js";
 import Cart from "../../models/cartSchema.js";
 import Order from "../../models/orderSchema.js";
 import ProductVariant from "../../models/productVariantSchema.js";
+import * as razorpayService from '../payment/razorpayService.js'
+import walletService from "./walletService.js";
 const SHIPPING_FLAT = 50;
 
 class CheckoutService {
@@ -114,8 +116,9 @@ const cart = await Cart.findOne({ userId })
     const items = await this.getCartItemsForCheckout(userId);
     const { addresses, defaultAddressId } = await this.getAddressData(userId);
     const summary = this.buildSummary(items);
+    const walletBalance = await walletService.getBalance(userId);
 
-    return { items, addresses, defaultAddressId, summary };
+    return { items, addresses, defaultAddressId, summary,walletBalance };
   };
 
   removeCheckoutItem = async (userId, itemId) => {
@@ -245,12 +248,52 @@ const cart = await Cart.findOne({ userId })
     await doc.save();
     return doc;
   };
+  createRazorpayOrderForCheckout = async (userId, couponCode = '') => {
+    if (!razorpayService.isRazorpayEnabled()) {
+      throw new Error('Online payment is not configured. Please use Cash on Delivery.');
+    }
+    const items = await this.getCartItemsForCheckout(userId);
+    if (!items.length) throw new Error('Your cart is empty');
+    if (items.some((item) => item.outOfStock)) {
+      throw new Error('Some items are out of stock. Please update cart before placing order.');
+    }
+    let summary = this.buildSummary(items);
+    /*if (couponCode) {
+      const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
+      const coupon = await this.getValidCoupon(couponCode, subtotal);
+      if (coupon) summary = this.buildSummary(items, coupon);
+    }*/
+    const razorpayOrder = await razorpayService.createOrder(summary.finalTotal, `checkout_${userId}`);
+    if (!razorpayOrder) throw new Error('Could not create payment order. Please try again.');
+    return {
+      razorpayOrderId: razorpayOrder.orderId,
+      keyId: razorpayService.getRazorpayKeyId(),
+      amount: razorpayOrder.amount,
+      currency: razorpayOrder.currency || 'INR',
+      finalTotal: summary.finalTotal
+    };
+  };
 
-  placeOrder = async (userId, orderData) => {
-    const { addressId, paymentMethod = 'cod' } = orderData || {};
+  /**
+   * Verify Razorpay payment and place order (reserve stock, create order, clear cart).
+   */
+  verifyAndPlaceOrder = async (userId, orderData) => {
+    const { addressId, razorpayOrderId, razorpayPaymentId, razorpaySignature } = orderData || {};
     if (!addressId) throw new Error('Please select shipping address');
-    if (paymentMethod !== 'cod') {
-      throw new Error('Selected payment method is not available right now. Please use Cash on Delivery.');
+    if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+      throw new Error('Invalid payment details. Please try again from checkout.');
+    }
+    const valid = await razorpayService.verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature);
+    if (!valid) throw new Error('Payment verification failed. Please try again.');
+
+    return this.placeOrder(userId, { addressId, paymentMethod: 'razorpay', paymentStatus: 'Completed'});
+  };
+   placeOrder = async (userId, orderData) => {
+    const { addressId, paymentMethod = 'cod', paymentStatus = 'Pending' } = orderData || {};
+    if (!addressId) throw new Error('Please select shipping address');
+    const allowedMethods = ['cod', 'razorpay', 'wallet'];
+    if (!allowedMethods.includes(paymentMethod)) {
+      throw new Error('Selected payment method is not available. Please use Cash on Delivery, Wallet or Online Payment.');
     }
 
     const items = await this.getCartItemsForCheckout(userId);
@@ -268,7 +311,23 @@ const cart = await Cart.findOne({ userId })
       throw new Error('Selected address is missing house number. Please edit address and try again.');
     }
 
-    const summary = this.buildSummary(items);
+    let summary = this.buildSummary(items);
+    /*if (orderCouponCode) {
+      const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
+      const coupon = await this.getValidCoupon(orderCouponCode, subtotal);
+      if (coupon) {
+        summary = this.buildSummary(items, coupon);
+        await Coupon.updateOne({ _id: coupon._id }, { $inc: { usedCount: 1 } });
+      }
+    }*/
+
+    if (paymentMethod === 'wallet') {
+      const balance = await walletService.getBalance(userId);
+      if (balance < summary.finalTotal) {
+        throw new Error(`Insufficient wallet balance. Your balance is ₹${balance}, order total is ₹${summary.finalTotal}.`);
+      }
+    }
+
     const reservedItems = await this.reserveStockForOrder(items);
 
     const orderItems = items.map((item) => ({
@@ -283,6 +342,10 @@ const cart = await Cart.findOne({ userId })
       price: item.price,
       itemTotal: item.itemTotal
     }));
+
+   if (paymentMethod === 'wallet') {
+      await walletService.debit(userId, summary.finalTotal, '', 'Order payment');
+    }
 
     try {
       const order = await Order.create({
@@ -303,13 +366,13 @@ const cart = await Cart.findOne({ userId })
           subtotal: summary.subtotal,
           shippingCharge: summary.shipping,
           tax: 0,
-          couponCode: summary.couponCode,
+          //couponCode: summary.couponCode,
           couponDiscount: summary.discount,
           finalAmount: summary.finalTotal
         },
         orderStatus: 'processing',
         paymentMethod,
-        paymentStatus: 'Pending',
+        paymentStatus: paymentStatus || (paymentMethod === 'cod' ? 'Pending' : 'Completed'),
         invoiceDate: new Date()
       });
 
@@ -317,11 +380,14 @@ const cart = await Cart.findOne({ userId })
 
       return { orderId: order.orderId };
     } catch (error) {
+      if (paymentMethod === 'wallet') {
+        await walletService.credit(userId, summary.finalTotal, '', 'Order creation failed – refund');
+      }
       await this.restoreReservedStock(reservedItems);
       throw error;
     }
   };
-
+   
 }
 
 export default new CheckoutService();

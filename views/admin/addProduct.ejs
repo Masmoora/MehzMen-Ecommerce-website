@@ -29,16 +29,16 @@
             <h5 class="mb-3">Product Details</h5>
             <div class="mb-2">
               <label class="form-label">Product Name</label>
-              <input class="form-control" name="name" >
+              <input class="form-control" name="name">
             </div>
             <div class="mb-2">
               <label class="form-label">Product Description</label>
-              <textarea class="form-control" name="description" rows="3" ></textarea>
+              <textarea class="form-control" name="description" rows="3"></textarea>
             </div>
 
             <div class="mb-2">
               <label class="form-label">Brand</label>
-              <select class="form-select" name="brand" >
+              <select class="form-select" name="brand">
                 <option value="">Select Brand</option>
                 <% brands.forEach(b=> { %>
                   <option value="<%= b._id %>">
@@ -50,7 +50,7 @@
 
             <div class="mb-2">
               <label class="form-label">Category</label>
-              <select class="form-select" name="category" >
+              <select class="form-select" name="category">
                 <option value="">Select Category</option>
                 <% categories.forEach(c=> { %>
                   <option value="<%= c._id %>">
@@ -62,7 +62,7 @@
 
             <div class="mb-2">
               <label class="form-label">Product Status</label>
-              <select class="form-select" name="status" >
+              <select class="form-select" name="status">
                 <option value="">Select Status</option>
                 <option value="available">Available</option>
                 <option value="out_of_stock">Out of Stock</option>

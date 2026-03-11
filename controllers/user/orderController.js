@@ -126,5 +126,37 @@ downloadInvoice = async (req, res) => {
     return res.status(error.statusCode || 500).send(error.message || 'Error generating invoice');
   }
 };
+  loadOrderSuccess = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.redirect('/login');
+      
+
+      const user = await UserService.getUserById(userId);
+      if (!user) return res.redirect('/pageNotFound');
+
+      const orderId = (req.query?.orderId || '').trim();
+      return res.render('orderSuccess', { user, orderId: this.isValidOrderId(orderId) ? orderId : null });
+    } catch (error) {
+      logger.error('Error loading order success page:', error);
+      return res.status(500).render('page-404');
+    }
+  };
+
+  loadOrderFailure = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.redirect('/login');
+
+      const user = await UserService.getUserById(userId);
+      if (!user) return res.redirect('/pageNotFound');
+
+      const orderId = (req.query?.orderId || '').trim();
+      return res.render('orderFailure', { user, orderId: this.isValidOrderId(orderId) ? orderId : null });
+    } catch (error) {
+      logger.error('Error loading order failure page:', error);
+      return res.status(500).render('page-404');
+    }
+  };
 }
 export default new OrderController();

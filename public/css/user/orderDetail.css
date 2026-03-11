@@ -1,0 +1,17 @@
+    body {
+        background: #f6f7fb;
+        padding-top: 52px;
+    }
+
+    .section-card {
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    .item-img {
+        width: 72px;
+        height: 72px;
+        object-fit: cover;
+        border-radius: 8px;
+    }

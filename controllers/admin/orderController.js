@@ -110,6 +110,7 @@ class AdminOrderController {
       next(error);
     }
   }
+  
 }
 
 export default new AdminOrderController();

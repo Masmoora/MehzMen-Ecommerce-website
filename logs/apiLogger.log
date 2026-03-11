@@ -1540,3 +1540,201 @@
 {"level":"error","message":"Error loading product details: Cannot read properties of null (reading '_id')","stack":"TypeError: Cannot read properties of null (reading '_id')\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:80:33)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-03-03 17:00:18"}
 {"level":"error","message":"Error updating cart quantity: Requested quantity exceeds stock","stack":"Error: Requested quantity exceeds stock\n    at CartService.updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/service/user/cartService.js:104:36)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/cartController.js:57:24)","timestamp":"2026-03-03 17:05:54"}
 {"level":"error","message":"Error updating cart quantity: Requested quantity exceeds stock","stack":"Error: Requested quantity exceeds stock\n    at CartService.updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/service/user/cartService.js:104:36)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/cartController.js:57:24)","timestamp":"2026-03-03 17:11:52"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-03 17:20:28"}
+{"level":"error","message":"Error updating cart quantity: Requested quantity exceeds stock","stack":"Error: Requested quantity exceeds stock\n    at CartService.updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/service/user/cartService.js:104:36)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/cartController.js:57:24)","timestamp":"2026-03-03 17:47:27"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-03 17:59:55"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:23:06"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:24:01"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:24:53"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:25:46"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:26:38"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:27:18"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:27:57"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:31:19"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:31:24"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:33:46"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:42:58"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:45:08"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:45:30"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:45:51"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:46:01"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:47:11"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:47:27"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:47:38"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:47:40"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:49:02"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 01:50:07"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 02:02:39"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 02:02:59"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 02:08:29"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 02:08:51"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-05 02:09:10"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:06:51"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:13:01"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:16:07"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:16:16"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:16:50"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:17:24"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:17:28"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:17:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:17:38"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:17:50"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:17:58"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:18:10"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:18:13"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:18:20"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:18:23"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:18:33"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:18:36"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:18:40"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:18:54"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:19:02"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:19:06"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:24:52"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:25:01"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:25:12"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:25:19"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:25:22"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:25:27"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:25:32"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:25:36"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:26:28"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:26:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:26:39"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:26:42"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:26:46"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:26:50"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:31:26"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:31:32"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:31:41"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:31:55"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 16:32:27"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 21:48:52"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 21:49:05"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 21:49:12"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 21:49:57"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-06 21:57:50"}
+{"level":"error","message":"Error loading product details: Cannot read properties of null (reading '_id')","stack":"TypeError: Cannot read properties of null (reading '_id')\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:80:33)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-03-07 14:11:59"}
+{"level":"error","message":"Error updating cart quantity: Requested quantity exceeds stock","stack":"Error: Requested quantity exceeds stock\n    at CartService.updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/service/user/cartService.js:104:36)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/cartController.js:57:24)","timestamp":"2026-03-07 14:12:45"}
+{"level":"error","message":"Error deleting variant image: Cannot delete image. Each variant must have at least 3 images","stack":"Error: Cannot delete image. Each variant must have at least 3 images\n    at ProductService.deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/service/admin/productService.js:282:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/productController.js:377:7)","timestamp":"2026-03-07 14:19:40"}
+{"level":"error","message":"Error deleting variant image: Cannot delete image. Each variant must have at least 3 images","stack":"Error: Cannot delete image. Each variant must have at least 3 images\n    at ProductService.deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/service/admin/productService.js:282:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/productController.js:377:7)","timestamp":"2026-03-07 14:19:59"}
+{"level":"error","message":"Error deleting variant image: Cannot delete image. Each variant must have at least 3 images","stack":"Error: Cannot delete image. Each variant must have at least 3 images\n    at ProductService.deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/service/admin/productService.js:282:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/productController.js:377:7)","timestamp":"2026-03-07 14:20:13"}
+{"level":"error","message":"Error deleting variant image: Cannot delete image. Each variant must have at least 3 images","stack":"Error: Cannot delete image. Each variant must have at least 3 images\n    at ProductService.deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/service/admin/productService.js:282:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/productController.js:377:7)","timestamp":"2026-03-07 14:20:24"}
+{"level":"error","message":"Error deleting variant image: Cannot delete image. Each variant must have at least 3 images","stack":"Error: Cannot delete image. Each variant must have at least 3 images\n    at ProductService.deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/service/admin/productService.js:282:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async deleteVariantImage (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/productController.js:377:7)","timestamp":"2026-03-07 14:20:42"}
+{"level":"error","message":"Error placing order: Selected payment method is not available right now. Please use Cash on Delivery.","stack":"Error: Selected payment method is not available right now. Please use Cash on Delivery.\n    at CheckoutService.placeOrder (file:///C:/MehzMen%20Ecommerce%20Website/service/user/checkoutService.js:253:13)\n    at placeOrder (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/checkoutController.js:103:44)\n    at Layer.handleRequest (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\route.js:157:13)\n    at checkSession (file:///C:/MehzMen%20Ecommerce%20Website/middlewares/auth.js:26:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-03-09 12:07:19"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:08:20"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:16:48"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:26:20"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:26:43"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:27:04"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:27:08"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:27:11"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:27:16"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:27:19"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:27:21"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:27:54"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:28:20"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 02:28:43"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 12:52:43"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 12:53:11"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 12:53:18"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 12:53:22"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 12:53:28"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 12:53:40"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 12:53:42"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 12:53:46"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 12:53:54"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 13:34:45"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 13:36:19"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 13:36:23"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 13:36:34"}
+{"_message":"Order validation failed","errors":{"orderStatus":{"kind":"enum","message":"`Processing` is not a valid enum value for path `orderStatus`.","name":"ValidatorError","path":"orderStatus","properties":{"enumValues":["processing","confirmed","shipped","out_for_delivery","delivered","partially_delivered","cancelled","partially_cancelled","return_requested","returned","partially_returned"],"length":10,"message":"`Processing` is not a valid enum value for path `orderStatus`.","path":"orderStatus","type":"enum","value":"Processing"},"value":"Processing"}},"level":"error","message":"Error placing order: Order validation failed: orderStatus: `Processing` is not a valid enum value for path `orderStatus`.","stack":"ValidationError: Order validation failed: orderStatus: `Processing` is not a valid enum value for path `orderStatus`.\n    at Document.invalidate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3365:32)\n    at validatePath (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3140:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Promise.all (index 6)\n    at async model.$__validate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3081:3)\n    at async model.validate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:2663:5)\n    at async model.validateBeforeSave (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\plugins\\validateBeforeSave.js:34:7)\n    at async Kareem.execPre (C:\\MehzMen Ecommerce Website\\node_modules\\kareem\\index.js:65:24)\n    at async model.$__save (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\model.js:369:5)\n    at async model.save (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\model.js:609:5)","timestamp":"2026-03-10 15:15:02"}
+{"level":"error","message":"Error placing order: Some items are out of stock. Please update cart before placing order.","stack":"Error: Some items are out of stock. Please update cart before placing order.\n    at CheckoutService.placeOrder (file:///C:/MehzMen%20Ecommerce%20Website/service/user/checkoutService.js:261:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async placeOrder (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/checkoutController.js:103:22)","timestamp":"2026-03-10 15:16:19"}
+{"level":"error","message":"Error placing order: Some items are out of stock. Please update cart before placing order.","stack":"Error: Some items are out of stock. Please update cart before placing order.\n    at CheckoutService.placeOrder (file:///C:/MehzMen%20Ecommerce%20Website/service/user/checkoutService.js:261:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async placeOrder (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/checkoutController.js:103:22)","timestamp":"2026-03-10 15:16:44"}
+{"level":"error","message":"Error placing order: Some items are out of stock. Please update cart before placing order.","stack":"Error: Some items are out of stock. Please update cart before placing order.\n    at CheckoutService.placeOrder (file:///C:/MehzMen%20Ecommerce%20Website/service/user/checkoutService.js:261:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async placeOrder (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/checkoutController.js:103:22)","timestamp":"2026-03-10 15:16:54"}
+{"_message":"Order validation failed","errors":{"orderStatus":{"kind":"enum","message":"`Processing` is not a valid enum value for path `orderStatus`.","name":"ValidatorError","path":"orderStatus","properties":{"enumValues":["processing","confirmed","shipped","out_for_delivery","delivered","partially_delivered","cancelled","partially_cancelled","return_requested","returned","partially_returned"],"length":10,"message":"`Processing` is not a valid enum value for path `orderStatus`.","path":"orderStatus","type":"enum","value":"Processing"},"value":"Processing"}},"level":"error","message":"Error placing order: Order validation failed: orderStatus: `Processing` is not a valid enum value for path `orderStatus`.","stack":"ValidationError: Order validation failed: orderStatus: `Processing` is not a valid enum value for path `orderStatus`.\n    at Document.invalidate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3365:32)\n    at validatePath (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3140:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Promise.all (index 6)\n    at async model.$__validate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3081:3)\n    at async model.validate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:2663:5)\n    at async model.validateBeforeSave (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\plugins\\validateBeforeSave.js:34:7)\n    at async Kareem.execPre (C:\\MehzMen Ecommerce Website\\node_modules\\kareem\\index.js:65:24)\n    at async model.$__save (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\model.js:369:5)\n    at async model.save (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\model.js:609:5)","timestamp":"2026-03-10 15:17:15"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 15:18:29"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 15:18:31"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 15:22:43"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 15:22:53"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 15:22:58"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:09:03"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:13:54"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:14:04"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:15:05"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:15:08"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:15:12"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:15:26"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:15:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:15:39"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:16:11"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:16:14"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:16:26"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:16:28"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:16:35"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:16:52"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:16:54"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:17:03"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:17:06"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:17:17"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:17:33"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:17:38"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:17:46"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:17:48"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:17:50"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:19:07"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:19:31"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:20:07"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 17:29:43"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 20:09:05"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 21:04:00"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 21:06:08"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 21:08:13"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 21:12:31"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 23:54:05"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 23:54:27"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 23:55:13"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 23:58:03"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-10 23:59:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:00:49"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:05:13"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:05:33"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:08:46"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:09:04"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:09:35"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:09:49"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:12:19"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:14:17"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:22:40"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:25:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:25:44"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:25:54"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:29:06"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:29:20"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:29:26"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:31:07"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:32:02"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:32:08"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:32:11"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:32:25"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:32:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:32:41"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:33:33"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 00:58:35"}
+{"level":"error","message":"Error loading product details: Cannot read properties of null (reading '_id')","stack":"TypeError: Cannot read properties of null (reading '_id')\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:80:33)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-03-11 01:07:04"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 01:08:25"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-11 19:21:47"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-12 00:00:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-12 02:02:33"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-12 02:03:10"}
+{"level":"error","message":"Error loading coupons list: couponService.getCoupons is not a function","stack":"TypeError: couponService.getCoupons is not a function\n    at loadCoupons (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/couponController.js:7:42)\n    at Layer.handleRequest (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\route.js:157:13)\n    at Route.dispatch (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\route.js:117:3)\n    at handle (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:435:11)\n    at Layer.handleRequest (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\layer.js:152:17)\n    at C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:295:15\n    at processParams (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:582:12)\n    at next (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:291:5)\n    at router.handle (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:186:3)","timestamp":"2026-03-12 02:03:12"}
+{"level":"error","message":"Error loading coupons list: couponService.getCoupons is not a function","stack":"TypeError: couponService.getCoupons is not a function\n    at loadCoupons (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/couponController.js:7:42)\n    at Layer.handleRequest (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\route.js:157:13)\n    at Route.dispatch (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\route.js:117:3)\n    at handle (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:435:11)\n    at Layer.handleRequest (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\layer.js:152:17)\n    at C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:295:15\n    at processParams (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:582:12)\n    at next (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:291:5)\n    at router.handle (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:186:3)","timestamp":"2026-03-12 02:03:15"}
+{"level":"error","message":"Error loading coupons list: couponService.getCoupons is not a function","stack":"TypeError: couponService.getCoupons is not a function\n    at loadCoupons (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/couponController.js:7:42)\n    at Layer.handleRequest (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\route.js:157:13)\n    at Route.dispatch (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\route.js:117:3)\n    at handle (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:435:11)\n    at Layer.handleRequest (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\layer.js:152:17)\n    at C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:295:15\n    at processParams (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:582:12)\n    at next (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:291:5)\n    at router.handle (C:\\MehzMen Ecommerce Website\\node_modules\\router\\index.js:186:3)","timestamp":"2026-03-12 02:03:53"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-12 02:04:53"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-12 02:08:55"}
+{"_message":"Coupon validation failed","errors":{"expiryDate":{"kind":"required","message":"Path `expiryDate` is required.","name":"ValidatorError","path":"expiryDate","properties":{"message":"Path `expiryDate` is required.","path":"expiryDate","type":"required"}},"startingDate":{"kind":"required","message":"Path `startingDate` is required.","name":"ValidatorError","path":"startingDate","properties":{"message":"Path `startingDate` is required.","path":"startingDate","type":"required"}}},"level":"error","message":"Error creating coupon: Coupon validation failed: expiryDate: Path `expiryDate` is required., startingDate: Path `startingDate` is required.","stack":"ValidationError: Coupon validation failed: expiryDate: Path `expiryDate` is required., startingDate: Path `startingDate` is required.\n    at Document.invalidate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3365:32)\n    at validatePath (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3140:13)\n    at async Promise.all (index 0)\n    at async model.$__validate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3081:3)\n    at async model.validate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:2663:5)\n    at async model.validateBeforeSave (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\plugins\\validateBeforeSave.js:34:7)\n    at async Kareem.execPre (C:\\MehzMen Ecommerce Website\\node_modules\\kareem\\index.js:65:24)\n    at async model.$__save (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\model.js:369:5)\n    at async model.save (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\model.js:609:5)\n    at async CouponService.create (file:///C:/MehzMen%20Ecommerce%20Website/service/admin/couponService.js:49:5)","timestamp":"2026-03-12 02:10:08"}
+{"_message":"Coupon validation failed","errors":{"expiryDate":{"kind":"required","message":"Path `expiryDate` is required.","name":"ValidatorError","path":"expiryDate","properties":{"message":"Path `expiryDate` is required.","path":"expiryDate","type":"required"}},"startingDate":{"kind":"required","message":"Path `startingDate` is required.","name":"ValidatorError","path":"startingDate","properties":{"message":"Path `startingDate` is required.","path":"startingDate","type":"required"}}},"level":"error","message":"Error creating coupon: Coupon validation failed: expiryDate: Path `expiryDate` is required., startingDate: Path `startingDate` is required.","stack":"ValidationError: Coupon validation failed: expiryDate: Path `expiryDate` is required., startingDate: Path `startingDate` is required.\n    at Document.invalidate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3365:32)\n    at validatePath (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3140:13)\n    at async Promise.all (index 0)\n    at async model.$__validate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:3081:3)\n    at async model.validate (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\document.js:2663:5)\n    at async model.validateBeforeSave (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\plugins\\validateBeforeSave.js:34:7)\n    at async Kareem.execPre (C:\\MehzMen Ecommerce Website\\node_modules\\kareem\\index.js:65:24)\n    at async model.$__save (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\model.js:369:5)\n    at async model.save (C:\\MehzMen Ecommerce Website\\node_modules\\mongoose\\lib\\model.js:609:5)\n    at async CouponService.create (file:///C:/MehzMen%20Ecommerce%20Website/service/admin/couponService.js:49:5)","timestamp":"2026-03-12 02:11:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-12 02:19:39"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-12 02:22:44"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-12 02:24:01"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-12 02:25:10"}
