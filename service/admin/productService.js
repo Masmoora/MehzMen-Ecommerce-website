@@ -217,7 +217,7 @@ class ProductService {
   updateVariant = async (variantId, variantData) => {
     try {
       // Validate minimum 3 images
-      if (variantData.images && variantData.images.length < 3) {
+      if (variantData.images && variantData.images.length < 1) {
         throw new Error('Each variant must have at least 3 images');
       }
 
@@ -278,7 +278,7 @@ class ProductService {
       }
 
       // Check if variant has more than 3 images
-      if (variant.images.length <= 3) {
+      if (variant.images.length <= 1) {
         throw new Error('Cannot delete image. Each variant must have at least 3 images');
       }
 
@@ -291,7 +291,19 @@ class ProductService {
       throw error;
     }
   };
-
+  // Replace one variant image with a new one (keeps same count)
+  replaceVariantImage = async (variantId, imageUrlToReplace, newImageUrl) => {
+    try {
+      const variant = await ProductVariant.findById(variantId);
+      if (!variant) throw new Error('Variant not found');
+      if (!variant.images.includes(imageUrlToReplace)) throw new Error('Image not found in variant');
+      variant.images = variant.images.map(url => (url === imageUrlToReplace ? newImageUrl : url));
+      await variant.save();
+      return variant;
+    } catch (error) {
+      throw error;
+    }
+  };
   // Add images to variant
   addVariantImages = async (variantId, newImageUrls) => {
     try {

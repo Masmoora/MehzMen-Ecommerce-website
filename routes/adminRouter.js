@@ -92,6 +92,8 @@ router.post('/products/update/:id',AuthMiddleware.adminAuth,s3Upload('products')
 
 // Delete variant image (AJAX endpoint)
 router.post('/products/variant/image/delete', AuthMiddleware.adminAuth,s3Upload('products').any(),productController.deleteVariantImage);
+// Replace variant image (AJAX endpoint, single file)
+router.post('/products/variant/image/replace',AuthMiddleware.adminAuth,s3Upload('products').single('image'), productController.replaceVariantImage);
 // View variants page
 router.get('/products/:id/variants', productController.loadViewVariants);
 

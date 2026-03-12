@@ -22,7 +22,7 @@ const productVariantSchema = new Schema({
   },
   images: {
     type: [String],
-    validate: [arr => arr.length >= 3, 'Each variant needs at least 3 images']
+    validate: [arr => arr.length >= 1, 'Each variant needs at least 1 images']
   },
   size: {
     type: String,

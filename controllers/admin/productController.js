@@ -388,6 +388,51 @@ class ProductController {
       });
     }
   };
+  // Replace variant image (AJAX endpoint) – one image swapped for a new upload
+ // Replace variant image (AJAX endpoint) – one image swapped for a new upload
+  replaceVariantImage = async (req, res) => {
+    try {
+      const { variantId, imageUrl } = req.body;
+
+      if (!variantId || !imageUrl) {
+        return res.status(400).json({
+          success: false,
+          message: 'Variant ID and image URL are required'
+        });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: 'New image file is required'
+        });
+      }
+
+      // Support S3 (file.location), local disk (file.path), or custom URL (file.url)
+      const newImageUrl = req.file.location ;
+
+      if (!newImageUrl) {
+        return res.status(400).json({
+          success: false,
+          message: 'Could not determine URL for uploaded image'
+        });
+      }
+
+      await ProductService.replaceVariantImage(variantId, imageUrl, newImageUrl);
+
+      res.json({
+        success: true,
+        message: 'Image replaced successfully',
+        newImageUrl
+      });
+    } catch (error) {
+      logger.error('Error replacing variant image:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to replace image'
+      });
+    }
+  };
 
   // Load view variants page
   loadViewVariants = async (req, res) => {
