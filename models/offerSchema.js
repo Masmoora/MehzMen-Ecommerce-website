@@ -2,27 +2,46 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const offerSchema = new Schema({
+  offerType:{
+    type:String,
+    enum:["product","category"],
+    required:true
+  },
   productId: {
     type: Schema.Types.ObjectId,
     ref: 'Product',
-    required: true,
-    unique: true   // one offer per product
+    default:null
+ // one offer per product
+  },
+    categoryId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Category',
+    default:null
+ // one offer per category
   },
   offerTitle: {
     type: String,
-    required: true
+    required: true,
+    trim:true
   },
   discountType: {
     type: String,
-    enum: ['PERCENTAGE', 'FIXED'],
+    enum: ['percentage', 'fixed'],
     required: true
   },
   discountValue: {
     type: Number,
-    required: true
+    required: true,
+    min:1
   },
-  startDate: Date,
-  endDate: Date,
+  startDate: {
+    type:Date,
+    required:true
+  },
+  endDate: {
+    type:Date,
+    required:true
+  },
   status: {
     type: String,
     enum: ['active', 'inactive'],

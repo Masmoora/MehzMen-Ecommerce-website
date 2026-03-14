@@ -95,7 +95,7 @@ router.post('/products/variant/image/delete', AuthMiddleware.adminAuth,s3Upload(
 // Replace variant image (AJAX endpoint, single file)
 router.post('/products/variant/image/replace',AuthMiddleware.adminAuth,s3Upload('products').single('image'), productController.replaceVariantImage);
 // View variants page
-router.get('/products/:id/variants', productController.loadViewVariants);
+//router.get('/products/:id/variants', productController.loadViewVariants);
 
 // Toggle variant status (AJAX endpoint)
 router.post('/products/variant/toggle-status',  AuthMiddleware.adminAuth,productController.toggleVariantStatus);
@@ -103,6 +103,33 @@ router.post('/products/variant/toggle-status',  AuthMiddleware.adminAuth,product
 // Update variant (AJAX endpoint)
 router.post('/products/variant/update',  AuthMiddleware.adminAuth,
   s3Upload('products').any(),productController.updateVariant);
+
+  //product offer management
+// PRODUCT OFFER ROUTES
+
+router.get(
+  "/products/:id/offer",
+  AuthMiddleware.adminAuth,
+  productController.getProductOffer
+)
+
+router.post(
+  "/products/:id/offer",
+  AuthMiddleware.adminAuth,
+  productController.addProductOffer
+)
+
+router.put(
+  "/products/:id/offer",
+  AuthMiddleware.adminAuth,
+  productController.updateProductOffer
+)
+
+router.delete(
+  "/products/:id/offer",
+  AuthMiddleware.adminAuth,
+  productController.deleteProductOffer
+)
 //order Management
 router.get('/orders', AuthMiddleware.adminAuth, AdminOrderController.loadOrders);
 router.get('/orders/:orderId',  AuthMiddleware.adminAuth, AuthMiddleware.adminAuth,AdminOrderController.loadOrderDetails);

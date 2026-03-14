@@ -434,7 +434,7 @@ class ProductController {
     }
   };
 
-  // Load view variants page
+  /*Load view variants page
   loadViewVariants = async (req, res) => {
     try {
       const { id } = req.params;
@@ -462,7 +462,7 @@ class ProductController {
       return res.redirect('/admin/products?error=load_failed');
     }
   };
-
+*/
   // Toggle variant active status (AJAX endpoint)
   toggleVariantStatus = async (req, res) => {
     try {
@@ -569,6 +569,130 @@ class ProductController {
       });
     }
   };
+  // GET OFFER
+  async getProductOffer(req,res){
+    try{
+
+      const productId = req.params.id
+
+      const offer = await ProductService.getProductOffer(productId)
+
+      res.json({offer})
+
+    }catch(error){
+      console.error(error)
+      res.status(500).json({message:"Server error"})
+    }
+  }
+
+
+  // ADD OFFER
+  async addProductOffer(req,res){
+
+    try{
+
+      const productId = req.params.id
+
+      const {offerTitle,discountType,discountValue,startDate,endDate} = req.body
+
+      // validation
+      if(!offerTitle || !discountType || !discountValue || !startDate || !endDate){
+        return res.status(400).json({message:"All fields required"})
+      }
+
+      if(discountType === "percentage" && discountValue > 90){
+        return res.status(400).json({message:"Percentage cannot exceed 90"})
+      }
+
+      const offer = await ProductService.createProductOffer({
+        productId,
+        offerTitle,
+        discountType,
+        discountValue,
+        startDate,
+        endDate
+      })
+
+      res.json({
+        success:true,
+        message:"Offer added",
+        offer
+      })
+
+    }catch(error){
+
+      console.error(error)
+
+      res.status(500).json({
+        message:"Internal server error"
+      })
+    }
+
+  }
+
+
+  // UPDATE OFFER
+  async updateProductOffer(req,res){
+
+    try{
+
+      const productId = req.params.id
+
+      const {offerTitle,discountType,discountValue,startDate,endDate} = req.body
+
+      const offer = await ProductService.updateProductOffer(productId,{
+        offerTitle,
+        discountType,
+        discountValue,
+        startDate,
+        endDate
+      })
+
+      res.json({
+        success:true,
+        message:"Offer updated",
+        offer
+      })
+
+    }catch(error){
+
+      console.error(error)
+
+      res.status(500).json({
+        message:"Internal server error"
+      })
+
+    }
+
+  }
+
+
+  // DELETE OFFER
+  async deleteProductOffer(req,res){
+
+    try{
+
+      const productId = req.params.id
+
+      await ProductService.deleteProductOffer(productId)
+
+      res.json({
+        success:true,
+        message:"Offer removed"
+      })
+
+    }catch(error){
+
+      console.error(error)
+
+      res.status(500).json({
+        message:"Internal server error"
+      })
+
+    }
+
+  }
+  
 }
 
 export default new ProductController();

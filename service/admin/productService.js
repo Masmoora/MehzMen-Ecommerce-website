@@ -1,5 +1,6 @@
 import Product from '../../models/productSchema.js';
 import ProductVariant from '../../models/productVariantSchema.js';
+import Offer from '../..//models/offerSchema.js'
 
 class ProductService {
   // Get paginated products with filters
@@ -29,6 +30,18 @@ class ProductService {
         .lean(),
       Product.countDocuments(filter)
     ]);
+    const productIds = products.map(p => p._id);
+
+  const offers = await Offer.find({
+    offerType: "product",
+    productId: { $in: productIds }
+  }).lean();
+
+  products.forEach(product => {
+    product.hasOffer = offers.some(
+      offer => offer.productId.toString() === product._id.toString()
+    );
+  })
 
     return {
       products,
@@ -331,5 +344,84 @@ class ProductService {
       throw error;
     }
   };
+  async getProductOffer(productId){
+
+    return await Offer.findOne({
+      productId,
+      offerType:"product"
+    })
+
+  }
+
+
+  async createProductOffer(data){
+
+    const existing = await Offer.findOne({
+      productId:data.productId
+    })
+
+    if(existing){
+      throw new Error("Offer already exists")
+    }
+
+    const offer = new Offer({
+
+      offerType:"product",
+
+      productId:data.productId,
+
+      offerTitle:data.offerTitle,
+
+      discountType:data.discountType,
+
+      discountValue:data.discountValue,
+
+      startDate:data.startDate,
+
+      endDate:data.endDate
+
+    })
+
+    await offer.save()
+
+    return offer
+
+  }
+
+
+
+  async updateProductOffer(productId,data){
+
+    const offer = await Offer.findOne({productId,
+      offerType:"product"
+    })
+
+    if(!offer){
+      throw new Error("Offer not found")
+    }
+
+    offer.offerTitle = data.offerTitle
+    offer.discountType = data.discountType
+    offer.discountValue = data.discountValue
+    offer.startDate = data.startDate
+    offer.endDate = data.endDate
+
+    await offer.save()
+
+    return offer
+
+  }
+
+
+
+  async deleteProductOffer(productId){
+
+    return await Offer.deleteOne({productId,
+      offerType:"product"
+    })
+
+  }
+
+
 };
 export default new ProductService();
