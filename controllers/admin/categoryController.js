@@ -155,6 +155,171 @@ class CategoryController {
             res.redirect('/admin/category?error=unlist_failed');
         }
     };
+addOffer = async (req, res) => {
+  try {
 
+    const {
+      categoryId,
+      offerTitle,
+      discountType,
+      discountValue,
+      startDate,
+      endDate
+    } = req.body;
+
+    // VALIDATION
+
+    if (!categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Category ID is required"
+      });
+    }
+
+    if (!offerTitle || !offerTitle.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Offer title is required"
+      });
+    }
+
+    if (!["percentage", "fixed"].includes(discountType)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid discount type"
+      });
+    }
+
+    if (!discountValue || discountValue <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Discount value must be greater than 0"
+      });
+    }
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Start date and end date required"
+      });
+    }
+
+    if (new Date(startDate) >= new Date(endDate)) {
+      return res.status(400).json({
+        success: false,
+        message: "End date must be after start date"
+      });
+    }
+
+    await CategoryService.addCategoryOffer({
+      categoryId,
+      offerTitle,
+      discountType,
+      discountValue,
+      startDate,
+      endDate
+    });
+
+    res.json({
+      success: true,
+      message: "Offer added successfully"
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+};
+  // GET OFFER (for edit modal)
+  getOffer = async (req, res) => {
+
+    try {
+
+      const { categoryId } = req.params;
+
+      const offer = await CategoryService.getCategoryOffer(categoryId);
+
+      return res.json({
+        success: true,
+        offer
+      });
+
+    } catch (error) {
+
+      logger.error("Get category offer error:", error);
+
+      return res.status(500).json({
+        success: false
+      });
+
+    }
+  };
+
+  // EDIT OFFER
+  editOffer = async (req, res) => {
+
+    try {
+
+      const {
+        categoryId,
+        offerTitle,
+        discountType,
+        discountValue,
+        startDate,
+        endDate
+      } = req.body;
+
+      await CategoryService.editCategoryOffer(categoryId, {
+        offerTitle,
+        discountType,
+        discountValue,
+        startDate,
+        endDate
+      });
+
+      return res.json({
+        success: true,
+        message: "Offer updated successfully"
+      });
+
+    } catch (error) {
+
+      logger.error("Edit category offer error:", error);
+
+      return res.status(500).json({
+        success: false
+      });
+
+    }
+  };
+
+  // REMOVE OFFER
+  removeOffer = async (req, res) => {
+
+    try {
+
+      const { categoryId } = req.params;
+
+      await CategoryService.removeCategoryOffer(categoryId);
+
+      return res.json({
+        success: true,
+        message: "Offer removed successfully"
+      });
+
+    } catch (error) {
+
+      logger.error("Remove category offer error:", error);
+
+      return res.status(500).json({
+        success: false
+      });
+
+    }
+  }
 }
 export default new CategoryController();

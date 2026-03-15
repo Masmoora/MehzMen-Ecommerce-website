@@ -10,6 +10,7 @@ import AdminOrderController from '../controllers/admin/orderController.js'
 //import categoryUpload from '../middlewares/multer.js';
 import s3Upload from '../middlewares/multer.js';
 import CouponController from '../controllers/admin/couponController.js';
+import OfferController from '../controllers/admin/offerController.js';
 
 router.get('/pageerror',adminController.pageerror);
 //Login Management
@@ -36,6 +37,15 @@ router.post(
   AuthMiddleware.adminAuth,
   categoryController.unlistCategory
 );
+
+// CATEGORY OFFER 
+router.post("/category/offer/add", categoryController.addOffer);
+
+router.get("/category/offer/:categoryId", categoryController.getOffer);
+
+router.put("/category/offer/edit", categoryController.editOffer);
+
+router.delete("/category/offer/remove/:categoryId", categoryController.removeOffer);
 //brand Management
 router.get('/brands',AuthMiddleware.adminAuth,brandController.loadBrands);
 router.post('/addBrand',AuthMiddleware.adminAuth,s3Upload('brands').single('logo'),brandController.addBrand);
@@ -105,7 +115,7 @@ router.post('/products/variant/update',  AuthMiddleware.adminAuth,
   s3Upload('products').any(),productController.updateVariant);
 
   //product offer management
-// PRODUCT OFFER ROUTES
+
 
 router.get(
   "/products/:id/offer",
@@ -149,4 +159,11 @@ router.post('/coupons/add', CouponController.createCoupon);
 router.get('/coupons/edit/:id', CouponController.loadEditCoupon);
 router.post('/coupons/edit/:id', CouponController.updateCoupon);
 router.delete('/coupons/delete/:id', CouponController.deleteCoupon);
+
+//offer management
+router.get('/offers', OfferController.loadOffers);
+router.post('/offers/add', OfferController.addOffer);
+router.put('/offers/edit/:id', OfferController.updateOffer);
+router.patch('/offers/deactivate/:id', OfferController.deactivateOffer);
+
 export default router;

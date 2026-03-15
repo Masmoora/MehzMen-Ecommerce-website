@@ -1,5 +1,6 @@
 import { name } from 'ejs';
 import Category from '../../models/categorySchema.js';
+import Offer from '../../models/offerSchema.js'
 class CategoryService {
     async listCategory(search, page, limit) {
         let query = {};
@@ -14,6 +15,21 @@ class CategoryService {
             .limit(limit);
 
         const total = await Category.countDocuments(query);
+        // Get category ids
+    const categoryIds = categories.map(c => c._id);
+
+    // Find offers for those categories
+    const offers = await Offer.find({
+        offerType: "category",
+        categoryId: { $in: categoryIds }
+    }).lean();
+
+    // Add hasOffer field
+    categories.forEach(category => {
+        category.hasOffer = offers.some(
+            offer => offer.categoryId.toString() === category._id.toString()
+        );
+    });
         return { categories, totalPages: Math.ceil(total / limit) };
     };
     // Add new category
@@ -79,6 +95,70 @@ class CategoryService {
     async getAllCategories() {
         return await Category.find({ isListed: true }).lean();
     }
+    // ADD CATEGORY OFFER
+  async addCategoryOffer(data) {
+
+    const existingOffer = await Offer.findOne({
+      offerType: "category",
+      categoryId: data.categoryId
+    });
+
+    if (existingOffer) {
+      throw new Error("Offer already exists for this category");
+    }
+
+    const offer = new Offer({
+      offerType: "category",
+      categoryId: data.categoryId,
+      offerTitle: data.offerTitle,
+      discountType: data.discountType,
+      discountValue: data.discountValue,
+      startDate: data.startDate,
+      endDate: data.endDate
+    });
+
+    return await offer.save();
+  }
+
+  // GET CATEGORY OFFER
+  async getCategoryOffer(categoryId) {
+
+    return await Offer.findOne({
+      offerType: "category",
+      categoryId
+    });
+
+  }
+
+  // EDIT CATEGORY OFFER
+  async editCategoryOffer(categoryId, data) {
+
+    return await Offer.findOneAndUpdate(
+      {
+        offerType: "category",
+        categoryId
+      },
+      {
+        offerTitle: data.offerTitle,
+        discountType: data.discountType,
+        discountValue: data.discountValue,
+        startDate: data.startDate,
+        endDate: data.endDate
+      },
+      { new: true }
+    );
+
+  }
+
+  // REMOVE CATEGORY OFFER
+  async removeCategoryOffer(categoryId) {
+
+    return await Offer.findOneAndDelete({
+      offerType: "category",
+      categoryId
+    });
+
+  }
 
 }
 
