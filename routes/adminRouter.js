@@ -160,10 +160,18 @@ router.get('/coupons/edit/:id', CouponController.loadEditCoupon);
 router.post('/coupons/edit/:id', CouponController.updateCoupon);
 router.delete('/coupons/delete/:id', CouponController.deleteCoupon);
 
-//offer management
-router.get('/offers', OfferController.loadOffers);
-router.post('/offers/add', OfferController.addOffer);
-router.put('/offers/edit/:id', OfferController.updateOffer);
-router.patch('/offers/deactivate/:id', OfferController.deactivateOffer);
+// Product offers
+router.get('/productOffers', OfferController.loadProductOffers);
+router.post('/createProductOffer', OfferController.createProductOffer);
+router.post('/updateProductOffer', OfferController.updateProductOffer);
+router.get('/deleteProductOffer/:id', OfferController.deleteProductOffer);
+router.get('/toggleProductOffer/:id', OfferController.toggleProductOffer);
+
+// Category offer
+router.get('/categoryOffers', OfferController.loadCategoryOffers);
+router.post('/createCategoryOffer', OfferController.createCategoryOffer);
+router.post('/updateCategoryOffer', OfferController.updateCategoryOffer);
+router.get('/deleteCategoryOffer/:id', OfferController.deleteCategoryOffer);
+router.get('/toggleCategoryOffer/:id', OfferController.toggleCategoryOffer);
 
 export default router;

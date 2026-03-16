@@ -61,12 +61,48 @@
           <span>Brands</span>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/offers">
-          <i class="bi bi-gift me-2"></i>
-          <span>Offers</span>
-        </a>
-      </li>
+<li class="nav-item">
+
+<a
+class="nav-link d-flex justify-content-between align-items-center"
+data-bs-toggle="collapse"
+href="#offersMenu"
+role="button"
+aria-expanded="false"
+aria-controls="offersMenu"
+>
+
+<div>
+<i class="bi bi-gift me-2"></i>
+<span>Offers</span>
+</div>
+
+<i class="bi bi-chevron-down toggle-caret"></i>
+
+</a>
+
+
+<div class="collapse" id="offersMenu">
+
+<ul class="nav flex-column ms-4">
+
+<li class="nav-item">
+<a href="/admin/productOffers" class="nav-link sub-link">
+Product Offers
+</a>
+</li>
+
+<li class="nav-item">
+<a href="/admin/categoryOffers" class="nav-link sub-link">
+Category Offers
+</a>
+</li>
+
+</ul>
+
+</div>
+
+</li>
     </ul>
   </nav>
 </aside>
@@ -88,6 +124,16 @@
   .sidebar-nav {
     padding: 1.5rem 0;
   }
+
+  .sub-link{
+  font-size: 0.9rem;
+  padding: 6px 20px;
+  color:#6c757d;
+}
+
+.sub-link:hover{
+  color:#667eea;
+}
 
   .sidebar-nav .nav-link {
     color: #495057;
@@ -131,6 +177,7 @@
     }
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   // Set active menu item based on current route
   (function() {
