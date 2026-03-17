@@ -173,5 +173,11 @@ router.post('/createCategoryOffer', OfferController.createCategoryOffer);
 router.post('/updateCategoryOffer', OfferController.updateCategoryOffer);
 router.get('/deleteCategoryOffer/:id', OfferController.deleteCategoryOffer);
 router.get('/toggleCategoryOffer/:id', OfferController.toggleCategoryOffer);
+//sales report
+// Show report page and handle filter
+router.get('/report', adminController.handleReport);
+
+// Same handler, but used for pagination/downloads
+router.get('/report/generate',adminController.handleReport);
 
 export default router;
