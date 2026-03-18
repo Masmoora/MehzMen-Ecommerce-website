@@ -2,7 +2,9 @@ import Product from '../../models/productSchema.js';
 import ProductVariant from '../../models/productVariantSchema.js';
 import Category from '../../models/categorySchema.js';
 import { populate } from 'dotenv';
-
+import offerController from '../../controllers/admin/offerController.js';
+import Offer from '../../models/offerSchema.js'
+import { getBestOffer } from '../../utils/offerHelper.js'
 class AllProductsService {
     // Get products for listing page with filters, sorting, and pagination
     getAllProducts = async ({
@@ -16,6 +18,8 @@ class AllProductsService {
         sort,
         color
     }) => {
+        //offer
+        const now = new Date();
         //  Build a simple product query
         const productQuery = { isBlocked: false };
 
@@ -49,13 +53,13 @@ class AllProductsService {
             }).lean();
 
             if (!variants.length) continue;
-             // 4) Apply color filter on variants
-      if (color) {
-        const normalizedColor = color.toLowerCase();
-        variants = variants.filter(v => (v.color || '').toLowerCase() === normalizedColor);
-      }
+            // 4) Apply color filter on variants
+            if (color) {
+                const normalizedColor = color.toLowerCase();
+                variants = variants.filter(v => (v.color || '').toLowerCase() === normalizedColor);
+            }
 
-      if (!variants.length) continue;
+            if (!variants.length) continue;
 
             // 4) Apply price filter on variants
             const min = minPrice ? Number(minPrice) : null;
@@ -75,13 +79,48 @@ class AllProductsService {
             variants.sort((a, b) => a.price - b.price);
             const cheapest = variants[0];
 
+            // Fetch offers for this product/category
+            const commonFilter = {
+                status: 'active',
+                startDate: { $lte: now },
+                endDate: { $gte: now }
+            };
+
+            const categoryId = product.category?._id || product.category || null;
+
+            const [productOffer, categoryOffer] = await Promise.all([
+                Offer.findOne({
+                    ...commonFilter,
+                    offerType: 'product',
+                    productId: product._id
+                }).lean(),
+                categoryId
+                    ? Offer.findOne({
+                        ...commonFilter,
+                        offerType: 'category',
+                        categoryId
+                    }).lean()
+                    : Promise.resolve(null)
+            ]);
+
+            const best = getBestOffer(cheapest.price, productOffer, categoryOffer);
+            const discountPercent =
+                best.discountAmount > 0 && best.originalPrice > 0
+                    ? Math.round((best.discountAmount / best.originalPrice) * 100)
+                    : 0;
+
+
             cards.push({
                 _id: product._id,
                 name: product.name,
                 brandName: product.brand?.name || 'N/A',
                 image: cheapest.images?.[0] || '',
-                price: cheapest.price || 0,
-                variantId: cheapest._id
+                price: best.finalPrice || 0,
+                variantId: cheapest._id,
+                originalPrice: best.originalPrice,
+                discountAmount: best.discountAmount,
+                discountPercent,
+                appliedOfferType: best.appliedOfferType
             });
         }
 
@@ -133,18 +172,18 @@ class AllProductsService {
 
         return Array.from(map.values());
     };
-     // Get colors list from active variants
-  getColors = async () => {
-    const colors = await ProductVariant.distinct('color', {
-      isActive: true,
-      stock: { $gt: 0 }
-    });
-    return colors
-      .filter(Boolean)
-      .map(color => color.trim())
-      .filter(color => color.length > 0)
-      .sort((a, b) => a.localeCompare(b));
-  };
+    // Get colors list from active variants
+    getColors = async () => {
+        const colors = await ProductVariant.distinct('color', {
+            isActive: true,
+            stock: { $gt: 0 }
+        });
+        return colors
+            .filter(Boolean)
+            .map(color => color.trim())
+            .filter(color => color.length > 0)
+            .sort((a, b) => a.localeCompare(b));
+    };
 
 
     // Get a product with its active variants (for product details page)
@@ -162,7 +201,48 @@ class AllProductsService {
             isActive: true
         }).lean();
 
-        return { product, variants };
+        //Offer
+
+        const now = new Date();
+        const commonFilter = {
+            status: 'active',
+            startDate: { $lte: now },
+            endDate: { $gte: now }
+        };
+
+        const categoryId = product.category?._id || product.category || null;
+
+        const [productOffer, categoryOffer] = await Promise.all([
+            Offer.findOne({
+                ...commonFilter,
+                offerType: 'product',
+                productId: product._id
+            }).lean(),
+            categoryId
+                ? Offer.findOne({
+                    ...commonFilter,
+                    offerType: 'category',
+                    categoryId
+                }).lean()
+                : Promise.resolve(null)
+        ]);
+        const enrichedVariants = variants.map((variant) => {
+            const best = getBestOffer(variant.price, productOffer, categoryOffer);
+            const discountPercent =
+                best.discountAmount > 0 && best.originalPrice > 0
+                    ? Math.round((best.discountAmount / best.originalPrice) * 100)
+                    : 0;
+
+            return {
+                ...variant,
+                originalPrice: best.originalPrice,
+                finalPrice: best.finalPrice,
+                discountAmount: best.discountAmount,
+                discountPercent,
+                appliedOfferType: best.appliedOfferType
+            };
+        });
+        return { product, variants: enrichedVariants };;
     };
 
     // Get related products from the same category (max 4)
@@ -176,7 +256,7 @@ class AllProductsService {
             .lean();
 
         const related = [];
-console.log('CATEGORY:', categoryId);
+        console.log('CATEGORY:', categoryId);
 
         for (const product of products) {
             const variants = await ProductVariant.find({
@@ -188,13 +268,20 @@ console.log('CATEGORY:', categoryId);
 
             variants.sort((a, b) => a.price - b.price);
             const cheapest = variants[0];
+            //offer
+            const now = new Date();
+            const commonFilter = { status: 'active', startDate: { $lte: now }, endDate: { $gte: now } }; 
+            const [productOffer, categoryOffer] = await Promise.all([Offer.findOne({ ...commonFilter, offerType: 'product', productId: product._id }).lean(), normalizedCategoryId ? Offer.findOne({ ...commonFilter, offerType: 'category', categoryId: normalizedCategoryId }).lean() : Promise.resolve(null)]); 
+            const best = getBestOffer(cheapest.price, productOffer, categoryOffer);
+            
 
             related.push({
                 _id: product._id,
                 name: product.name,
                 brandName: product.brand?.name || 'N/A',
                 image: cheapest.images?.[0] || '',
-                price: cheapest.price || 0
+               // price: cheapest.price || 0
+                price: best.finalPrice || 0//offer
             });
         }
 

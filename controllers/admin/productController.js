@@ -75,10 +75,12 @@ class ProductController {
     try {
       const { product, variants } =
         await ProductService.getProductWithVariants(req.params.id);
+        //for offer
+        const enrichedVariants = await ProductService.getBestVariantPricing(product, variants);
 
       res.render('viewVariants', {
         product,
-        variants
+        variants: enrichedVariants 
       });
     } catch (err) {
       console.error(err.message);

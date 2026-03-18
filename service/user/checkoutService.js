@@ -78,7 +78,13 @@ const cart = await Cart.findOne({ userId })
         color: variant?.color || '-',
         size: variant?.size || '-',
         quantity: item.quantity,
+        originalPrice: item.basePrice,
         price: item.salePrice,
+        discount: item.discount,
+        discountPercent:
+          item.basePrice > 0 && item.basePrice > item.salePrice
+            ? Math.round(((item.basePrice - item.salePrice) / item.basePrice) * 100)
+            : 0,
         itemTotal: item.salePrice * item.quantity,
         outOfStock
       };

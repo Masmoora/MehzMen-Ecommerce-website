@@ -3,8 +3,12 @@ import Product from '../../models/productSchema.js';
 import ProductVariant from '../../models/productVariantSchema.js';
 import Category from "../../models/categorySchema.js";
 import Wishlist from "../../models/wishlistSchema.js";
+import Offer from '../../models/offerSchema.js';
+import { getBestOffer } from "../../utils/offerHelper.js";
+
 const MAX_QTY = 5;
 const SHIPPING_FLAT = 50;
+
 class CartService{
     toValidQty = (quantity) => {
     const qty = Number(quantity);
@@ -44,7 +48,33 @@ class CartService{
     const qtyToAdd = this.toValidQty(quantity);
     if (qtyToAdd > MAX_QTY) throw new Error(`Maximum quantity is ${MAX_QTY}`);
 
-    const { variant } = await this.validateProductAndVariant(productId, variantId);
+    const {product, variant } = await this.validateProductAndVariant(productId, variantId);
+
+    //offer
+    const now = new Date();
+const commonFilter = {
+  status: 'active',
+  startDate: { $lte: now },
+  endDate: { $gte: now }
+};
+
+const categoryId = product.category;
+
+const [productOffer, categoryOffer] = await Promise.all([
+  Offer.findOne({
+    ...commonFilter,
+    offerType: 'product',
+    productId
+  }).lean(),
+  categoryId
+    ? Offer.findOne({
+        ...commonFilter,
+        offerType: 'category',
+        categoryId
+      }).lean()
+    : Promise.resolve(null)
+]);
+const best = getBestOffer(variant.price, productOffer, categoryOffer);
 
     let cart = await Cart.findOne({ userId });
     if (!cart) cart = new Cart({ userId, items: [] });
@@ -72,9 +102,9 @@ class CartService{
         variantId,
         quantity: qtyToAdd,
         basePrice: variant.price,
-        salePrice: variant.price,
-        discount: 0,
-        total: variant.price * qtyToAdd
+        salePrice: best.finalPrice, //variant.price
+        discount:best.discountAmount ,// 0
+        total: best.finalPrice * qtyToAdd  //variant.price * qtyToAdd
       });
     }
 
@@ -99,15 +129,46 @@ class CartService{
     const item = cart.items.id(itemId);
     if (!item) throw new Error('Cart item not found');
 
-    const variant = await ProductVariant.findById(item.variantId).lean();
-    if (!variant || !variant.isActive) throw new Error('Variant not available');
+   // const variant = await ProductVariant.findById(item.variantId).lean();
+   // if (!variant || !variant.isActive) throw new Error('Variant not available');
+       const { product, variant } = await this.validateProductAndVariant(
+      item.productId,
+      item.variantId
+    );
+
     if (qty > variant.stock) throw new Error('Requested quantity exceeds stock');
+//offer
+      const now = new Date();
+    const commonFilter = {
+      status: 'active',
+      startDate: { $lte: now },
+      endDate: { $gte: now }
+    };
+
+    const categoryId = product.category;
+
+    const [productOffer, categoryOffer] = await Promise.all([
+      Offer.findOne({
+        ...commonFilter,
+        offerType: 'product',
+        productId: product._id
+      }).lean(),
+      categoryId
+        ? Offer.findOne({
+            ...commonFilter,
+            offerType: 'category',
+            categoryId
+          }).lean()
+        : Promise.resolve(null)
+    ]);
+
+    const best = getBestOffer(variant.price, productOffer, categoryOffer);
 
     item.quantity = qty;
     item.basePrice = variant.price;
-    item.salePrice = variant.price;
-    item.discount = 0;
-    item.total = variant.price * qty;
+    item.salePrice = best.finalPrice; //variant.price;
+    item.discount = best.discountAmount; //0;
+    item.total = best.finalPrice * qty //variant.price * qty;
     await cart.save();
 
     return this.getCartPageData(userId);
@@ -165,7 +226,13 @@ class CartService{
         image: variant?.images?.[0] || '',
         color: variant?.color || '-',
         size: variant?.size || '-',
+        originalPrice: item.basePrice,//offer
         price: item.salePrice,
+        discount: item.discount,
+        discountPercent:
+          item.basePrice > 0 && item.basePrice > item.salePrice
+            ? Math.round(((item.basePrice - item.salePrice) / item.basePrice) * 100)
+            : 0,
         quantity: item.quantity,
         stock,
         lineTotal: item.salePrice * item.quantity,

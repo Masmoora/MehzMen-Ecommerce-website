@@ -157,7 +157,23 @@
                   <img src="<%= products[i].image %>" alt="<%= products[i].name %>">
                   <h6 class="product-title mt-2 mb-1"><%= products[i].name %></h6>
                   <p class="mb-0">Brand: <%= products[i].brandName %></p>
-                  <p class="mb-0 price-text">Starting from ₹<%= products[i].price %></p>
+                 <!-- <p class="mb-0 price-text">Starting from ₹<%= products[i].price %></p>-->
+                  <!-- offer -->
+                                     <p class="mb-0">
+                    <% if (products[i].discountAmount && products[i].discountAmount > 0) { %>
+                      <span class="text-muted text-decoration-line-through me-1">
+                        ₹<%= products[i].originalPrice %>
+                      </span>
+                      <span class="price-text text-danger">
+                        ₹<%= products[i].price %>
+                      </span>
+                      <span class="badge bg-success ms-1">
+                        -<%= products[i].discountPercent %>%
+                      </span>
+                    <% } else { %>
+                      <span class="price-text">Starting from ₹<%= products[i].price %></span>
+                    <% } %>
+                  </p>
                 </div>
               </a>
             </div>

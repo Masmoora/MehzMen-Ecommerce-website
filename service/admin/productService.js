@@ -1,6 +1,7 @@
 import Product from '../../models/productSchema.js';
 import ProductVariant from '../../models/productVariantSchema.js';
-import Offer from '../..//models/offerSchema.js'
+import Offer from '../../models/offerSchema.js'
+import { getBestOffer } from '../../utils/offerHelper.js'
 
 class ProductService {
   // Get paginated products with filters
@@ -421,7 +422,34 @@ class ProductService {
     })
 
   }
+//offer
+getBestVariantPricing = async (product, variants) => {
+  const now = new Date();
+  const commonFilter = {
+    status: 'active',
+    startDate: { $lte: now },
+    endDate: { $gte: now }
+  };
+  const categoryId = product.category?._id || product.category || null;
 
+  const [productOffer, categoryOffer] = await Promise.all([
+    Offer.findOne({ ...commonFilter, offerType: 'product', productId: product._id }).lean(),
+    categoryId
+      ? Offer.findOne({ ...commonFilter, offerType: 'category', categoryId }).lean()
+      : Promise.resolve(null)
+  ]);
+
+  return variants.map((v) => {
+    const best = getBestOffer(v.price, productOffer, categoryOffer);
+    const discountPercent =
+      best.discountAmount > 0 && best.originalPrice > 0
+        ? Math.round((best.discountAmount / best.originalPrice) * 100)
+        : 0;
+
+    return { ...v, originalPrice: best.originalPrice, finalPrice: best.finalPrice,
+             discountAmount: best.discountAmount, discountPercent, appliedOfferType: best.appliedOfferType };
+  });
+};
 
 };
 export default new ProductService();

@@ -50,8 +50,22 @@
                               </div>
                               <div class="muted-small">Color: <%= item.color %> | Size: <%= item.size %>
                               </div>
-                              <div class="muted-small">Qty: <%= item.quantity %> × ₹<%= item.price %>
-                              </div>
+                              <!--<div class="muted-small">Qty: <%= item.quantity %> × ₹<%= item.price %>
+                              </div>-->
+                              <!--offer-->
+                              <div class="muted-small">
+                            Qty: <%= item.quantity %> ×
+                            <% if (item.discount && item.discount > 0) { %>
+                              <span class="text-muted text-decoration-line-through me-1">
+                                ₹<%= item.originalPrice %>
+                              </span>
+                              <span>₹<%= item.price %></span>
+                              <span class="badge bg-success ms-1 small">-<%= item.discountPercent %>%</span>
+                            <% } else { %>
+                              ₹<%= item.price %>
+                            <% } %>
+                          </div>
+                          
                               <% if (item.outOfStock) { %>
                                 <div class="text-danger fw-semibold small mt-1">Out of stock</div>
                                 <% } %>
