@@ -4,10 +4,11 @@ import Order from "../../models/orderSchema.js";
 import ProductVariant from "../../models/productVariantSchema.js";
 import * as razorpayService from '../payment/razorpayService.js'
 import walletService from "./walletService.js";
+import Coupon from "../../models/couponSchema.js";
 const SHIPPING_FLAT = 50;
 
 class CheckoutService {
-  reserveStockForOrder = async (items) => {
+ reserveStockForOrder = async (items) => {
     const reservedItems = [];
 
     for (const item of items) {
@@ -42,16 +43,13 @@ class CheckoutService {
   };
 
   getCartItemsForCheckout = async (userId) => {
-const cart = await Cart.findOne({ userId })
-  .populate({
-    path: 'items.productId',
-    populate: {
-      path: 'brand',
-      select: 'name'
-    }
-  })
-  .populate('items.variantId')
-  .lean();
+    const cart = await Cart.findOne({ userId })
+      .populate({
+        path: 'items.productId',
+        populate: { path: 'brand', select: 'name' }
+      })
+      .populate('items.variantId')
+      .lean();
 
     if (!cart || !cart.items?.length) return [];
 
@@ -73,7 +71,7 @@ const cart = await Cart.findOne({ userId })
         productId: product?._id?.toString() || '',
         variantId: variant?._id?.toString() || '',
         productName: product?.name || 'Product',
-        brand: product?.brand?.name || 'N/A',
+        brand: product?.brand?.name || (typeof product?.brand === 'string' ? product.brand : 'N/A'),
         image: variant?.images?.[0] || '',
         color: variant?.color || '-',
         size: variant?.size || '-',
@@ -102,20 +100,79 @@ const cart = await Cart.findOne({ userId })
     };
   };
 
-  buildSummary = (items) => {
+ 
+  getValidCoupon = async (code, subtotal = 0) => {
+    const raw = String(code || '').trim();
+    if (!raw) return null;
+    const coupon = await Coupon.findOne({ code: raw.toUpperCase(), isActive: true }).lean();
+    if (!coupon) return null;
+    const now = new Date();
+    if (coupon.startDate && new Date(coupon.startDate) > now) return null;
+    if (coupon.endDate && new Date(coupon.endDate) < now) return null;
+    if (coupon.usageLimit != null && (coupon.usedCount || 0) >= coupon.usageLimit) return null;
+    if (Number(coupon.minOrderValue || 0) > subtotal) return null;
+    return coupon;
+  };
+
+  /**
+   * Compute discount amount from coupon and subtotal. Respects maxDiscount for percentage.
+   */
+  computeCouponDiscount = (coupon, subtotal) => {
+    if (!coupon || subtotal <= 0) return 0;
+    let discount = 0;
+    if (coupon.type === 'percentage') {
+      discount = Math.round((subtotal * Number(coupon.value || 0)) / 100);
+      if (coupon.maxDiscount != null && discount > coupon.maxDiscount) discount = coupon.maxDiscount;
+    } else {
+      discount = Math.min(Number(coupon.value || 0), subtotal);
+    }
+    return Math.max(0, discount);
+  };
+
+  buildSummary = (items, couponDoc = null) => {
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
     const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
-    const discount = 0;
-    const finalTotal = Math.max(0, subtotal - discount + (items.length ? SHIPPING_FLAT : 0));
+    const shipping = items.length ? SHIPPING_FLAT : 0;
+    const discount = couponDoc ? this.computeCouponDiscount(couponDoc, subtotal) : 0;
+    const finalTotal = Math.max(0, subtotal + shipping - discount);
 
     return {
       totalItems,
       subtotal,
-      shipping: items.length ? SHIPPING_FLAT : 0,
+      shipping,
       discount,
-      couponCode: '',
+      couponCode: couponDoc ? couponDoc.code : '',
       finalTotal
     };
+  };
+
+  getAvailableCouponsForCheckout = async (items) => {
+    if (!items?.length) return [];
+
+    const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
+    const now = new Date();
+    const coupons = await Coupon.find({ isActive: true }).sort({ createdAt: -1 }).lean();
+
+    return coupons
+      .filter((coupon) => {
+        if (coupon.startDate && new Date(coupon.startDate) > now) return false;
+        if (coupon.endDate && new Date(coupon.endDate) < now) return false;
+        if (coupon.usageLimit != null && (coupon.usedCount || 0) >= coupon.usageLimit) return false;
+        return true;
+      })
+      .map((coupon) => {
+        const isEligible = Number(coupon.minOrderValue || 0) <= subtotal;
+        const possibleDiscount = isEligible ? this.computeCouponDiscount(coupon, subtotal) : 0;
+        return {
+          code: coupon.code,
+          type: coupon.type,
+          value: Number(coupon.value || 0),
+          minOrderValue: Number(coupon.minOrderValue || 0),
+          maxDiscount: coupon.maxDiscount != null ? Number(coupon.maxDiscount) : null,
+          isEligible,
+          possibleDiscount
+        };
+      });
   };
 
   getCheckoutPageData = async (userId) => {
@@ -123,8 +180,27 @@ const cart = await Cart.findOne({ userId })
     const { addresses, defaultAddressId } = await this.getAddressData(userId);
     const summary = this.buildSummary(items);
     const walletBalance = await walletService.getBalance(userId);
+    const availableCoupons = await this.getAvailableCouponsForCheckout(items);
 
-    return { items, addresses, defaultAddressId, summary,walletBalance };
+    return { items, addresses, defaultAddressId, summary, walletBalance, availableCoupons };
+  };
+
+  /** Apply coupon: validate and return updated summary. Only one coupon at a time (replaces any previous). */
+  applyCoupon = async (userId, code) => {
+    const items = await this.getCartItemsForCheckout(userId);
+    if (!items.length) throw new Error('Your cart is empty');
+    const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
+    const coupon = await this.getValidCoupon(code, subtotal);
+    if (!coupon) throw new Error('Invalid or expired coupon, or minimum order value not met');
+    const summary = this.buildSummary(items, coupon);
+    return { summary, couponCode: coupon.code };
+  };
+
+  /** Remove coupon and return summary without discount. */
+  removeCoupon = async (userId) => {
+    const items = await this.getCartItemsForCheckout(userId);
+    const summary = this.buildSummary(items);
+    return { summary };
   };
 
   removeCheckoutItem = async (userId, itemId) => {
@@ -254,21 +330,39 @@ const cart = await Cart.findOne({ userId })
     await doc.save();
     return doc;
   };
-  createRazorpayOrderForCheckout = async (userId, couponCode = '') => {
+
+  /**
+   * Create a Razorpay order for current cart (for online payment). Does not create DB order or clear cart.
+   * @returns {{ razorpayOrderId, keyId, amount, currency, finalTotal } | null}
+   */
+  createRazorpayOrderForCheckout = async (userId, addressId, couponCode = '') => {
     if (!razorpayService.isRazorpayEnabled()) {
       throw new Error('Online payment is not configured. Please use Cash on Delivery.');
     }
+    if (!addressId) {
+      throw new Error('Please select shipping address');
+    }
+
+    const addressDoc = await Address.findOne({ userId });
+    if (!addressDoc) throw new Error('Address not found');
+
+    const selectedAddress = addressDoc.address.id(addressId);
+    if (!selectedAddress) throw new Error('Selected address not found');
+    if (!selectedAddress.houseNo) {
+      throw new Error('Selected address is missing house number. Please edit address and try again.');
+    }
+
     const items = await this.getCartItemsForCheckout(userId);
     if (!items.length) throw new Error('Your cart is empty');
     if (items.some((item) => item.outOfStock)) {
       throw new Error('Some items are out of stock. Please update cart before placing order.');
     }
     let summary = this.buildSummary(items);
-    /*if (couponCode) {
+    if (couponCode) {
       const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
       const coupon = await this.getValidCoupon(couponCode, subtotal);
       if (coupon) summary = this.buildSummary(items, coupon);
-    }*/
+    }
     const razorpayOrder = await razorpayService.createOrder(summary.finalTotal, `checkout_${userId}`);
     if (!razorpayOrder) throw new Error('Could not create payment order. Please try again.');
     return {
@@ -284,18 +378,19 @@ const cart = await Cart.findOne({ userId })
    * Verify Razorpay payment and place order (reserve stock, create order, clear cart).
    */
   verifyAndPlaceOrder = async (userId, orderData) => {
-    const { addressId, razorpayOrderId, razorpayPaymentId, razorpaySignature } = orderData || {};
+    const { addressId, razorpayOrderId, razorpayPaymentId, razorpaySignature, couponCode = '' } = orderData || {};
     if (!addressId) throw new Error('Please select shipping address');
     if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
       throw new Error('Invalid payment details. Please try again from checkout.');
     }
-    const valid = await razorpayService.verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature);
+    const valid = razorpayService.verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature);
     if (!valid) throw new Error('Payment verification failed. Please try again.');
 
-    return this.placeOrder(userId, { addressId, paymentMethod: 'razorpay', paymentStatus: 'Completed'});
+    return this.placeOrder(userId, { addressId, paymentMethod: 'razorpay', paymentStatus: 'Completed', couponCode });
   };
-   placeOrder = async (userId, orderData) => {
-    const { addressId, paymentMethod = 'cod', paymentStatus = 'Pending' } = orderData || {};
+
+  placeOrder = async (userId, orderData) => {
+    const { addressId, paymentMethod = 'cod', paymentStatus = 'Pending', couponCode: orderCouponCode = '' } = orderData || {};
     if (!addressId) throw new Error('Please select shipping address');
     const allowedMethods = ['cod', 'razorpay', 'wallet'];
     if (!allowedMethods.includes(paymentMethod)) {
@@ -318,14 +413,14 @@ const cart = await Cart.findOne({ userId })
     }
 
     let summary = this.buildSummary(items);
-    /*if (orderCouponCode) {
+    if (orderCouponCode) {
       const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
       const coupon = await this.getValidCoupon(orderCouponCode, subtotal);
       if (coupon) {
         summary = this.buildSummary(items, coupon);
         await Coupon.updateOne({ _id: coupon._id }, { $inc: { usedCount: 1 } });
       }
-    }*/
+    }
 
     if (paymentMethod === 'wallet') {
       const balance = await walletService.getBalance(userId);
@@ -349,7 +444,7 @@ const cart = await Cart.findOne({ userId })
       itemTotal: item.itemTotal
     }));
 
-   if (paymentMethod === 'wallet') {
+    if (paymentMethod === 'wallet') {
       await walletService.debit(userId, summary.finalTotal, '', 'Order payment');
     }
 
@@ -372,7 +467,7 @@ const cart = await Cart.findOne({ userId })
           subtotal: summary.subtotal,
           shippingCharge: summary.shipping,
           tax: 0,
-          //couponCode: summary.couponCode,
+          couponCode: summary.couponCode,
           couponDiscount: summary.discount,
           finalAmount: summary.finalTotal
         },
@@ -393,7 +488,7 @@ const cart = await Cart.findOne({ userId })
       throw error;
     }
   };
-   
+
 }
 
 export default new CheckoutService();

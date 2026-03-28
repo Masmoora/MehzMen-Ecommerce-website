@@ -495,6 +495,26 @@ deleteAddress = async (req,res) => {
 
    }
 };
+  loadCouponsPage = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.redirect('/login');
+
+      const user = await UserService.getUserById(userId);
+      if (!user) return res.redirect('/pageNotFound');
+
+      const coupons = await ProfileService.getCouponsForUserProfile();
+
+      return res.render('coupons', {
+        user,
+        coupons,
+        activeItem: 'coupons'
+      });
+    } catch (error) {
+      logger.error('Error loading coupons page:', error);
+      return res.status(500).render('page-404');
+    }
+  };
 
 
 }

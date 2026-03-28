@@ -271,7 +271,7 @@ class AllProductsService {
             //offer
             const now = new Date();
             const commonFilter = { status: 'active', startDate: { $lte: now }, endDate: { $gte: now } }; 
-            const [productOffer, categoryOffer] = await Promise.all([Offer.findOne({ ...commonFilter, offerType: 'product', productId: product._id }).lean(), normalizedCategoryId ? Offer.findOne({ ...commonFilter, offerType: 'category', categoryId: normalizedCategoryId }).lean() : Promise.resolve(null)]); 
+            const [productOffer, categoryOffer] = await Promise.all([Offer.findOne({ ...commonFilter, offerType: 'product', productId: product._id }).lean(), categoryId ? Offer.findOne({ ...commonFilter, offerType: 'category', categoryId: categoryId }).lean() : Promise.resolve(null)]); 
             const best = getBestOffer(cheapest.price, productOffer, categoryOffer);
             
 

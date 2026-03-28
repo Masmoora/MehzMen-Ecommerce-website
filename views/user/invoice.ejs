@@ -3,106 +3,231 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Invoice <%= order.orderId %>
-  </title>
-  <link rel="stylesheet" href="/css/user/invoice.css">
+  <title>Invoice <%= order.orderId %></title>
 
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f6f7fb;
+      padding: 30px;
+      color: #333;
+    }
+
+    .invoice-container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .brand {
+      font-size: 24px;
+      font-weight: bold;
+      color: #198754;
+    }
+
+    .section {
+      margin-bottom: 25px;
+    }
+
+    .section h4 {
+      margin-bottom: 10px;
+      color: #555;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .card {
+      background: #f9fafc;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th {
+      background: #198754;
+      color: #fff;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .status {
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      color: #fff;
+    }
+
+    .delivered { background: #28a745; }
+    .pending { background: #ffc107; color: #000; }
+    .cancelled { background: #dc3545; }
+
+    .totals {
+      width: 300px;
+      margin-left: auto;
+      margin-top: 20px;
+      background: #f9fafc;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .totals .row {
+      margin-bottom: 8px;
+    }
+
+    .grand-total {
+      font-size: 18px;
+      font-weight: bold;
+      color: #198754;
+    }
+  </style>
 </head>
 
 <body>
-  <h2 class="mb-20">Mehzmen-INVOICE</h2>
 
-  <div class="row mb-10">
-    <div>
-      <div><strong>Order ID:</strong>
-        <%= order.orderId %>
-      </div>
-      <div><strong>Placed On:</strong>
-        <%= new Date(order.createdAt).toLocaleString() %>
-      </div>
-      <div><strong>Invoice Date:</strong>
-        <%= new Date(order.invoiceDate || new Date()).toLocaleString() %>
+  <div class="invoice-container">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="brand">MehzMen</div>
+      <div>
+        <div><strong>Invoice</strong></div>
+        <div>ID: <%= order.orderId %></div>
       </div>
     </div>
-    <div>
-      <div><strong>Payment Method:</strong>
-        <%= String(order.paymentMethod || '' ).toUpperCase() %>
+
+    <!-- ORDER INFO -->
+    <div class="section card">
+      <div class="row">
+        <div>
+          <strong>Placed On:</strong><br>
+          <%= new Date(order.createdAt).toLocaleString() %>
+        </div>
+        <div>
+          <strong>Invoice Date:</strong><br>
+          <%= new Date(order.invoiceDate || new Date()).toLocaleString() %>
+        </div>
       </div>
-      <div><strong>Payment Status:</strong>
-        <%= order.paymentStatus %>
-      </div>
-      <div><strong>Order Status:</strong>
-        <%= order.orderStatus %>
+
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <strong>Payment:</strong><br>
+          <%= String(order.paymentMethod || '').toUpperCase() %>
+        </div>
+        <div>
+          <strong>Status:</strong><br>
+          <%= order.paymentStatus %>
+        </div>
+        <div>
+          <strong>Order:</strong><br>
+          <%= order.orderStatus %>
+        </div>
       </div>
     </div>
+
+    <!-- ADDRESS -->
+    <div class="section card">
+      <h4>Shipping Address</h4>
+      <div><strong><%= order.shippingAddress.name %></strong> - <%= order.shippingAddress.phone %></div>
+      <div>
+        <%= order.shippingAddress.houseNo %>, 
+        <%= order.shippingAddress.landMark %>, 
+        <%= order.shippingAddress.city %>, 
+        <%= order.shippingAddress.state %> - 
+        <%= order.shippingAddress.pincode %>, 
+        <%= order.shippingAddress.country %>
+      </div>
+    </div>
+
+    <!-- ITEMS -->
+    <div class="section">
+      <h4>Order Items</h4>
+
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>Variant</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% order.items.forEach((item, index)=> { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td>
+                <%= item.productName %><br>
+                <small><%= item.brand || '' %></small>
+              </td>
+              <td>
+                <%= item.color || '-' %> / <%= item.size || '-' %>
+              </td>
+              <td><%= item.quantity %></td>
+              <td>₹<%= item.price %></td>
+              <td>₹<%= item.itemTotal %></td>
+              <td>
+                <span class="status <%= item.itemStatus.toLowerCase() %>">
+                  <%= item.itemStatus %>
+                </span>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TOTALS -->
+    <div class="totals">
+      <div class="row">
+        <span>Subtotal</span>
+        <span>₹<%= order.pricing.subtotal %></span>
+      </div>
+      <div class="row">
+        <span>Shipping</span>
+        <span>₹<%= order.pricing.shippingCharge %></span>
+      </div>
+      <div class="row">
+        <span>Discount</span>
+        <span>- ₹<%= order.pricing.couponDiscount || 0 %></span>
+      </div>
+      <hr>
+      <div class="row grand-total">
+        <span>Total</span>
+        <span>₹<%= order.pricing.finalAmount %></span>
+      </div>
+    </div>
+
   </div>
 
-  <div class="mb-20">
-    <h3 class="mb-10">Shipping Address</h3>
-    <div>
-      <%= order.shippingAddress.name %> - <%= order.shippingAddress.phone %>
-    </div>
-    <div>
-      <%= order.shippingAddress.houseNo %>, <%= order.shippingAddress.landMark %>,
-          <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> -
-              <%= order.shippingAddress.pincode %>, <%= order.shippingAddress.country %>
-    </div>
-  </div>
-
-  <h3>Items</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Product</th>
-        <th>Brand</th>
-        <th>Color</th>
-        <th>Size</th>
-        <th>Qty</th>
-        <th>Price</th>
-        <th>Total</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% order.items.forEach((item, index)=> { %>
-        <tr>
-          <td>
-            <%= index + 1 %>
-          </td>
-          <td>
-            <%= item.productName %>
-          </td>
-          <td>
-            <%= item.brand || 'N/A' %>
-          </td>
-          <td>
-            <%= item.color || '-' %>
-          </td>
-          <td>
-            <%= item.size || '-' %>
-          </td>
-          <td>
-            <%= item.quantity %>
-          </td>
-          <td>₹<%= item.price %>
-          </td>
-          <td>₹<%= item.itemTotal %>
-          </td>
-          <td>
-            <%= item.itemStatus %>
-          </td>
-        </tr>
-        <% }) %>
-    </tbody>
-  </table>
-
-  <div style="margin-top: 20px; width: 280px; margin-left: auto;">
-    <div class="row mb-10"><span>Subtotal:</span><span>₹<%= order.pricing.subtotal %></span></div>
-    <div class="row mb-10"><span>Shipping:</span><span>₹<%= order.pricing.shippingCharge %></span></div>
-    <div class="row mb-10"><span>Discount:</span><span>₹<%= order.pricing.couponDiscount || 0 %></span></div>
-    <div class="row"><strong>Grand Total:</strong><strong>₹<%= order.pricing.finalAmount %></strong></div>
-  </div>
 </body>
-
 </html>

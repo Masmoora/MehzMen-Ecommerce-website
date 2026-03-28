@@ -2,6 +2,7 @@
 import User from '../../models/userSchema.js'
 import Address from '../../models/addressSchema.js';
 import bcrypt from 'bcrypt';
+import Coupon from '../../models/couponSchema.js';
 
 class ProfileService {
    updateUserProfileById = async (userId, updateData) => {
@@ -175,5 +176,16 @@ async deleteAddress(userId, addressId){
 
    }
 }
+  getCouponsForUserProfile = async () => {
+    const now = new Date();
+    const coupons = await Coupon.find({ isActive: true }).sort({ createdAt: -1 }).lean();
+
+    return coupons.filter((coupon) => {
+      if (coupon.startDate && new Date(coupon.startDate) > now) return false;
+      if (coupon.endDate && new Date(coupon.endDate) < now) return false;
+      if (coupon.usageLimit != null && (coupon.usedCount || 0) >= coupon.usageLimit) return false;
+      return true;
+    });
+  };
 }
 export default new ProfileService();

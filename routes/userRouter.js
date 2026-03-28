@@ -71,6 +71,7 @@ router.get('/address',AuthMiddleware.checkSession,ProfileController.loadAddressP
 router.post('/add-address',AuthMiddleware.checkSession, ProfileController.addAddress);
 router.post('/edit-address/:id',AuthMiddleware.checkSession, ProfileController.editAddress);
 router.post('/delete-address/:id', AuthMiddleware.checkSession,ProfileController.deleteAddress);
+router.get('/profile/coupons', ProfileController.loadCouponsPage)
 //user wishlist management
 router.get('/wishlist',AuthMiddleware.checkSession,  WishlistController.loadWishlist);
 router.post('/wishlist/add', AuthMiddleware.checkSession,WishlistController.addToWishlist);
@@ -93,19 +94,23 @@ router.delete('/checkout/item/:itemId', AuthMiddleware.checkSession, CheckoutCon
 router.post('/checkout/address', AuthMiddleware.checkSession, CheckoutController.addAddress);
 router.patch('/checkout/address/:addressId',  AuthMiddleware.checkSession,CheckoutController.updateAddress);
 router.delete('/checkout/address/:addressId',AuthMiddleware.checkSession,CheckoutController.deleteAddress);
-router.post('/checkout/place-order', AuthMiddleware.checkSession, CheckoutController.placeOrder);
-router.post('/checkout/create-razorpay-order', AuthMiddleware.isLogin, CheckoutController.createRazorpayOrder);
-router.post('/checkout/verify-payment', AuthMiddleware.isLogin, CheckoutController.verifyPayment);
+router.post('/checkout/apply-coupon', CheckoutController.applyCoupon);
+router.post('/checkout/remove-coupon', CheckoutController.removeCoupon);
+router.post('/checkout/place-order', CheckoutController.placeOrder);
+router.post('/checkout/create-razorpay-order',  CheckoutController.createRazorpayOrder);
+router.post('/checkout/verify-payment',  CheckoutController.verifyPayment);
 
 //order management
+
 router.get('/orders', AuthMiddleware.checkSession, OrderController.loadOrders);
+router.get('/orders/success', OrderController.loadOrderSuccess);
+router.get('/orders/failure', OrderController.loadOrderFailure);
 router.get('/orders/:orderId',AuthMiddleware.checkSession,  OrderController.loadOrderDetails);
 router.patch('/orders/:orderId/items/:itemId/cancel',AuthMiddleware.checkSession,  OrderController.cancelSingleItem);
 router.patch('/orders/:orderId/cancel', AuthMiddleware.checkSession, OrderController.cancelEntireOrder);
 router.patch('/orders/:orderId/return', AuthMiddleware.checkSession, OrderController.requestReturnOrder);
 router.get('/orders/:orderId/invoice', AuthMiddleware.checkSession,OrderController.downloadInvoice);
-router.get('/orders/success', OrderController.loadOrderSuccess);
-router.get('/orders/failure', OrderController.loadOrderFailure);
+
 
 //wallet management
 router.get('/wallet',WalletController.loadWalletPage)

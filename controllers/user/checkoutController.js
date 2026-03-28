@@ -18,7 +18,8 @@ class CheckoutController{
         addresses: data.addresses,
         defaultAddressId: data.defaultAddressId,
         summary: data.summary,
-        walletBalance: data.walletBalance ?? 0
+        walletBalance: data.walletBalance ?? 0,
+        availableCoupons: data.availableCoupons || []
       });
     } catch (error) {
       logger.error('Error loading checkout page:', error);
@@ -105,45 +106,68 @@ class CheckoutController{
       return res.json({
         success: true,
         message: 'Order placed successfully',
-        orderId: result.orderId,
-        redirectUrl: `/orders/success?orderId=${encodeURIComponent(result.orderId)}`
+        orderId: result.orderId,redirectUrl: `/orders/success?orderId=${encodeURIComponent(result.orderId)}`
       });
+        
     } catch (error) {
       logger.error('Error placing order:', error);
       return res.status(400).json({ success: false, message: error.message || 'Failed to place order' });
     }
   };
-createRazorpayOrder = async (req, res) => {
-  try {
-    const userId = req.session?.user;
-    if (!userId) return res.status(401).json({ success: false, message: 'Login required' });
 
-    const { addressId } = req.body || {};
-    if (!addressId) {
-      return res.status(400).json({ success: false, message: 'Address is required' });
+  createRazorpayOrder = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.status(401).json({ success: false, message: 'Login required' });
+
+      const { addressId, couponCode = '' } = req.body || {};
+      if (!addressId) return res.status(400).json({ success: false, message: 'Address is required' });
+
+      const data = await CheckoutService.createRazorpayOrderForCheckout(userId, addressId, couponCode);
+      return res.json({ success: true, ...data });
+    } catch (error) {
+      logger.error('Error creating Razorpay order:', error);
+      return res.status(400).json({ success: false, message: error.message || 'Failed to create payment order' });
     }
+  };
 
-    const data = await CheckoutService.createRazorpayOrderForCheckout(userId, addressId);
+  applyCoupon = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.status(401).json({ success: false, message: 'Login required' });
 
-    return res.json({
-      success: true,
-      razorpayOrderId: data.razorpayOrderId,
-      amount: data.amount,
-      currency: data.currency,
-      keyId: data.keyId
-    });
+      const { couponCode } = req.body || {};
+      if (!couponCode || !String(couponCode).trim()) {
+        return res.status(400).json({ success: false, message: 'Coupon code is required' });
+      }
 
-  } catch (error) {
-    logger.error('Error creating Razorpay order:', error);
-    return res.status(400).json({ success: false, message: error.message });
-  }
-};
-    verifyPayment = async (req, res) => {
+      const result = await CheckoutService.applyCoupon(userId, couponCode);
+      return res.json({ success: true, message: 'Coupon applied', summary: result.summary, couponCode: result.couponCode });
+    } catch (error) {
+      logger.error('Error applying coupon:', error);
+      return res.status(400).json({ success: false, message: error.message || 'Failed to apply coupon' });
+    }
+  };
+
+  removeCoupon = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.status(401).json({ success: false, message: 'Login required' });
+
+      const result = await CheckoutService.removeCoupon(userId);
+      return res.json({ success: true, message: 'Coupon removed', summary: result.summary });
+    } catch (error) {
+      logger.error('Error removing coupon:', error);
+      return res.status(400).json({ success: false, message: error.message || 'Failed to remove coupon' });
+    }
+  };
+
+  verifyPayment = async (req, res) => {
     try {
       const userId = req.session?.user;
       if (!userId) return res.redirect('/login');
 
-      const { addressId, razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body || {};
+      const { addressId, razorpayOrderId, razorpayPaymentId, razorpaySignature, couponCode = '' } = req.body || {};
       if (!addressId || !razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
         return res.redirect('/orders/failure');
       }
@@ -153,7 +177,7 @@ createRazorpayOrder = async (req, res) => {
         razorpayOrderId,
         razorpayPaymentId,
         razorpaySignature,
-        
+        couponCode
       });
       return res.redirect(`/orders/success?orderId=${encodeURIComponent(result.orderId)}`);
     } catch (error) {

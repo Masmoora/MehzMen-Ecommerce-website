@@ -1,59 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/user/checkout.css">
-
+  <style>
+    body { background: #f6f7fb; padding-top: 52px; }
+    .checkout-img { width: 84px; height: 84px; object-fit: cover; border-radius: 8px; }
+    .section-card { border: 1px solid #e9ecef; border-radius: 10px; background: #fff; }
+    .address-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 12px; background: #fff; }
+    .address-card.default { border-color: #198754; background: #f8fff9; }
+    .muted-small { font-size: 13px; color: #6c757d; }
+  </style>
 </head>
-
 <body>
   <%- include("../partials/user/header") %>
 
-    <main class="container pt-2 pb-4">
-      <h3 class="mb-4">Checkout</h3>
+  <main class="container pt-2 pb-4">
+    <h3 class="mb-4">Checkout</h3>
 
-      <% if (!checkoutItems || checkoutItems.length===0) { %>
-        <section class="py-5 text-center">
-          <h2 class="fw-bold text-uppercase mb-3">Your Cart Is Empty</h2>
-          <p class="text-muted fs-5 mb-4">Add products to cart to continue checkout.</p>
-          <a href="/shop" class="btn btn-outline-primary btn-lg px-5">Continue Shopping</a>
-        </section>
-        <% } else { %>
-          <div class="row g-4">
-            <div class="col-12 col-lg-8">
-              <!-- Section 1: Ordered Items Details -->
-              <section class="section-card p-3 mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h5 class="mb-0">Ordered Items</h5>
-                  <span class="muted-small"><span id="sumTotalItems">
-                      <%= summary.totalItems %>
-                    </span> items</span>
-                </div>
+    <% if (!checkoutItems || checkoutItems.length === 0) { %>
+      <section class="py-5 text-center">
+        <h2 class="fw-bold text-uppercase mb-3">Your Cart Is Empty</h2>
+        <p class="text-muted fs-5 mb-4">Add products to cart to continue checkout.</p>
+        <a href="/allProducts" class="btn btn-outline-primary btn-lg px-5">Continue Shopping</a>
+      </section>
+    <% } else { %>
+      <div class="row g-4">
+        <div class="col-12 col-lg-8">
+          <!-- Section 1: Ordered Items Details -->
+          <section class="section-card p-3 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Ordered Items</h5>
+              <span class="muted-small"><span id="sumTotalItems"><%= summary.totalItems %></span> items</span>
+            </div>
 
-                <div id="checkoutItemsWrap">
-                  <% checkoutItems.forEach((item)=> { %>
-                    <div class="border rounded p-3 mb-3 checkout-item-row" id="item-row-<%= item._id %>">
-                      <div class="d-flex gap-3">
-                        <img src="<%= item.image || 'https://via.placeholder.com/90x90?text=No+Image' %>"
-                          class="checkout-img" alt="<%= item.productName %>">
-                        <div class="flex-grow-1">
-                          <div class="d-flex justify-content-between gap-2">
-                            <div>
-                              <h6 class="mb-1">
-                                <%= item.productName %>
-                              </h6>
-                              <div class="muted-small">Brand: <%= item.brand || 'N/A' %>
-                              </div>
-                              <div class="muted-small">Color: <%= item.color %> | Size: <%= item.size %>
-                              </div>
-                              <!--<div class="muted-small">Qty: <%= item.quantity %> × ₹<%= item.price %>
-                              </div>-->
-                              <!--offer-->
-                              <div class="muted-small">
+            <div id="checkoutItemsWrap">
+              <% checkoutItems.forEach((item) => { %>
+                <div class="border rounded p-3 mb-3 checkout-item-row" id="item-row-<%= item._id %>">
+                  <div class="d-flex gap-3">
+                    <img src="<%= item.image || 'https://via.placeholder.com/90x90?text=No+Image' %>" class="checkout-img" alt="<%= item.productName %>">
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between gap-2">
+                        <div>
+                          <h6 class="mb-1"><%= item.productName %></h6>
+                          <div class="muted-small">Brand: <%= item.brand || 'N/A' %></div>
+                          <div class="muted-small">Color: <%= item.color %> | Size: <%= item.size %></div>
+                          <div class="muted-small">
                             Qty: <%= item.quantity %> ×
                             <% if (item.discount && item.discount > 0) { %>
                               <span class="text-muted text-decoration-line-through me-1">
@@ -65,385 +59,475 @@
                               ₹<%= item.price %>
                             <% } %>
                           </div>
-                          
-                              <% if (item.outOfStock) { %>
-                                <div class="text-danger fw-semibold small mt-1">Out of stock</div>
-                                <% } %>
-                            </div>
-                            <div class="text-end">
-                              <div class="fw-bold mb-2">₹<%= item.itemTotal %>
-                              </div>
-                              <button class="btn btn-sm btn-outline-danger"
-                                onclick="removeCheckoutItem('<%= item._id %>')">Delete</button>
-                            </div>
-                          </div>
+                          <% if (item.outOfStock) { %>
+                            <div class="text-danger fw-semibold small mt-1">Out of stock</div>
+                          <% } %>
+                        </div>
+                        <div class="text-end">
+                          <div class="fw-bold mb-2">₹<%= item.itemTotal %></div>
+                          <button class="btn btn-sm btn-outline-danger" onclick="removeCheckoutItem('<%= item._id %>')">Delete</button>
                         </div>
                       </div>
                     </div>
-                    <% }) %>
-                </div>
-              </section>
-
-              <!-- Section 2: Shipping Address -->
-              <section class="section-card p-3 mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h5 class="mb-0">Shipping Address</h5>
-                  <button class="btn btn-sm btn-dark" id="addAddressBtn">+ Add New Address</button>
-                </div>
-
-                <% if (!addresses || addresses.length===0) { %>
-                  <div class="alert alert-warning mb-0">No address found. Please add one address to place order.</div>
-                  <% } else { %>
-                    <% const defaultAddress=addresses.find((a)=> a.isDefault); %>
-                      <% if (defaultAddress) { %>
-                        <div class="address-card default mb-3">
-                          <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                              <div class="fw-semibold">
-                                <%= defaultAddress.name %> <span class="badge bg-success">Default</span>
-                              </div>
-                              <div class="muted-small">
-                                <%= defaultAddress.phone %>
-                              </div>
-                              <div>
-                                <%= defaultAddress.houseNo %>, <%= defaultAddress.landMark %>, <%= defaultAddress.city
-                                      %>, <%= defaultAddress.state %> - <%= defaultAddress.pincode %>, <%=
-                                            defaultAddress.country %>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <% } %>
-
-                          <div class="row g-3">
-                            <% addresses.forEach((addr)=> { %>
-                              <div class="col-12 col-md-6">
-                                <label class="address-card h-100 w-100">
-                                  <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                      <input class="form-check-input me-2 address-radio" type="radio"
-                                        name="selectedAddress" value="<%= addr._id %>"
-                                        <%=(defaultAddressId===addr._id.toString()) ? 'checked' : '' %>
-                                      >
-                                      <span class="fw-semibold">
-                                        <%= addr.name %>
-                                      </span>
-                                      <% if (addr.isDefault) { %>
-                                        <span class="badge bg-success ms-1">Default</span>
-                                        <% } %>
-                                    </div>
-                                  </div>
-                                  <div class="muted-small mb-1">
-                                    <%= addr.phone %>
-                                  </div>
-                                  <div class="mb-2">
-                                    <%= addr.houseNo %>, <%= addr.landMark %>, <%= addr.city %>, <%= addr.state %> - <%=
-                                              addr.pincode %>, <%= addr.country %>
-                                  </div>
-                                  <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-sm btn-outline-primary edit-address-btn"
-                                      data-id="<%= addr._id %>" data-name="<%= addr.name %>"
-                                      data-phone="<%= addr.phone %>" data-house-no="<%= addr.houseNo %>"
-                                      data-landmark="<%= addr.landMark %>" data-city="<%= addr.city %>"
-                                      data-state="<%= addr.state %>" data-pincode="<%= addr.pincode %>"
-                                      data-country="<%= addr.country %>"
-                                      data-default="<%= addr.isDefault ? '1' : '0' %>">Edit</button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger"
-                                      onclick="deleteCheckoutAddress('<%= addr._id %>')">Delete</button>
-                                  </div>
-                                </label>
-                              </div>
-                              <% }) %>
-                          </div>
-                          <% } %>
-              </section>
-
-              <!-- Section 3: Payment Method -->
-              <section class="section-card p-3 mb-4">
-                <h5 class="mb-3">Payment Method</h5>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="radio" name="paymentMethod" id="pmCod" value="cod" checked>
-                  <label class="form-check-label" for="pmCod">Cash on Delivery (COD)</label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="radio" name="paymentMethod" id="pmOnline" value="razorpay">
-                  <label class="form-check-label" for="pmOnline">Online Payment</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="paymentMethod" id="pmWallet" value="wallet">
-                  <label class="form-check-label" for="pmWallet">Wallet</label>
-                </div>
-
-              </section>
-
-              <!-- Section 4: Apply Coupon -->
-              <section class="section-card p-3 mb-4">
-                <h5 class="mb-3">Apply Coupon</h5>
-                <div class="d-flex gap-2">
-                  <input id="couponCodeInput" type="text" class="form-control" placeholder="Enter coupon code">
-                  <button id="applyCouponBtn" class="btn btn-dark">Apply</button>
-                </div>
-
-              </section>
-            </div>
-
-            <!-- Section 5: Order Summary + Place Order -->
-            <div class="col-12 col-lg-4">
-              <section class="section-card p-3">
-                <h5 class="mb-3">Order Summary</h5>
-
-                <div class="d-flex justify-content-between mb-2">
-                  <span>Total items</span>
-                  <span id="sumItems">
-                    <%= summary.totalItems %>
-                  </span>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                  <span>Subtotal</span>
-                  <span id="sumSubtotal">₹<%= summary.subtotal %></span>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                  <span>Shipping</span>
-                  <span id="sumShipping">₹<%= summary.shipping %></span>
-                </div>
-                <div class="d-flex justify-content-between mb-3">
-                  <span>Coupon Discount</span>
-                  <span id="sumDiscount">- ₹<%= summary.discount %></span>
-                </div>
-                <hr>
-                <div class="d-flex justify-content-between fw-bold fs-5">
-                  <span>Final Total</span>
-                  <span id="sumFinal">₹<%= summary.finalTotal %></span>
-                </div>
-
-                <button id="placeOrderBtn" class="btn btn-success w-100 mt-3">Place Order</button>
-              </section>
-            </div>
-          </div>
-          <% } %>
-    </main>
-
-    <!-- Address Add/Edit Modal -->
-    <div class="modal fade" id="addressModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addressModalTitle">Add Address</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <form id="addressForm">
-            <div class="modal-body">
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label">Full Name</label>
-                  <input id="afFullName" type="text" class="form-control" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Phone</label>
-                  <input id="afPhone" type="text" class="form-control" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">House No</label>
-                  <input id="afHouseNo" type="text" class="form-control" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Landmark</label>
-                  <input id="afLandmark" type="text" class="form-control" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">City</label>
-                  <input id="afCity" type="text" class="form-control" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">State</label>
-                  <input id="afState" type="text" class="form-control" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Pincode</label>
-                  <input id="afPincode" type="text" class="form-control" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Country</label>
-                  <input id="afCountry" type="text" class="form-control" value="India" required>
-                </div>
-                <div class="col-md-6 d-flex align-items-center">
-                  <div class="form-check mt-4">
-                    <input class="form-check-input" type="checkbox" id="afIsDefault">
-                    <label class="form-check-label" for="afIsDefault">Set as default</label>
                   </div>
+                </div>
+              <% }) %>
+            </div>
+          </section>
+
+          <!-- Section 2: Shipping Address -->
+          <section class="section-card p-3 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Shipping Address</h5>
+              <button class="btn btn-sm btn-dark" id="addAddressBtn">+ Add New Address</button>
+            </div>
+
+            <% if (!addresses || addresses.length === 0) { %>
+              <div class="alert alert-warning mb-0">No address found. Please add one address to place order.</div>
+            <% } else { %>
+              <% const defaultAddress = addresses.find((a) => a.isDefault); %>
+              <% if (defaultAddress) { %>
+                <div class="address-card default mb-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <div class="fw-semibold"><%= defaultAddress.name %> <span class="badge bg-success">Default</span></div>
+                      <div class="muted-small"><%= defaultAddress.phone %></div>
+                      <div><%= defaultAddress.houseNo %>, <%= defaultAddress.landMark %>, <%= defaultAddress.city %>, <%= defaultAddress.state %> - <%= defaultAddress.pincode %>, <%= defaultAddress.country %></div>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+
+              <div class="row g-3">
+                <% addresses.forEach((addr) => { %>
+                  <div class="col-12 col-md-6">
+                    <label class="address-card h-100 w-100">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                          <input
+                            class="form-check-input me-2 address-radio"
+                            type="radio"
+                            name="selectedAddress"
+                            value="<%= addr._id %>"
+                            <%= (defaultAddressId === addr._id.toString()) ? 'checked' : '' %>
+                          >
+                          <span class="fw-semibold"><%= addr.name %></span>
+                          <% if (addr.isDefault) { %>
+                            <span class="badge bg-success ms-1">Default</span>
+                          <% } %>
+                        </div>
+                      </div>
+                      <div class="muted-small mb-1"><%= addr.phone %></div>
+                      <div class="mb-2"><%= addr.houseNo %>, <%= addr.landMark %>, <%= addr.city %>, <%= addr.state %> - <%= addr.pincode %>, <%= addr.country %></div>
+                      <div class="d-flex gap-2">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-primary edit-address-btn"
+                          data-id="<%= addr._id %>"
+                          data-name="<%= addr.name %>"
+                          data-phone="<%= addr.phone %>"
+                          data-house-no="<%= addr.houseNo %>"
+                          data-landmark="<%= addr.landMark %>"
+                          data-city="<%= addr.city %>"
+                          data-state="<%= addr.state %>"
+                          data-pincode="<%= addr.pincode %>"
+                          data-country="<%= addr.country %>"
+                          data-default="<%= addr.isDefault ? '1' : '0' %>"
+                        >Edit</button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-danger"
+                          onclick="deleteCheckoutAddress('<%= addr._id %>')"
+                        >Delete</button>
+                      </div>
+                    </label>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+          </section>
+
+          <!-- Section 3: Payment Method -->
+          <section class="section-card p-3 mb-4">
+            <h5 class="mb-3">Payment Method</h5>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="pmCod" value="cod" checked>
+              <label class="form-check-label" for="pmCod">Cash on Delivery (COD)</label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="pmOnline" value="razorpay">
+              <label class="form-check-label" for="pmOnline">Online Payment</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="pmWallet" value="wallet">
+              <label class="form-check-label" for="pmWallet">Wallet</label>
+              <span class="ms-2 text-muted small">(Balance: ₹<span id="walletBalanceDisplay"><%= typeof walletBalance !== 'undefined' ? walletBalance : 0 %></span>)</span>
+            </div>
+            <div class="muted-small mt-2" id="walletNote">Pay using your wallet. Refunds from cancelled/returned orders are credited here.</div>
+          </section>
+
+          <!-- Section 4: Apply Coupon -->
+          <section class="section-card p-3 mb-4">
+            <h5 class="mb-3">Apply Coupon</h5>
+            <div id="couponApplyWrap" class="d-flex gap-2">
+              <input id="couponCodeInput" type="text" class="form-control" placeholder="Enter coupon code" autocomplete="off">
+              <button id="applyCouponBtn" class="btn btn-dark">Apply</button>
+            </div>
+            <div id="couponAppliedWrap" class="d-none d-flex align-items-center gap-2 flex-wrap">
+              <span class="text-success fw-semibold">Applied: <span id="appliedCouponCode"></span></span>
+              <span class="text-muted small">(Discount: ₹<span id="appliedCouponDiscount">0</span>)</span>
+              <button id="removeCouponBtn" type="button" class="btn btn-sm btn-outline-danger">Remove</button>
+            </div>
+            <div class="muted-small mt-2">One coupon per order. Enter code and click Apply.</div>
+            <% if (availableCoupons && availableCoupons.length) { %>
+              <div class="mt-3">
+                <div class="fw-semibold mb-2">Available Coupons</div>
+                <div class="d-flex flex-column gap-2" id="availableCouponsWrap">
+                  <% availableCoupons.forEach((coupon) => { %>
+                    <div class="border rounded p-2 d-flex justify-content-between align-items-center">
+                      <div>
+                        <div class="fw-semibold"><%= coupon.code %></div>
+                        <div class="muted-small">
+                          <% if (coupon.type === 'percentage') { %>
+                            <%= coupon.value %>% OFF
+                            <% if (coupon.maxDiscount != null) { %>
+                              (max ₹<%= coupon.maxDiscount %>)
+                            <% } %>
+                          <% } else { %>
+                            ₹<%= coupon.value %> OFF
+                          <% } %>
+                          | Min order ₹<%= coupon.minOrderValue %>
+                        </div>
+                        <% if (coupon.isEligible) { %>
+                          <div class="text-success small">You can save up to ₹<%= coupon.possibleDiscount %></div>
+                        <% } else { %>
+                          <div class="text-muted small">Not eligible for current cart amount</div>
+                        <% } %>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary use-coupon-btn"
+                        data-code="<%= coupon.code %>"
+                        <%= coupon.isEligible ? '' : 'disabled' %>
+                      >Use</button>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+            <% } %>
+          </section>
+        </div>
+
+        <!-- Section 5: Order Summary + Place Order -->
+        <div class="col-12 col-lg-4">
+          <section class="section-card p-3">
+            <h5 class="mb-3">Order Summary</h5>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span>Total items</span>
+              <span id="sumItems"><%= summary.totalItems %></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal</span>
+              <span id="sumSubtotal">₹<%= summary.subtotal %></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Shipping</span>
+              <span id="sumShipping">₹<%= summary.shipping %></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Coupon Discount</span>
+              <span id="sumDiscount"><%= summary.discount > 0 ? '-' : '' %> ₹<%= summary.discount %></span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between fw-bold fs-5">
+              <span>Grand Total</span>
+              <span id="sumFinal">₹<%= summary.finalTotal %></span>
+            </div>
+
+            <button id="placeOrderBtn" class="btn btn-success w-100 mt-3">Place Order</button>
+          </section>
+        </div>
+      </div>
+    <% } %>
+  </main>
+
+  <!-- Address Add/Edit Modal -->
+  <div class="modal fade" id="addressModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addressModalTitle">Add Address</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="addressForm">
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Full Name</label>
+                <input id="afFullName" type="text" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Phone</label>
+                <input id="afPhone" type="text" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">House No</label>
+                <input id="afHouseNo" type="text" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Landmark</label>
+                <input id="afLandmark" type="text" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">City</label>
+                <input id="afCity" type="text" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">State</label>
+                <input id="afState" type="text" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Pincode</label>
+                <input id="afPincode" type="text" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Country</label>
+                <input id="afCountry" type="text" class="form-control" value="India" required>
+              </div>
+              <div class="col-md-6 d-flex align-items-center">
+                <div class="form-check mt-4">
+                  <input class="form-check-input" type="checkbox" id="afIsDefault">
+                  <label class="form-check-label" for="afIsDefault">Set as default</label>
                 </div>
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-dark">Save Address</button>
-            </div>
-          </form>
-        </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-dark">Save Address</button>
+          </div>
+        </form>
       </div>
     </div>
+  </div>
 
-    <%- include("../partials/user/footer") %>
+  <%- include("../partials/user/footer") %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    const addressModalEl = document.getElementById('addressModal');
+    const addressModal = addressModalEl ? new bootstrap.Modal(addressModalEl) : null;
+    const addressForm = document.getElementById('addressForm');
+    let editingAddressId = '';
 
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>  
+    function renderSummary(summary) {
+      if (!summary) return;
+      document.getElementById('sumItems').textContent = summary.totalItems;
+      document.getElementById('sumTotalItems').textContent = summary.totalItems;
+      document.getElementById('sumSubtotal').textContent = `₹${summary.subtotal}`;
+      document.getElementById('sumShipping').textContent = `₹${summary.shipping}`;
+      document.getElementById('sumDiscount').textContent = summary.discount > 0 ? `- ₹${summary.discount}` : `₹${summary.discount}`;
+      document.getElementById('sumFinal').textContent = `₹${summary.finalTotal}`;
+    }
 
-      <script>
-        const addressModalEl = document.getElementById('addressModal');
-        const addressModal = addressModalEl ? new bootstrap.Modal(addressModalEl) : null;
-        const addressForm = document.getElementById('addressForm');
-        let editingAddressId = '';
+    async function removeCheckoutItem(itemId) {
+      const confirm = await Swal.fire({
+        title: 'Remove this item?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, remove'
+      });
+      if (!confirm.isConfirmed) return;
 
-        function renderSummary(summary) {
-          if (!summary) return;
-          document.getElementById('sumItems').textContent = summary.totalItems;
-          document.getElementById('sumTotalItems').textContent = summary.totalItems;
-          document.getElementById('sumSubtotal').textContent = `₹${summary.subtotal}`;
-          document.getElementById('sumShipping').textContent = `₹${summary.shipping}`;
-          document.getElementById('sumDiscount').textContent = `- ₹${summary.discount}`;
-          document.getElementById('sumFinal').textContent = `₹${summary.finalTotal}`;
+      try {
+        const res = await fetch(`/checkout/item/${itemId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          Swal.fire('Error', data.message || 'Failed to remove item', 'error');
+          return;
         }
 
-        async function removeCheckoutItem(itemId) {
-          const confirm = await Swal.fire({
-            title: 'Remove this item?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, remove'
-          });
-          if (!confirm.isConfirmed) return;
+        document.getElementById(`item-row-${itemId}`)?.remove();
+        renderSummary(data.checkout?.summary);
 
-          try {
-            const res = await fetch(`/checkout/item/${itemId}`, { method: 'DELETE' });
-            const data = await res.json();
-            if (!res.ok || !data.success) {
-              Swal.fire('Error', data.message || 'Failed to remove item', 'error');
-              return;
-            }
+        const remaining = document.querySelectorAll('.checkout-item-row').length;
+        if (remaining === 0) {
+          location.reload();
+          return;
+        }
+        Swal.fire('Removed', 'Item removed from checkout', 'success');
+      } catch (error) {
+        Swal.fire('Error', 'Something went wrong', 'error');
+      }
+    }
 
-            document.getElementById(`item-row-${itemId}`)?.remove();
-            renderSummary(data.checkout?.summary);
+    function clearAddressForm() {
+      editingAddressId = '';
+      document.getElementById('addressModalTitle').textContent = 'Add Address';
+      document.getElementById('afFullName').value = '';
+      document.getElementById('afPhone').value = '';
+      document.getElementById('afHouseNo').value = '';
+      document.getElementById('afLandmark').value = '';
+      document.getElementById('afCity').value = '';
+      document.getElementById('afState').value = '';
+      document.getElementById('afPincode').value = '';
+      document.getElementById('afCountry').value = 'India';
+      document.getElementById('afIsDefault').checked = false;
+    }
 
-            const remaining = document.querySelectorAll('.checkout-item-row').length;
-            if (remaining === 0) {
-              location.reload();
-              return;
-            }
-            Swal.fire('Removed', 'Item removed from checkout', 'success');
-          } catch (error) {
-            Swal.fire('Error', 'Something went wrong', 'error');
-          }
+    document.getElementById('addAddressBtn')?.addEventListener('click', () => {
+      clearAddressForm();
+      addressModal?.show();
+    });
+
+    document.querySelectorAll('.edit-address-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        editingAddressId = btn.dataset.id || '';
+        document.getElementById('addressModalTitle').textContent = 'Edit Address';
+        document.getElementById('afFullName').value = btn.dataset.name || '';
+        document.getElementById('afPhone').value = btn.dataset.phone || '';
+        document.getElementById('afHouseNo').value = btn.dataset.houseNo || '';
+        document.getElementById('afLandmark').value = btn.dataset.landmark || '';
+        document.getElementById('afCity').value = btn.dataset.city || '';
+        document.getElementById('afState').value = btn.dataset.state || '';
+        document.getElementById('afPincode').value = btn.dataset.pincode || '';
+        document.getElementById('afCountry').value = btn.dataset.country || 'India';
+        document.getElementById('afIsDefault').checked = btn.dataset.default === '1';
+        addressModal?.show();
+      });
+    });
+
+    addressForm?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const payload = {
+        fullName: document.getElementById('afFullName').value.trim(),
+        mobile: document.getElementById('afPhone').value.trim(),
+        houseNo: document.getElementById('afHouseNo').value.trim(),
+        landmark: document.getElementById('afLandmark').value.trim(),
+        city: document.getElementById('afCity').value.trim(),
+        state: document.getElementById('afState').value.trim(),
+        pincode: document.getElementById('afPincode').value.trim(),
+        country: document.getElementById('afCountry').value.trim(),
+        isDefault: document.getElementById('afIsDefault').checked
+      };
+
+      try {
+        const url = editingAddressId ? `/checkout/address/${editingAddressId}` : '/checkout/address';
+        const method = editingAddressId ? 'PATCH' : 'POST';
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          Swal.fire('Error', data.message || 'Failed to save address', 'error');
+          return;
         }
 
-        function clearAddressForm() {
-          editingAddressId = '';
-          document.getElementById('addressModalTitle').textContent = 'Add Address';
-          document.getElementById('afFullName').value = '';
-          document.getElementById('afPhone').value = '';
-          document.getElementById('afHouseNo').value = '';
-          document.getElementById('afLandmark').value = '';
-          document.getElementById('afCity').value = '';
-          document.getElementById('afState').value = '';
-          document.getElementById('afPincode').value = '';
-          document.getElementById('afCountry').value = 'India';
-          document.getElementById('afIsDefault').checked = false;
+        await Swal.fire('Success', data.message || 'Address saved', 'success');
+        location.reload();
+      } catch (error) {
+        Swal.fire('Error', 'Something went wrong', 'error');
+      }
+    });
+
+    async function deleteCheckoutAddress(addressId) {
+      const confirm = await Swal.fire({
+        title: 'Delete this address?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete'
+      });
+      if (!confirm.isConfirmed) return;
+
+      try {
+        const res = await fetch(`/checkout/address/${addressId}`, { method: 'DELETE' });
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          Swal.fire('Error', data.message || 'Failed to delete address', 'error');
+          return;
         }
 
-        document.getElementById('addAddressBtn')?.addEventListener('click', () => {
-          clearAddressForm();
-          addressModal?.show();
+        await Swal.fire('Deleted', data.message || 'Address deleted', 'success');
+        location.reload();
+      } catch (error) {
+        Swal.fire('Error', 'Something went wrong', 'error');
+      }
+    }
+
+    let appliedCouponCode = '';
+
+    function showCouponApplied(code, discount) {
+      appliedCouponCode = code;
+      document.getElementById('appliedCouponCode').textContent = code;
+      document.getElementById('appliedCouponDiscount').textContent = discount;
+      document.getElementById('couponApplyWrap').classList.add('d-none');
+      document.getElementById('couponAppliedWrap').classList.remove('d-none');
+    }
+
+    function clearCouponApplied() {
+      appliedCouponCode = '';
+      document.getElementById('couponCodeInput').value = '';
+      document.getElementById('couponApplyWrap').classList.remove('d-none');
+      document.getElementById('couponAppliedWrap').classList.add('d-none');
+    }
+
+    document.getElementById('applyCouponBtn')?.addEventListener('click', async () => {
+      const couponCode = document.getElementById('couponCodeInput').value.trim();
+      if (!couponCode) {
+        Swal.fire('Info', 'Please enter a coupon code', 'info');
+        return;
+      }
+      try {
+        const res = await fetch('/checkout/apply-coupon', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ couponCode })
         });
-
-        document.querySelectorAll('.edit-address-btn').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            editingAddressId = btn.dataset.id || '';
-            document.getElementById('addressModalTitle').textContent = 'Edit Address';
-            document.getElementById('afFullName').value = btn.dataset.name || '';
-            document.getElementById('afPhone').value = btn.dataset.phone || '';
-            document.getElementById('afHouseNo').value = btn.dataset.houseNo || '';
-            document.getElementById('afLandmark').value = btn.dataset.landmark || '';
-            document.getElementById('afCity').value = btn.dataset.city || '';
-            document.getElementById('afState').value = btn.dataset.state || '';
-            document.getElementById('afPincode').value = btn.dataset.pincode || '';
-            document.getElementById('afCountry').value = btn.dataset.country || 'India';
-            document.getElementById('afIsDefault').checked = btn.dataset.default === '1';
-            addressModal?.show();
-          });
-        });
-
-        addressForm?.addEventListener('submit', async (event) => {
-          event.preventDefault();
-          const payload = {
-            fullName: document.getElementById('afFullName').value.trim(),
-            mobile: document.getElementById('afPhone').value.trim(),
-            houseNo: document.getElementById('afHouseNo').value.trim(),
-            landmark: document.getElementById('afLandmark').value.trim(),
-            city: document.getElementById('afCity').value.trim(),
-            state: document.getElementById('afState').value.trim(),
-            pincode: document.getElementById('afPincode').value.trim(),
-            country: document.getElementById('afCountry').value.trim(),
-            isDefault: document.getElementById('afIsDefault').checked
-          };
-
-          try {
-            const url = editingAddressId ? `/checkout/address/${editingAddressId}` : '/checkout/address';
-            const method = editingAddressId ? 'PATCH' : 'POST';
-            const res = await fetch(url, {
-              method,
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-
-            if (!res.ok || !data.success) {
-              Swal.fire('Error', data.message || 'Failed to save address', 'error');
-              return;
-            }
-
-            await Swal.fire('Success', data.message || 'Address saved', 'success');
-            location.reload();
-          } catch (error) {
-            Swal.fire('Error', 'Something went wrong', 'error');
-          }
-        });
-
-        async function deleteCheckoutAddress(addressId) {
-          const confirm = await Swal.fire({
-            title: 'Delete this address?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete'
-          });
-          if (!confirm.isConfirmed) return;
-
-          try {
-            const res = await fetch(`/checkout/address/${addressId}`, { method: 'DELETE' });
-            const data = await res.json();
-
-            if (!res.ok || !data.success) {
-              Swal.fire('Error', data.message || 'Failed to delete address', 'error');
-              return;
-            }
-
-            await Swal.fire('Deleted', data.message || 'Address deleted', 'success');
-            location.reload();
-          } catch (error) {
-            Swal.fire('Error', 'Something went wrong', 'error');
-          }
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          Swal.fire('Error', data.message || 'Could not apply coupon', 'error');
+          return;
         }
+        renderSummary(data.summary);
+        showCouponApplied(data.couponCode, data.summary.discount || 0);
+        Swal.fire('Success', data.message || 'Coupon applied', 'success');
+      } catch (e) {
+        Swal.fire('Error', 'Something went wrong', 'error');
+      }
+    });
 
-        document.getElementById('applyCouponBtn')?.addEventListener('click', () => {
-          const couponCode = document.getElementById('couponCodeInput').value.trim();
-          if (!couponCode) {
-            Swal.fire('Info', 'Please enter a coupon code', 'info');
-            return;
-          }
-          // UI only for now (no backend logic yet)
-          Swal.fire('Info', 'Coupon apply logic will be added later.', 'info');
-        });
+    document.querySelectorAll('.use-coupon-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const code = btn.dataset.code || '';
+        if (!code) return;
+        document.getElementById('couponCodeInput').value = code;
+        document.getElementById('applyCouponBtn')?.click();
+      });
+    });
 
-        document.getElementById('placeOrderBtn')?.addEventListener('click', async () => {
+    document.getElementById('removeCouponBtn')?.addEventListener('click', async () => {
+      try {
+        const res = await fetch('/checkout/remove-coupon', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          Swal.fire('Error', data.message || 'Could not remove coupon', 'error');
+          return;
+        }
+        renderSummary(data.summary);
+        clearCouponApplied();
+        Swal.fire('Success', data.message || 'Coupon removed', 'success');
+      } catch (e) {
+        Swal.fire('Error', 'Something went wrong', 'error');
+      }
+    });
+
+    document.getElementById('placeOrderBtn')?.addEventListener('click', async () => {
       const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
       const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
       if (!selectedAddress) {
@@ -491,8 +575,8 @@
                   addressId,
                   razorpayOrderId: response.razorpay_order_id,
                   razorpayPaymentId: response.razorpay_payment_id,
-                  razorpaySignature: response.razorpay_signature
-                  
+                  razorpaySignature: response.razorpay_signature,
+                  couponCode: appliedCouponCode || undefined
                 })
               }).then(function (res) {
                 if (res.redirected) window.location.href = res.url;
@@ -529,7 +613,8 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               addressId,
-              paymentMethod: 'wallet'
+              paymentMethod: 'wallet',
+              couponCode: appliedCouponCode || undefined
             })
           });
           const data = await res.json();
@@ -554,8 +639,8 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             addressId,
-            paymentMethod: 'cod'
-            
+            paymentMethod: 'cod',
+            couponCode: appliedCouponCode || undefined
           })
         });
         const data = await res.json();
@@ -577,3 +662,4 @@
   </script>
 </body>
 </html>
+
