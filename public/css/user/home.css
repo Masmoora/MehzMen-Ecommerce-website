@@ -10,72 +10,65 @@ body {
 }
 
 .card-soft {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    border: 1px solid #eee;
-}
-
-.banner-img {
-    width: 100%;
-    height: 420px;
-    object-fit: cover;
-}
-
-.arrival-card img {
-    height: 220px;
-    object-fit: cover;
-    border-radius: 10px;
-}
-
-.arrival-card {
-    min-width: 260px;
-}
-
-.scroll-wrapper {
-    overflow: hidden;
-    position: relative;
-}
-
-.scroll-track {
-    display: flex;
-    gap: 16px;
-    scroll-behavior: smooth;
-    overflow-x: auto;
-    padding-bottom: 6px;
-}
-
-.scroll-track::-webkit-scrollbar {
-    height: 6px;
-}
-
-.scroll-track::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 6px;
-}
-
-.scroll-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: none;
-    background: #111;
-    color: #fff;
-}
-
-.category-card {
-    height: 180px;
-    object-fit: cover;
-    border-radius: 10px;
-}
-
-.brand-logo {
-    height: 80px;
-    object-fit: contain;
-    filter: grayscale(1);
-    transition: all 0.2s ease;
-}
-
-.brand-logo:hover {
-    filter: grayscale(0);
-}
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid #eee;
+    }
+    .banner-img {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+    }
+    .arrival-card img {
+      height: 220px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .arrival-card {
+      min-width: 260px;
+    }
+    .scroll-wrapper {
+      overflow: hidden;
+      position: relative;
+    }
+    .scroll-track {
+      display: flex;
+      gap: 16px;
+      scroll-behavior: smooth;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+    .scroll-track::-webkit-scrollbar { height: 6px; }
+    .scroll-track::-webkit-scrollbar-thumb { background: #ccc; border-radius: 6px; }
+    .scroll-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      background: #111;
+      color: #fff;
+    }
+    .category-arrival-card {
+      min-width: 260px;
+      transition: transform 0.2s ease;
+    }
+    .category-arrival-card:hover {
+      transform: translateY(-4px);
+    }
+    .category-arrival-card img {
+      height: 220px;
+      width: 100%;
+      object-fit: contain;
+      object-position: center;
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 8px;
+    }
+    .brand-logo {
+      height: 80px;
+      object-fit: contain;
+      filter: grayscale(1);
+      transition: all 0.2s ease;
+    }
+    .brand-logo:hover { filter: grayscale(0); }

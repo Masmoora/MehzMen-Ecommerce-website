@@ -91,7 +91,7 @@
                   <th>Product Name</th>
                   <th>Brand</th>
                   <th>Category</th>
-                  <th>Offer Price</th>
+                  
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -109,13 +109,7 @@
                       <%= product.category ? product.category.name : 'N/A' %>
                     </td>
 
-                    <td>
-                      <% if (product.offerPrice) { %>
-                        <span class="text-success fw-bold">₹<%= product.offerPrice %></span>
-                        <% } else { %>
-                          <span class="text-muted">-</span>
-                          <% } %>
-                    </td>
+                   
                     <td>
                       <% if (product.isBlocked) { %>
                         <span class="badge bg-danger">

@@ -36,30 +36,31 @@
 
         /* Navbar - Matching Admin Header */
         .custom-navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.7rem 1.5rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-bottom: none;
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            color: #F8FAFC;
+            
+           padding: 0.7rem 1.5rem;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.18);
+            border-bottom: 1px solid #334155;
         }
 
         .logo-text {
             font-size: 1.5rem;
             font-weight: 600;
-            color: white;
+            color: #F8FAFC;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             letter-spacing: 0.5px;
             text-decoration: none;
         }
 
         .logo-text:hover {
-            color: rgba(255, 255, 255, 0.9);
+            color: #E2E8F0;
         }
 
         /* Links */
         .navbar-nav .nav-link {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
+            color: #F8FAFC;
             margin: 0 10px;
             font-size: 0.95rem;
             transition: all 0.3s ease;
@@ -67,15 +68,15 @@
         }
 
         .navbar-nav .nav-link:hover {
-            color: rgba(255, 255, 255, 0.8);
-            background-color: rgba(255, 255, 255, 0.1);
+            color: #BFDBFE;
+            background-color: rgba(255, 255, 255, 0.10);
             border-radius: 6px;
         }
 
         /* Buttons */
         .btn-login {
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            color: white;
+            border: 1px solid rgba(248, 250, 252, 0.55);
+            color: #F8FAFC;
             padding: 6px 16px;
             border-radius: 6px;
             transition: all 0.3s ease;
@@ -83,29 +84,29 @@
         }
 
         .btn-login:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(248, 250, 252, 0.12);
+            color: #F8FAFC;
+            border-color: rgba(248, 250, 252, 0.8);
         }
 
         .signup-btn {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: #3B82F6;
+            color: #FFFFFF;
+            border: 1px solid #60A5FA;
             border-radius: 6px;
             padding: 7px 18px;
             transition: all 0.3s ease;
         }
 
         .signup-btn:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-            color: white;
-            border-color: rgba(255, 255, 255, 0.5);
+            background-color: #2563EB;
+            color: #FFFFFF;
+            border-color: #3B82F6;
         }
 
         /* Dropdown */
         .dropdown-toggle {
-            color: white !important;
+            color: #F8FAFC !important;
         }
 
         .dropdown-menu {
@@ -125,28 +126,44 @@
         }
 
         .dropdown-item i {
-            color: #667eea;
+            color: #3B82F6;
         }
 
         /* Icons */
         .navbar-nav .nav-link i {
-            color: white;
+            color: #F8FAFC;
             transition: all 0.3s ease;
         }
 
         .navbar-nav .nav-link:hover i {
-            color: rgba(255, 255, 255, 0.8);
+            color: #BFDBFE;
         }
 
         /* Toggler Icon */
         .navbar-toggler {
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(248, 250, 252, 0.35);
             padding: 0.25rem 0.5rem;
         }
 
         .navbar-toggler-icon {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
+
+        /* Footer - Matching Admin Footer */
+        .custom-footer {
+            background-color: #f8f9fa;
+            padding: 1.5rem 0;
+            margin-top: auto;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .custom-footer p {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         /* Responsive */
         @media (max-width: 992px) {
             .custom-navbar {
@@ -161,6 +178,7 @@
                 margin: 0.25rem 0;
             }
         }
+
     </style>
 </head>
 
@@ -191,9 +209,7 @@
                         <a class="nav-link" href="/allProducts">All Products</a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="/allProducts">Brands</a>
-                    </li>
+
 
                     <% if (user) { %>
 

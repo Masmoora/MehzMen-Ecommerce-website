@@ -5,11 +5,24 @@ import path from 'path';
 import fs from 'fs';
 import puppeteer from 'puppeteer';
 import ejs from 'ejs';
-
+import walletService from '../user/walletService.js';
 class AdminOrderService {
   normalize = (value) => String(value || '').trim().toLowerCase().replace(/\s+/g, '_');
 
   orderFlow = ['pending', 'confirmed', 'shipped', 'out_for_delivery', 'delivered'];
+ isOrderPaid = (order) => {
+    const method = this.normalize(order.paymentMethod || '');
+    const status = this.normalize(order.paymentStatus || '');
+    return (method === 'wallet' || method === 'razorpay') && status === 'completed';
+  };
+
+  getProportionalRefund = (order, item) => {
+    const subtotal = Number(order.pricing?.subtotal || 0);
+    const finalAmount = Number(order.pricing?.finalAmount || 0);
+    if (subtotal <= 0) return 0;
+    return Math.round((Number(item.itemTotal || 0) / subtotal) * finalAmount);
+  };
+
 
   recalculatePricing = (orderDoc) => {
     const activeItems = (orderDoc.items || []).filter((item) => {
@@ -183,7 +196,7 @@ if (targetIndex < highestItemIndex) {
     `Cannot downgrade order below existing item progress.`
   );
 }
-    if (['returned', 'cancelled'].includes(currentStatus)) {
+    if (['returned', 'cancelled','return_requested', 'return_approved'].includes(currentStatus)) {
   throw new Error('Cannot update returned or cancelled order');
 }
 
@@ -212,6 +225,12 @@ if (targetIndex < highestItemIndex) {
     const currentStatus = this.normalize(order.orderStatus);
     if (['cancelled', 'delivered', 'returned'].includes(currentStatus)) {
       throw new Error('Cannot cancel this order');
+    }
+        if (this.isOrderPaid(order)) {
+      const refundAmount = Number(order.pricing?.finalAmount || 0);
+      if (refundAmount > 0 && order.userId) {
+        await walletService.refundToWallet(order.userId, refundAmount, order.orderId, 'Order cancelled by admin');
+      }
     }
 
     for (const item of order.items) {
@@ -267,6 +286,19 @@ if (targetIndex < highestItemIndex) {
     const item = order.items.id(itemId);
     if (!item) throw new Error('Order item not found');
     if (this.normalize(item.itemStatus) === 'cancelled') throw new Error('Item already cancelled');
+if (['delivered', 'returned', 'return_requested', 'return_approved'].includes(itemStatus)) {
+      throw new Error('Delivered/returned/return-requested items cannot be cancelled');
+    }
+    if (['requested', 'approved', 'rejected', 'returned'].includes(returnStatus)) {
+      throw new Error('Cannot cancel item with return lifecycle');
+    }
+
+    if (this.isOrderPaid(order)) {
+      const refundAmount = this.getProportionalRefund(order, item);
+      if (refundAmount > 0 && order.userId) {
+        await walletService.refundToWallet(order.userId, refundAmount, order.orderId, 'Order item cancelled by admin');
+      }
+    }
 
     item.itemStatus = 'cancelled';
     item.cancelReason = String(cancelReason || '').trim() || 'Cancelled by admin';
@@ -298,6 +330,13 @@ if (targetIndex < highestItemIndex) {
 
     item.returnStatus = 'approved';
     item.itemStatus = 'return_approved';
+        // Refund on admin approval (not on request).
+    if (this.isOrderPaid(order)) {
+      const refundAmount = this.getProportionalRefund(order, item);
+      if (refundAmount > 0 && order.userId) {
+        await walletService.refundToWallet(order.userId, refundAmount, order.orderId, 'Return approved by admin');
+      }
+    }
 
     order.orderStatus = this.calculateOrderStatus(order);
     await order.save();
@@ -316,7 +355,10 @@ if (targetIndex < highestItemIndex) {
     if (returnStatus !== 'requested' && itemStatus !== 'return_requested') {
       throw new Error('Return request not found for this item');
     }
-
+    const reason = String(rejectionReason || '').trim();
+    if (!reason) {
+      throw new Error('Rejection reason is required');
+    }
     item.returnStatus = 'rejected';
     item.returnRejectionReason = String(rejectionReason || '').trim();
     item.itemStatus = 'delivered';

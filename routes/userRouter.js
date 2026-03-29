@@ -113,5 +113,9 @@ router.get('/orders/:orderId/invoice', AuthMiddleware.checkSession,OrderControll
 
 
 //wallet management
-router.get('/wallet',WalletController.loadWalletPage)
+//router.get('/wallet',WalletController.loadWalletPage)
+router.get('/wallet',  WalletController.loadWalletPage);
+router.post('/wallet/add-money',  WalletController.addMoney);
+router.post('/wallet/verify-payment',  WalletController.verifyPayment);
+
 export default router;

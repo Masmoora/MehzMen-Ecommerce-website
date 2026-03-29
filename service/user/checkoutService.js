@@ -523,7 +523,7 @@ class CheckoutService {
       return { orderId: order.orderId };
     } catch (error) {
       if (paymentMethod === 'wallet') {
-        await walletService.credit(userId, summary.finalTotal, '', 'Order creation failed – refund');
+        await walletService.credit(userId, summary.finalTotal, '', 'Order creation failed refund');
       }
       await this.restoreReservedStock(reservedItems);
       throw error;

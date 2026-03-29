@@ -43,12 +43,7 @@
           <span>Categories</span>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">
-          <i class="bi bi-arrow-left-right me-2"></i>
-          <span>Refund / Return</span>
-        </a>
-      </li>
+
       <li class="nav-item">
         <a class="nav-link" href="#">
           <i class="bi bi-image me-2"></i>
@@ -114,49 +109,51 @@ Category Offers
     left: 0;
     height: calc(100vh - 70px);
     width: 260px;
-    background: #ffffff;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    background: #f8fafc;
+    border-right: 1px solid #cbd5e1;
+    box-shadow: 2px 0 12px rgba(15, 23, 42, 0.08);
     overflow-y: auto;
     z-index: 1020;
     transition: all 0.3s ease;
   }
 
   .sidebar-nav {
-    padding: 1.5rem 0;
+    padding: 0.6rem 0;
   }
 
-  .sub-link{
-  font-size: 0.9rem;
-  padding: 6px 20px;
-  color:#6c757d;
-}
+  .sub-link {
+    font-size: 0.9rem;
+    padding: 6px 20px;
+    color: #64748b;
+  }
 
-.sub-link:hover{
-  color:#667eea;
-}
+  .sub-link:hover {
+    color: #1e3a8a;
+    background: rgba(59, 130, 246, 0.08);
+  }
 
   .sidebar-nav .nav-link {
-    color: #495057;
+    color: #334155;
     padding: 0.875rem 1.5rem;
     display: flex;
     align-items: center;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     border-left: 3px solid transparent;
     text-decoration: none;
   }
 
   .sidebar-nav .nav-link:hover {
-    background-color: #f8f9fa;
-    color: #667eea;
-    border-left-color: #667eea;
+    background-color: #e2e8f0;
+    color: #1e293b;
+    border-left-color: #3b82f6;
     padding-left: 1.75rem;
   }
 
   .sidebar-nav .nav-link.active {
-    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
-    color: #667eea;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0.06) 100%);
+    color: #1e3a8a;
     font-weight: 600;
-    border-left-color: #667eea;
+    border-left-color: #3b82f6;
   }
 
   .sidebar-nav .nav-link i {
@@ -165,7 +162,15 @@ Category Offers
     text-align: center;
   }
 
-  /* Responsive */
+  .toggle-caret {
+    font-size: 0.85rem;
+    transition: transform 0.2s ease;
+  }
+
+  .nav-link[aria-expanded="true"] .toggle-caret {
+    transform: rotate(180deg);
+  }
+
   @media (max-width: 768px) {
     .admin-sidebar {
       transform: translateX(-100%);
