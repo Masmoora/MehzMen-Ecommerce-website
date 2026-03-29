@@ -37,8 +37,12 @@ const couponSchema = new Schema(
     endDate: { type: Date, default: null },
     isActive: { type: Boolean, default: true },
     usageLimit: { type: Number, default: null, min: 0 },// Total times this coupon can be used globally
-    usedCount: { type: Number, default: 0, min: 0 } // How many times it has been used
+    usedCount: { type: Number, default: 0, min: 0 } ,// How many times it has been used
+        userId: { type: Schema.Types.ObjectId, ref: 'User', default: null, index: true },
+    isReferralReward: { type: Boolean, default: false },
+    referralTitle: { type: String, trim: true, default: '' }
   },
+
   { timestamps: true }
 );
 

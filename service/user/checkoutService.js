@@ -1,4 +1,5 @@
 import Address from "../../models/addressSchema.js";
+import User from "../../models/userSchema.js";
 import Cart from "../../models/cartSchema.js";
 import Order from "../../models/orderSchema.js";
 import ProductVariant from "../../models/productVariantSchema.js";
@@ -101,14 +102,20 @@ class CheckoutService {
   };
 
  
-  getValidCoupon = async (code, subtotal = 0) => {
+  getValidCoupon = async (code, subtotal = 0, userId = null) => {
     const raw = String(code || '').trim();
     if (!raw) return null;
-    const coupon = await Coupon.findOne({ code: raw.toUpperCase(), isActive: true }).lean();
+    const coupon = await Coupon.findOne({
+      code: raw.toUpperCase(),
+      isActive: true,
+      $or: [{ userId: null }, { userId }]
+    }).lean();
     if (!coupon) return null;
     const now = new Date();
     if (coupon.startDate && new Date(coupon.startDate) > now) return null;
     if (coupon.endDate && new Date(coupon.endDate) < now) return null;
+        // Referral reward coupons are strictly one-time use.
+    if (coupon.isReferralReward && Number(coupon.usedCount || 0) >= 1) return null;
     if (coupon.usageLimit != null && (coupon.usedCount || 0) >= coupon.usageLimit) return null;
     if (Number(coupon.minOrderValue || 0) > subtotal) return null;
     return coupon;
@@ -146,17 +153,22 @@ class CheckoutService {
     };
   };
 
-  getAvailableCouponsForCheckout = async (items) => {
+  getAvailableCouponsForCheckout = async (items, userId) => {
     if (!items?.length) return [];
 
     const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
     const now = new Date();
-    const coupons = await Coupon.find({ isActive: true }).sort({ createdAt: -1 }).lean();
+    const coupons = await Coupon.find({
+      isActive: true,
+      $or: [{ userId: null }, { userId }]
+    }).sort({ createdAt: -1 }).lean();
 
     return coupons
       .filter((coupon) => {
         if (coupon.startDate && new Date(coupon.startDate) > now) return false;
         if (coupon.endDate && new Date(coupon.endDate) < now) return false;
+            // Referral reward coupons are strictly one-time use.
+    if (coupon.isReferralReward && Number(coupon.usedCount || 0) >= 1) return null;
         if (coupon.usageLimit != null && (coupon.usedCount || 0) >= coupon.usageLimit) return false;
         return true;
       })
@@ -169,28 +181,45 @@ class CheckoutService {
           value: Number(coupon.value || 0),
           minOrderValue: Number(coupon.minOrderValue || 0),
           maxDiscount: coupon.maxDiscount != null ? Number(coupon.maxDiscount) : null,
+          isReferralReward: !!coupon.isReferralReward,
+          referralTitle: coupon.referralTitle || '',
           isEligible,
           possibleDiscount
         };
       });
   };
 
+
   getCheckoutPageData = async (userId) => {
     const items = await this.getCartItemsForCheckout(userId);
     const { addresses, defaultAddressId } = await this.getAddressData(userId);
     const summary = this.buildSummary(items);
     const walletBalance = await walletService.getBalance(userId);
-    const availableCoupons = await this.getAvailableCouponsForCheckout(items);
+    const user = await User.findById(userId).select('referralCode').lean();
+    const allCoupons = await this.getAvailableCouponsForCheckout(items, userId);
+    const referralCoupons = allCoupons.filter((coupon) => coupon.isReferralReward);
+    const availableCoupons = allCoupons.filter((coupon) => !coupon.isReferralReward);
 
-    return { items, addresses, defaultAddressId, summary, walletBalance, availableCoupons };
+    return {
+      items,
+      addresses,
+      defaultAddressId,
+      summary,
+      walletBalance,
+      referralCode: user?.referralCode || '',
+      referralCoupons,
+      availableCoupons,
+      allCoupons
+    };
   };
+
 
   /** Apply coupon: validate and return updated summary. Only one coupon at a time (replaces any previous). */
   applyCoupon = async (userId, code) => {
     const items = await this.getCartItemsForCheckout(userId);
     if (!items.length) throw new Error('Your cart is empty');
     const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
-    const coupon = await this.getValidCoupon(code, subtotal);
+    const coupon = await this.getValidCoupon(code, subtotal, userId);
     if (!coupon) throw new Error('Invalid or expired coupon, or minimum order value not met');
     const summary = this.buildSummary(items, coupon);
     return { summary, couponCode: coupon.code };
@@ -360,7 +389,7 @@ class CheckoutService {
     let summary = this.buildSummary(items);
     if (couponCode) {
       const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
-      const coupon = await this.getValidCoupon(couponCode, subtotal);
+      const coupon = await this.getValidCoupon(couponCode, subtotal,userId);
       if (coupon) summary = this.buildSummary(items, coupon);
     }
     const razorpayOrder = await razorpayService.createOrder(summary.finalTotal, `checkout_${userId}`);
@@ -415,7 +444,7 @@ class CheckoutService {
     let summary = this.buildSummary(items);
     if (orderCouponCode) {
       const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
-      const coupon = await this.getValidCoupon(orderCouponCode, subtotal);
+      const coupon = await this.getValidCoupon(orderCouponCode, subtotal,userId);
       if (coupon) {
         summary = this.buildSummary(items, coupon);
         await Coupon.updateOne({ _id: coupon._id }, { $inc: { usedCount: 1 } });
@@ -431,18 +460,29 @@ class CheckoutService {
 
     const reservedItems = await this.reserveStockForOrder(items);
 
-    const orderItems = items.map((item) => ({
-      productId: item.productId,
-      variantId: item.variantId,
-      productName: item.productName,
-      brand: item.brand || 'N/A',
-      image: item.image || '',
-      color: item.color || '-',
-      size: item.size || '-',
-      quantity: item.quantity,
-      price: item.price,
-      itemTotal: item.itemTotal
-    }));
+  const orderItems = items.map((item) => {
+      const original = Number(item.originalPrice) || 0;
+      const sale = Number(item.price) || 0;
+      const qty = Number(item.quantity) || 0;
+      const offerLineTotal = Math.max(0, Math.round((original - sale) * qty));
+
+      return {
+        productId: item.productId,
+        variantId: item.variantId,
+        productName: item.productName,
+        brand: item.brand || 'N/A',
+        image: item.image || '',
+        color: item.color || '-',
+        size: item.size || '-',
+        quantity: qty,
+        price: sale,
+        originalPrice: original,
+        offerLineTotal,
+        itemTotal: item.itemTotal
+      };
+    });
+
+    const offerDiscount = orderItems.reduce((sum, line) => sum + (line.offerLineTotal || 0), 0);
 
     if (paymentMethod === 'wallet') {
       await walletService.debit(userId, summary.finalTotal, '', 'Order payment');
@@ -469,6 +509,7 @@ class CheckoutService {
           tax: 0,
           couponCode: summary.couponCode,
           couponDiscount: summary.discount,
+          offerDiscount,
           finalAmount: summary.finalTotal
         },
         orderStatus: 'processing',

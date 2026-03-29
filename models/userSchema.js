@@ -54,13 +54,21 @@ const userSchema = new Schema({
     ref:'Order'
   }],
 
-  referralCode:{
-    type:String,
-    //  required:true
+referralCode: {
+    type: String,
+    trim: true,
+    uppercase: true,
+    unique: true,
+    sparse: true
   },
-  redeemed:{
-    type:Boolean,
-    //   required:true
+  referredBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  referralRewardGiven: {
+    type: Boolean,
+    default: false
   },
   profileImage: {
   type: String,   // S3 image URL

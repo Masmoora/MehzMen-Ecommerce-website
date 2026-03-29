@@ -57,6 +57,19 @@ const orderItemSchema = new Schema({
     required: true,
     min: 0
   },
+   /** Per-unit list/base price before offer (for reporting). */
+  originalPrice: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+
+  /** Rupees saved on this line from product/category offer (not coupon). */
+  offerLineTotal: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
 
   itemTotal: {
     type: Number,
@@ -167,6 +180,12 @@ const pricingSchema = new Schema({
   },
 
   couponDiscount: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  /** Total savings from product/category offers (sum of line offerLineTotal). Not coupon. */
+  offerDiscount: {
     type: Number,
     default: 0,
     min: 0

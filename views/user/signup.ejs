@@ -49,11 +49,18 @@
                         </div>
                         <% } %>
 
-                            <!-- Referral Section -->
-                            <p class="text-center mt-2 mb-1">Anyone has referred you? Claim the reward</p>
-                            <div class="d-flex justify-content-center">
-                                <button class="btn btn-outline-dark mb-3">REFERRAL CODE</button>
-                            </div>
+<!-- Referral Section -->
+<label>Referral Code (Optional)</label>
+<input
+  type="text"
+  id="referralCode"
+  name="referralCode"
+  class="form-control mb-0 text-uppercase"
+  placeholder="Enter referral code (optional)"
+  maxlength="20"
+  value="<%= referralCode || '' %>"
+>
+<div id="error6" class="error-message"></div>
 
                             <p class="text-center">
                                 Already have an account?
@@ -161,6 +168,23 @@
                 error5.innerHTML = ""
             }
         }
+        const referralCodeId = document.getElementById('referralCode')
+const error6 = document.getElementById('error6')
+
+function referralValidateChecking() {
+  const referralVal = (referralCodeId?.value || '').trim()
+  if (!referralVal) {
+    error6.innerHTML = ''   // optional field, so empty is valid
+    return
+  }
+
+  const referralPattern = /^[A-Z0-9]{4,20}$/i
+  if (!referralPattern.test(referralVal)) {
+    error6.innerHTML = 'Referral code format is invalid'
+  } else {
+    error6.innerHTML = ''
+  }
+}
 
         document.addEventListener('DOMContentLoaded', function () {
             signupForm.addEventListener('submit', function (e) {
@@ -168,6 +192,7 @@
                 emailValidateChecking()
                 phoneValidateCheching()
                 passwordValidateChecking()
+                referralValidateChecking()
 
                 if (
                     error1.innerHTML ||

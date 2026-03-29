@@ -503,11 +503,14 @@ deleteAddress = async (req,res) => {
       const user = await UserService.getUserById(userId);
       if (!user) return res.redirect('/pageNotFound');
 
-      const coupons = await ProfileService.getCouponsForUserProfile();
+      const { referralCoupons, availableCoupons, allCoupons } = await ProfileService.getCouponsForUserProfile(userId);
 
       return res.render('coupons', {
         user,
-        coupons,
+        referralCode: user.referralCode || '',
+        referralCoupons,
+        availableCoupons,
+        coupons: allCoupons,
         activeItem: 'coupons'
       });
     } catch (error) {

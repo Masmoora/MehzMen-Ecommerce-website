@@ -19,7 +19,11 @@ class CheckoutController{
         defaultAddressId: data.defaultAddressId,
         summary: data.summary,
         walletBalance: data.walletBalance ?? 0,
-        availableCoupons: data.availableCoupons || []
+        availableCoupons: data.availableCoupons || [],
+         referralCode: data.referralCode || '',
+        referralCoupons: data.referralCoupons || [],
+        availableCoupons: data.availableCoupons || [],
+        allCoupons: data.allCoupons || []
       });
     } catch (error) {
       logger.error('Error loading checkout page:', error);

@@ -176,16 +176,25 @@ async deleteAddress(userId, addressId){
 
    }
 }
-  getCouponsForUserProfile = async () => {
+getCouponsForUserProfile = async (userId) => {
     const now = new Date();
-    const coupons = await Coupon.find({ isActive: true }).sort({ createdAt: -1 }).lean();
+    const coupons = await Coupon.find({
+      isActive: true,
+      $or: [{ userId: null }, { userId }]
+    }).sort({ createdAt: -1 }).lean();
 
-    return coupons.filter((coupon) => {
+    const activeCoupons = coupons.filter((coupon) => {
       if (coupon.startDate && new Date(coupon.startDate) > now) return false;
       if (coupon.endDate && new Date(coupon.endDate) < now) return false;
+          // Referral reward coupons are strictly one-time use.
+    if (coupon.isReferralReward && Number(coupon.usedCount || 0) >= 1) return null;
       if (coupon.usageLimit != null && (coupon.usedCount || 0) >= coupon.usageLimit) return false;
       return true;
     });
+
+    const referralCoupons = activeCoupons.filter((coupon) => coupon.isReferralReward);
+    const availableCoupons = activeCoupons.filter((coupon) => !coupon.isReferralReward);
+    return { allCoupons: activeCoupons, referralCoupons, availableCoupons };
   };
 }
 export default new ProfileService();

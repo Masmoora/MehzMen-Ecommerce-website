@@ -128,6 +128,7 @@ async handleReport(req, res) {
     return res.redirect('/admin/pageerror');
   }
 }
+
 }
 
 export default new AdminController();

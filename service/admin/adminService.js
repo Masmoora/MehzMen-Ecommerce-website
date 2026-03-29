@@ -59,7 +59,7 @@ getDateRange(rangeType, startDate, endDate) {
 }
 
 // Main report service
-async getSalesReport({
+/*async getSalesReport({
   rangeType = 'day',
   startDate,
   endDate,
@@ -129,7 +129,148 @@ async getSalesReport({
       totalPages
     }
   };
+}*/
+async getSalesReport({
+  rangeType = 'day',
+  startDate,
+  endDate,
+  page = 1,
+  limit = PAGE_SIZE
+}) {
+  const { from, to } = this.getDateRange(rangeType, startDate, endDate);
+
+  const match = {
+    orderStatus: { $nin: ['Returned', 'Cancelled', 'Processing'] },"pricing.finalAmount":{$gt:0}
+  };
+  if (from && to) {
+    match.createdAt = { $gte: from, $lte: to };
+  }
+
+  // Get all matched orders for totals
+  const allOrders = await Order.find(match)
+    .populate('userId', 'name email')
+    .sort({ createdAt: -1 })
+    .lean();
+
+  const totalSale = allOrders.length;
+  let totalAmount = 0;
+  let totalDiscount = 0;
+  let totalOffer = 0;
+
+  const fullSalesData = allOrders.map((order) => {
+    const orderTotal = order.pricing?.finalAmount ?? 0;
+    const discount = order.pricing?.couponDiscount ?? 0;
+
+      const offer =
+        order.pricing?.offerDiscount != null
+          ? Number(order.pricing.offerDiscount)
+          : (order.items || []).reduce((sum, line) => sum + Number(line.offerLineTotal || 0), 0);
+
+    totalAmount += orderTotal;
+    totalDiscount += discount;
+    totalOffer += offer;
+
+    return {
+      orderId: order.orderId,
+      user: order.userId?.name || order.userId?.email || 'N/A',
+      date: new Date(order.createdAt).toISOString().slice(0, 10),
+      payment: order.paymentMethod || 'N/A',
+      totalAmount: orderTotal,
+      discount,
+      offer
+    };
+  });
+
+  const totalPages = Math.max(1, Math.ceil(totalSale / limit));
+  const currentPage = Math.min(Math.max(1, Number(page) || 1), totalPages);
+  const startIndex = (currentPage - 1) * limit;
+  const salesDataPage = fullSalesData.slice(startIndex, startIndex + limit);
+
+  return {
+    salesDataPage,
+    fullSalesData,
+    totals: {
+      totalSale,
+      totalAmount,
+      totalDiscount,
+      totalOffer
+    },
+    pagination: {
+      currentPage,
+      totalPages
+    }
+  };
 }
+ /* getSalesReport = async ({
+    rangeType = 'day',
+    startDate,
+    endDate,
+    page = 1,
+    limit = PAGE_SIZE
+  }) => {
+    const { from, to } =this. getDateRange(rangeType, startDate, endDate);
+
+    const match = {
+      orderStatus: { $nin: EXCLUDED_STATUSES },
+      'pricing.finalAmount': { $gt: 0 }
+    };
+    if (from && to) {
+      match.createdAt = { $gte: from, $lte: to };
+    }
+
+    const allOrders = await Order.find(match)
+      .populate('userId', 'name email')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const totalSale = allOrders.length;
+    let totalAmount = 0;
+    let totalDiscount = 0;
+    let totalOffer = 0;
+
+    const fullSalesData = allOrders.map((order) => {
+      const orderTotal = order.pricing?.finalAmount ?? 0;
+      const discount = order.pricing?.couponDiscount ?? 0;
+      const offer =
+        order.pricing?.offerDiscount != null
+          ? Number(order.pricing.offerDiscount)
+          : (order.items || []).reduce((sum, line) => sum + Number(line.offerLineTotal || 0), 0);
+
+      totalAmount += orderTotal;
+      totalDiscount += discount;
+      totalOffer += offer;
+
+      return {
+        orderId: order.orderId,
+        user: order.userId?.name || order.userId?.email || 'N/A',
+        date: new Date(order.createdAt).toISOString().slice(0, 10),
+        payment: order.paymentMethod || 'N/A',
+        totalAmount: orderTotal,
+        discount,
+        offer
+      };
+    });
+
+    const totalPages = Math.max(1, Math.ceil(totalSale / limit));
+    const currentPage = Math.min(Math.max(1, Number(page) || 1), totalPages);
+    const startIndex = (currentPage - 1) * limit;
+    const salesDataPage = fullSalesData.slice(startIndex, startIndex + limit);
+
+    return {
+      salesDataPage,
+      fullSalesData,
+      totals: {
+        totalSale,
+        totalAmount,
+        totalDiscount,
+        totalOffer
+      },
+      pagination: {
+        currentPage,
+        totalPages
+      }
+    };
+  };*/
 
 }
 export default new AdminService();
