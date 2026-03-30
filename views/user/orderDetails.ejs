@@ -155,6 +155,18 @@
       <% if (normalize(order.orderStatus) === 'delivered' && hasDeliveredItemsForReturn && !hasActiveReturn) { %>
         <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#returnOrderModal">Return Order</button>
       <% } %>
+       <% const hasReturnRequested = order.items.some(item => normalize(item.returnStatus) === 'requested'); %>
+
+      <% if(hasReturnRequested){ %>
+
+<button
+  class="btn btn-outline-danger"
+  onclick="cancelEntireReturnRequest('<%= order.orderId %>')"
+>
+Cancel Entire Return Request
+</button>
+
+<% } %>
       <a class="btn btn-dark" href="/orders/<%= order.orderId %>/invoice">Download Invoice</a>
     </div>
   </main>
@@ -213,18 +225,8 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-warning" onclick="submitReturnOrder('<%= order.orderId %>')">Submit Return Request</button>
-          <% const hasReturnRequested = order.items.some(item => normalize(item.returnStatus) === 'requested'); %>
+         
 
-<% if(hasReturnRequested){ %>
-
-<button
-  class="btn btn-outline-danger"
-  onclick="cancelEntireReturnRequest('<%= order.orderId %>')"
->
-Cancel Entire Return Request
-</button>
-
-<% } %>
         </div>
       </div>
     </div>
