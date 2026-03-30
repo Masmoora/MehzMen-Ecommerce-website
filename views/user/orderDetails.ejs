@@ -213,6 +213,18 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-warning" onclick="submitReturnOrder('<%= order.orderId %>')">Submit Return Request</button>
+          <% const hasReturnRequested = order.items.some(item => normalize(item.returnStatus) === 'requested'); %>
+
+<% if(hasReturnRequested){ %>
+
+<button
+  class="btn btn-outline-danger"
+  onclick="cancelEntireReturnRequest('<%= order.orderId %>')"
+>
+Cancel Entire Return Request
+</button>
+
+<% } %>
         </div>
       </div>
     </div>
@@ -222,61 +234,80 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    async function requestItemReturn(orderId, itemId) {
-      const result = await Swal.fire({
-        title: 'Return Request',
-        html: `
-          <select id="sw-return-reason" class="swal2-input">
-            <option value="">Select a reason</option>
-            <option value="Wrong size">Wrong size</option>
-            <option value="Damaged product">Damaged product</option>
-            <option value="Quality issue">Quality issue</option>
-            <option value="Wrong item delivered">Wrong item delivered</option>
-            <option value="Other">Other</option>
-          </select>
-          <textarea id="sw-return-desc" class="swal2-textarea" placeholder="Detailed description"></textarea>
-          <input id="sw-return-images" type="file" class="swal2-file" accept="image/*" multiple />
-          <small style="display:block;color:#666">Maximum 3 images</small>
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'Submit Return Request',
-        preConfirm: () => {
-          const reason = document.getElementById('sw-return-reason').value.trim();
-          const desc = document.getElementById('sw-return-desc').value.trim();
-          const imageInput = document.getElementById('sw-return-images');
-          const files = Array.from(imageInput.files || []);
+async function requestItemReturn(orderId, itemId) {
 
-          if (!reason) {
-            Swal.showValidationMessage('Please select return reason');
-            return false;
-          }
-          if (files.length > 3) {
-            Swal.showValidationMessage('You can upload maximum 3 images');
-            return false;
-          }
-          return { reason, desc, files };
-        }
-      });
-      if (!result.isConfirmed) return;
+  const result = await Swal.fire({
+    title: 'Return Request',
+    html: `
+      <select id="sw-return-reason" class="swal2-input">
+        <option value="">Select reason</option>
+        <option value="Wrong size">Wrong size</option>
+        <option value="Damaged product">Damaged product</option>
+        <option value="Quality issue">Quality issue</option>
+        <option value="Wrong item delivered">Wrong item delivered</option>
+        <option value="Other">Other</option>
+      </select>
 
-      const fd = new FormData();
-      fd.append('returnReason', result.value.reason);
-      fd.append('returnDescription', result.value.desc);
-      result.value.files.forEach((file) => fd.append('returnImages', file));
+      <textarea
+        id="sw-return-desc"
+        class="swal2-textarea"
+        placeholder="Description (optional)">
+      </textarea>
+    `,
+    showCancelButton: true,
+    confirmButtonText: 'Submit',
 
-      const res = await fetch(`/orders/${orderId}/items/${itemId}/return-request`, {
-        method: 'PATCH',
-        body: fd
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        Swal.fire('Error', data.message || 'Failed to request return', 'error');
-        return;
+    preConfirm: () => {
+
+      const reason = document
+        .getElementById('sw-return-reason')
+        .value
+        .trim();
+
+      const desc = document
+        .getElementById('sw-return-desc')
+        .value
+        .trim();
+
+      if (!reason) {
+        Swal.showValidationMessage('Please select reason');
+        return false;
       }
-      await Swal.fire('Success', data.message || 'Return requested', 'success');
-      location.reload();
+
+      return { reason, desc };
+
     }
+
+  });
+
+  if (!result.isConfirmed) return;
+
+  const res = await fetch(`/orders/${orderId}/items/${itemId}/return-request`, {
+
+    method: "PATCH",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      returnReason: result.value.reason,
+      returnDescription: result.value.desc
+    })
+
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    Swal.fire("Error", data.message || "Failed", "error");
+    return;
+  }
+
+  await Swal.fire("Success", "Return requested", "success");
+
+  location.reload();
+}
 
     async function cancelItemReturnRequest(orderId, itemId) {
       const ask = await Swal.fire({
@@ -298,6 +329,32 @@
       await Swal.fire('Success', data.message || 'Return request cancelled', 'success');
       location.reload();
     }
+    async function cancelEntireReturnRequest(orderId){
+
+  const confirm = await Swal.fire({
+    title: "Cancel entire return request?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes cancel"
+  });
+
+  if(!confirm.isConfirmed) return;
+
+  const res = await fetch(`/orders/${orderId}/cancel-return`, {
+    method: "PATCH"
+  });
+
+  const data = await res.json();
+
+  if(!res.ok || !data.success){
+    Swal.fire("Error", data.message || "Failed", "error");
+    return;
+  }
+
+  await Swal.fire("Success", "Return request cancelled", "success");
+
+  location.reload();
+}
 
     async function cancelSingleItem(orderId, itemId) {
       const confirm = await Swal.fire({

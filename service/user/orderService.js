@@ -348,6 +348,41 @@ class OrderService {
 
   return { fileName, filePath };
 }
+cancelEntireReturnRequest = async (userId, orderId) => {
+
+  const order = await Order.findOne({ userId, orderId });
+
+  if (!order)
+    throw new Error("Order not found");
+
+  let found = false;
+
+  order.items.forEach(item => {
+
+    if (item.returnStatus === "requested") {
+
+      item.returnStatus = "cancelled_by_user";
+      item.itemStatus = "delivered";
+
+      found = true;
+
+    }
+
+  });
+
+  if (!found)
+    throw new Error("No return request found");
+
+  this.refreshOrderStatusFromItems(order);
+
+  await order.save();
+
+  return {
+    orderId: order.orderId,
+    orderStatus: order.orderStatus
+  };
+
+};
 }
 
 export default new OrderService();

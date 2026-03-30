@@ -419,7 +419,13 @@ class CheckoutService {
   };
 
   placeOrder = async (userId, orderData) => {
-    const { addressId, paymentMethod = 'cod', paymentStatus = 'Pending', couponCode: orderCouponCode = '' } = orderData || {};
+    //const { addressId, paymentMethod = 'cod', paymentStatus = 'Pending', couponCode: orderCouponCode = '' } = orderData || {};
+        const {
+      addressId,
+      paymentMethod = 'cod',
+      paymentStatus: incomingPaymentStatus = '',
+      couponCode: orderCouponCode = ''
+    } = orderData || {};
     if (!addressId) throw new Error('Please select shipping address');
     const allowedMethods = ['cod', 'razorpay', 'wallet'];
     if (!allowedMethods.includes(paymentMethod)) {
@@ -457,6 +463,10 @@ class CheckoutService {
         throw new Error(`Insufficient wallet balance. Your balance is ₹${balance}, order total is ₹${summary.finalTotal}.`);
       }
     }
+    
+    const resolvedPaymentStatus =
+      String(incomingPaymentStatus || '').trim() ||
+      (paymentMethod === 'cod' ? 'Pending' : 'Completed');
 
     const reservedItems = await this.reserveStockForOrder(items);
 
@@ -514,7 +524,8 @@ class CheckoutService {
         },
         orderStatus: 'processing',
         paymentMethod,
-        paymentStatus: paymentStatus || (paymentMethod === 'cod' ? 'Pending' : 'Completed'),
+        //paymentStatus: paymentStatus || (paymentMethod === 'cod' ? 'Pending' : 'Completed'),
+        paymentStatus: resolvedPaymentStatus,
         invoiceDate: new Date()
       });
 

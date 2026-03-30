@@ -109,7 +109,29 @@ router.get('/orders/:orderId',AuthMiddleware.checkSession,  OrderController.load
 router.patch('/orders/:orderId/items/:itemId/cancel',AuthMiddleware.checkSession,  OrderController.cancelSingleItem);
 router.patch('/orders/:orderId/cancel', AuthMiddleware.checkSession, OrderController.cancelEntireOrder);
 router.patch('/orders/:orderId/return', AuthMiddleware.checkSession, OrderController.requestReturnOrder);
+//router.patch('/orders/:orderId/items/:itemId/return-request',AuthMiddleware.checkSession, OrderController.requestItemReturn)
+// SINGLE ITEM RETURN
+router.patch(
+  '/orders/:orderId/items/:itemId/return-request',
+  AuthMiddleware.checkSession,
+  OrderController.requestItemReturn
+);
+
+// CANCEL SINGLE ITEM RETURN
+router.patch(
+  '/orders/:orderId/items/:itemId/cancel-return-request',
+  AuthMiddleware.checkSession,
+  OrderController.cancelItemReturnRequest
+);
+
+// CANCEL ENTIRE RETURN REQUEST
+router.patch(
+  '/orders/:orderId/cancel-return',
+  AuthMiddleware.checkSession,
+  OrderController.cancelEntireReturnRequest
+);
 router.get('/orders/:orderId/invoice', AuthMiddleware.checkSession,OrderController.downloadInvoice);
+
 
 
 //wallet management

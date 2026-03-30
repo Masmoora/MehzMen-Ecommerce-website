@@ -1,4 +1,3 @@
-
 import UserService from '../../service/user/userService.js';
 import OrderService from '../../service/user/orderService.js';
 import logger from '../../logger.js';
@@ -158,5 +157,108 @@ downloadInvoice = async (req, res) => {
       return res.status(500).render('page-404');
     }
   };
+  requestItemReturn = async (req, res) => {
+  try {
+
+    const userId = req.session?.user;
+    if (!userId)
+      return res.status(401).json({ success: false, message: "Login required" });
+
+    const { orderId, itemId } = req.params;
+    const { returnReason = "", returnDescription = "" } = req.body;
+
+    const result = await OrderService.requestItemReturn(
+      userId,
+      orderId,
+      itemId,
+      returnReason,
+      returnDescription
+    );
+
+    return res.json({
+      success: true,
+      message: "Return request submitted",
+      data: result
+    });
+
+  } catch (error) {
+
+    logger.error("Error requesting item return:", error);
+
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Failed to request return"
+    });
+
+  }
+};
+cancelItemReturnRequest = async (req, res) => {
+
+  try {
+
+    const userId = req.session?.user;
+
+    if (!userId)
+      return res.status(401).json({ success: false, message: "Login required" });
+
+    const { orderId, itemId } = req.params;
+
+    const result = await OrderService.cancelItemReturnRequest(
+      userId,
+      orderId,
+      itemId
+    );
+
+    return res.json({
+      success: true,
+      message: "Return request cancelled",
+      data: result
+    });
+
+  } catch (error) {
+
+    logger.error("Error cancelling return request:", error);
+
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Failed to cancel return request"
+    });
+
+  }
+};
+cancelEntireReturnRequest = async (req, res) => {
+
+  try {
+
+    const userId = req.session?.user;
+
+    if (!userId)
+      return res.status(401).json({ success: false, message: "Login required" });
+
+    const { orderId } = req.params;
+
+    const result = await OrderService.cancelEntireReturnRequest(
+      userId,
+      orderId
+    );
+
+    return res.json({
+      success: true,
+      message: "Entire return request cancelled",
+      data: result
+    });
+
+  } catch (error) {
+
+    logger.error("Error cancelling entire return:", error);
+
+    return res.status(400).json({
+      success: false,
+      message: error.message || "Failed to cancel return request"
+    });
+
+  }
+
+};
 }
 export default new OrderController();

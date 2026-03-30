@@ -2260,3 +2260,22 @@
 {"level":"error","message":"Error loading product details: Cannot read properties of null (reading '_id')","stack":"TypeError: Cannot read properties of null (reading '_id')\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:80:33)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-03-29 23:02:19"}
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-29 23:12:43"}
 {"level":"error","message":"Error cancelling full order: This order cannot be cancelled now","stack":"Error: This order cannot be cancelled now\n    at OrderService.cancelEntireOrder (file:///C:/MehzMen%20Ecommerce%20Website/service/user/orderService.js:175:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async cancelEntireOrder (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/orderController.js:80:22)","timestamp":"2026-03-29 23:15:35"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 09:31:25"}
+{"level":"error","message":"Error requesting order return: Return reason is required","stack":"Error: Return reason is required\n    at OrderService.requestReturnOrder (file:///C:/MehzMen%20Ecommerce%20Website/service/user/orderService.js:220:24)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async requestReturnOrder (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/orderController.js:98:22)","timestamp":"2026-03-30 09:34:28"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 09:45:14"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 09:45:36"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 09:45:38"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 09:46:37"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 09:47:38"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 09:47:55"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 12:05:18"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 12:05:52"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 12:07:26"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 12:44:13"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 12:45:03"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 12:45:18"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 12:48:15"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 12:48:56"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 12:49:12"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 13:03:24"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 13:03:43"}
