@@ -3,7 +3,15 @@ import logger from '../../logger.js';
 import HTTP_STATUS from '../../constants/httpStatus.js';
 
 import { generatePdfReport, generateExcelReport } from '../../utils/salesReportHelper.js';
-
+function formatRangeLabel(rangeType, startDate, endDate) {
+  if (rangeType === 'week') return 'This Week';
+  if (rangeType === 'month') return 'This Month';
+  if (rangeType === 'custom') {
+    if (startDate && endDate) return `${startDate} to ${endDate}`;
+    return 'Custom Range';
+  }
+  return 'Today';
+}
 class AdminController {
 
     pageerror = async (req, res) => {
@@ -83,6 +91,8 @@ class AdminController {
     //salesReport
 
 
+
+
 async handleReport(req, res) {
   try {
     const {
@@ -101,13 +111,20 @@ async handleReport(req, res) {
     });
 
     // Download as PDF / Excel if requested
-    if (format === 'pdf') {
-      return generatePdfReport(res, report.fullSalesData, report.totals);
-    }
+    const reportMeta = {
+        websiteName: 'Mehzmen',
+        rangeLabel: formatRangeLabel(rangeType, startDate, endDate),
+        generatedAt: new Date()
+      };
 
-    if (format === 'excel') {
-      return generateExcelReport(res, report.fullSalesData, report.totals);
-    }
+      if (format === 'pdf') {
+        return generatePdfReport(res, report.fullSalesData, report.totals, reportMeta);
+      }
+
+      if (format === 'excel') {
+        return generateExcelReport(res, report.fullSalesData, report.totals, reportMeta);
+      }
+
 
     // Render HTML page
     return res.render('salesReport', {

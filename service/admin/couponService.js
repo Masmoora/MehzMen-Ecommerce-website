@@ -16,6 +16,13 @@ class CouponService{
       Coupon.find(filter).sort({ createdAt: -1 }).skip(skip).limit(safeLimit).lean(),
       Coupon.countDocuments(filter)
     ]);
+    //chech if coupon is expired
+    const today = new Date()
+    items.forEach(coupon =>{
+      if(coupon.endDate && new Date(coupon.endDate)<today){
+        coupon.status ="Expired"
+      }
+    })
 
     const totalPages = Math.max(1, Math.ceil(total / safeLimit));
 

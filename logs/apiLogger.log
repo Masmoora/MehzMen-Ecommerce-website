@@ -2280,3 +2280,48 @@
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 13:03:24"}
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 13:03:43"}
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 13:22:32"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 14:03:55"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 14:15:34"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 16:02:47"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 16:02:51"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 16:03:02"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 16:04:28"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 16:04:35"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 16:04:38"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 16:04:48"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 16:04:56"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 16:05:10"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-30 16:29:03"}
+{"level":"error","message":"Error updating cart quantity: Maximum quantity is 5","stack":"Error: Maximum quantity is 5\n    at CartService.updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/service/user/cartService.js:124:30)\n    at updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/cartController.js:57:42)\n    at Layer.handleRequest (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (C:\\MehzMen Ecommerce Website\\node_modules\\router\\lib\\route.js:157:13)\n    at checkSession (file:///C:/MehzMen%20Ecommerce%20Website/middlewares/auth.js:26:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-03-30 16:38:03"}
+{"level":"error","message":"Error updating cart quantity: Requested quantity exceeds stock","stack":"Error: Requested quantity exceeds stock\n    at CartService.updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/service/user/cartService.js:139:36)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/cartController.js:57:24)","timestamp":"2026-03-30 16:39:17"}
+{"level":"error","message":"Error updating cart quantity: Requested quantity exceeds stock","stack":"Error: Requested quantity exceeds stock\n    at CartService.updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/service/user/cartService.js:139:36)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/cartController.js:57:24)","timestamp":"2026-03-30 16:41:48"}
+{"level":"error","message":"Error updating cart quantity: Requested quantity exceeds stock","stack":"Error: Requested quantity exceeds stock\n    at CartService.updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/service/user/cartService.js:139:36)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async updateQuantity (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/cartController.js:57:24)","timestamp":"2026-03-30 16:53:31"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-03-31 01:18:32"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 12:04:05"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 12:29:20"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 12:31:20"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 12:32:48"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 18:21:56"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:17:02"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:17:18"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:17:48"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:18:03"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:19:03"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:19:10"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:19:43"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:19:56"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:21:00"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:21:58"}
+{"level":"error","message":"Error while loading sales report page Cannot read properties of undefined (reading 'formatRangeLabel')","stack":"TypeError: Cannot read properties of undefined (reading 'formatRangeLabel')\n    at handleReport (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/adminController.js:114:26)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-04-02 19:22:22"}
+{"level":"error","message":"Error while loading sales report page Cannot read properties of undefined (reading 'formatRangeLabel')","stack":"TypeError: Cannot read properties of undefined (reading 'formatRangeLabel')\n    at handleReport (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/adminController.js:114:26)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-04-02 19:22:23"}
+{"level":"error","message":"Error while loading sales report page Cannot read properties of undefined (reading 'formatRangeLabel')","stack":"TypeError: Cannot read properties of undefined (reading 'formatRangeLabel')\n    at handleReport (file:///C:/MehzMen%20Ecommerce%20Website/controllers/admin/adminController.js:114:26)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-04-02 19:22:25"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:22:56"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:25:24"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:25:40"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:26:17"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:26:35"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:27:24"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:27:48"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:27:53"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-02 19:33:51"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 11:02:59"}

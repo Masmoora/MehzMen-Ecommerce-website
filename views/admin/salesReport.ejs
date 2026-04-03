@@ -31,7 +31,7 @@
           </select>
         </div>
 
-               <div class="col-md-3 custom-range <%= rangeType !== 'custom' ? 'd-none' : '' %>">
+        <div class="col-md-3 custom-range <%= rangeType !== 'custom' ? 'd-none' : '' %>">
           <label for="startDate" class="form-label">Start Date</label>
           <input type="date" class="form-control" id="startDate" name="startDate" value="<%= startDate || '' %>">
         </div>
@@ -116,17 +116,43 @@
     </div>
   </main>
 
-<%- include("../../views/partials/admin/footer")%>
+  <%- include("../../views/partials/admin/footer")%>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
+    function getTodayISODate() {
+      const today = new Date();
+      const y = today.getFullYear();
+      const m = String(today.getMonth() + 1).padStart(2, '0');
+      const d = String(today.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function parseDateInput(dateStr) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+
     function toggleDateInputs(value) {
       const customRange = document.querySelectorAll('.custom-range');
+      const startInput = document.getElementById('startDate');
+      const endInput = document.getElementById('endDate');
+
       customRange.forEach(el => {
-        el.style.display = value === 'custom' ? 'block' : 'none';
+        el.classList.toggle('d-none', value !== 'custom');
       });
+
+      const isCustom = value === 'custom';
+      startInput.required = isCustom;
+      endInput.required = isCustom;
+
+      if (isCustom) {
+        const today = getTodayISODate();
+        if (!startInput.value) startInput.value = today;
+        if (!endInput.value) endInput.value = today;
+      }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -144,9 +170,6 @@
           const today = new Date();
           today.setHours(0, 0, 0, 0);
 
-          const startDate = new Date(start);
-          const endDate = new Date(end);
-
           if (!start || !end) {
             e.preventDefault();
             Swal.fire({
@@ -156,6 +179,9 @@
             });
             return;
           }
+
+          const startDate = parseDateInput(start);
+          const endDate = parseDateInput(end);
 
           if (startDate > endDate) {
             e.preventDefault();
