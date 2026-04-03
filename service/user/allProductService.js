@@ -63,7 +63,7 @@ class AllProductsService {
             let variants = await ProductVariant.find({
                 productId: product._id,
                 isActive: true,
-                stock: { $gt: 0 }
+                //stock: { $gt: 0 }
             }).lean();
 
             if (!variants.length) continue;
@@ -92,6 +92,7 @@ class AllProductsService {
             // 5) Pick the lowest priced variant
             variants.sort((a, b) => a.price - b.price);
             const cheapest = variants[0];
+            const allOutOfStock = variants.every(v => v.stock === 0);
 
             // Fetch offers for this product/category
             const commonFilter = {
@@ -134,7 +135,8 @@ class AllProductsService {
                 originalPrice: best.originalPrice,
                 discountAmount: best.discountAmount,
                 discountPercent,
-                appliedOfferType: best.appliedOfferType
+                appliedOfferType: best.appliedOfferType,
+                outOfStock:allOutOfStock
             });
         }
 

@@ -155,13 +155,21 @@
   type="button"
   class="wishlist-btn <%= isWishlisted ? 'active' : '' %>"
   data-product-id="<%= products[i]._id %>"
-  aria-label="Add to wishlist"
-  title="Add to wishlist"
+  <%= products[i].outOfStock ? 'disabled' : '' %>
 >
   <i class="bi <%= isWishlisted ? 'bi-heart-fill text-danger' : 'bi-heart' %>"></i>
 </button>
                 <a href="/productDetails/<%= products[i]._id %>?variant=<%= products[i].variantId %>" class="text-decoration-none text-dark">
-                  <img src="<%= products[i].image %>" alt="<%= products[i].name %>">
+                  <div style="position:relative;">
+  <img src="<%= products[i].image %>" alt="<%= products[i].name %>">
+
+  <% if(products[i].outOfStock){ %>
+    <span class="badge bg-danger"
+      style="position:absolute; top:5px; left:5px;">
+      Out of Stock
+    </span>
+  <% } %>
+</div>
                   <h6 class="product-title mt-2 mb-1"><%= products[i].name %></h6>
                   <p class="mb-0">Brand: <%= products[i].brandName %></p>
                   <p class="mb-0">

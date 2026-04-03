@@ -2344,3 +2344,11 @@
 {"level":"error","message":"Error loading all products page: UserService is not defined","stack":"ReferenceError: UserService is not defined\n    at loadAllProducts (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:43:20)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-04-03 17:32:12"}
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 17:33:53"}
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 17:34:01"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-04 01:33:59"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-04 01:37:39"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-04 01:38:25"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-04 01:38:56"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-04 01:39:27"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-04 01:39:42"}
+{"level":"error","message":"Error loading product details: Cannot read properties of null (reading '_id')","stack":"TypeError: Cannot read properties of null (reading '_id')\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:95:33)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-04-04 01:42:40"}
+{"level":"error","message":"Error loading product details: Cannot read properties of null (reading '_id')","stack":"TypeError: Cannot read properties of null (reading '_id')\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:95:33)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-04-04 01:42:42"}
