@@ -113,10 +113,20 @@
                               <div class="actions">
                                 <a class="btn btn-sm btn-info text-white"
                                   href="/admin/orders/<%= order.orderId %>">View</a>
-                                <button class="btn btn-sm btn-primary" type="button"
-                                  onclick="quickUpdateOrder('<%= order.orderId %>', '<%= normalize(order.orderStatus) %>')">Update</button>
-                                <button class="btn btn-sm btn-danger" type="button"
-                                  onclick="quickCancelOrder('<%= order.orderId %>')">Cancel</button>
+                                <% const orderStatus = normalize(order.orderStatus); %>
+
+<% if (!['cancelled','returned','return_requested','return_approved','delivered'].includes(orderStatus)) { %>
+<button class="btn btn-sm btn-primary"
+  onclick="quickUpdateOrder('<%= order.orderId %>', '<%= orderStatus %>')">
+  Update
+</button>
+<% } %>
+                   <% if (!['cancelled','returned','delivered'].includes(orderStatus)) { %>
+<button class="btn btn-danger btn-sm"
+  onclick="cancelOrder('<%= order.orderId %>')">
+  Cancel Order
+</button>
+<% } %>
                               </div>
                             </td>
                           </tr>

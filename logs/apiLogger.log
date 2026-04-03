@@ -2352,3 +2352,5 @@
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-04 01:39:42"}
 {"level":"error","message":"Error loading product details: Cannot read properties of null (reading '_id')","stack":"TypeError: Cannot read properties of null (reading '_id')\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:95:33)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-04-04 01:42:40"}
 {"level":"error","message":"Error loading product details: Cannot read properties of null (reading '_id')","stack":"TypeError: Cannot read properties of null (reading '_id')\n    at loadProductDetails (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:95:33)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-04-04 01:42:42"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-04 02:00:49"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-04 02:40:51"}
