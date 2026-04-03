@@ -148,17 +148,18 @@
       <div class="row g-4">
         <% if (products && products.length > 0) { %>
           <% for (let i = 0; i < products.length; i++) { %>
+            <% const isWishlisted = wishlistProductIds && wishlistProductIds.includes(products[i]._id.toString()); %>
             <div class="col-12 col-md-6 col-lg-4">
               <div class="product-card">
-                <button
-                  type="button"
-                  class="wishlist-btn"
-                  data-product-id="<%= products[i]._id %>"
-                  aria-label="Add to wishlist"
-                  title="Add to wishlist"
-                >
-                  <i class="bi bi-heart"></i>
-                </button>
+<button
+  type="button"
+  class="wishlist-btn <%= isWishlisted ? 'active' : '' %>"
+  data-product-id="<%= products[i]._id %>"
+  aria-label="Add to wishlist"
+  title="Add to wishlist"
+>
+  <i class="bi <%= isWishlisted ? 'bi-heart-fill text-danger' : 'bi-heart' %>"></i>
+</button>
                 <a href="/productDetails/<%= products[i]._id %>?variant=<%= products[i].variantId %>" class="text-decoration-none text-dark">
                   <img src="<%= products[i].image %>" alt="<%= products[i].name %>">
                   <h6 class="product-title mt-2 mb-1"><%= products[i].name %></h6>

@@ -2335,3 +2335,12 @@
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 14:08:25"}
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 14:12:56"}
 {"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 14:13:08"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 17:21:43"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 17:27:29"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 17:29:02"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 17:29:08"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 17:29:18"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 17:31:46"}
+{"level":"error","message":"Error loading all products page: UserService is not defined","stack":"ReferenceError: UserService is not defined\n    at loadAllProducts (file:///C:/MehzMen%20Ecommerce%20Website/controllers/user/allProductsController.js:43:20)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2026-04-03 17:32:12"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 17:33:53"}
+{"level":"info","message":"MongoDB connected successfully","timestamp":"2026-04-03 17:34:01"}

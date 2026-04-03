@@ -4,8 +4,22 @@ import Category from '../../models/categorySchema.js';
 import { populate } from 'dotenv';
 import offerController from '../../controllers/admin/offerController.js';
 import Offer from '../../models/offerSchema.js'
+import Wishlist from '../../models/wishlistSchema.js';
 import { getBestOffer } from '../../utils/offerHelper.js'
+
 class AllProductsService {
+
+    getWishlistProductIds = async (userId) => {
+  if (!userId) return [];
+
+  const wishlist = await Wishlist.findOne({ userId })
+    .select('products.productId')
+    .lean();
+
+  if (!wishlist) return [];
+
+  return wishlist.products.map(item => item.productId.toString());
+};
     // Get products for listing page with filters, sorting, and pagination
     getAllProducts = async ({
         page,

@@ -54,7 +54,7 @@ router.get('/reset-password', userController.loadResetPasswordPage);
 router.post('/reset-password', userController.resetPassword);
 
 // User-side product listing
-router.get('/allProducts', AllProductsController.loadAllProducts);
+router.get('/allProducts',AuthMiddleware.checkSession, AllProductsController.loadAllProducts);
 
 // Product details page
 router.get('/productDetails/:id', AllProductsController.loadProductDetails);

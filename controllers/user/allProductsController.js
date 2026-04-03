@@ -1,6 +1,7 @@
 
 import AllProductsService from '../../service/user/allProductService.js';
 import logger from '../../logger.js';
+import UserService from "../../service/user/userService.js";
 
 
 class AllProductsController {
@@ -34,8 +35,21 @@ class AllProductsController {
                 AllProductsService.getBrands(),
                 AllProductsService.getColors()
             ]);
+console.log( req.session.user)
+            
+           
+const userId = req.session?.user;
+      if (!userId) return res.redirect('/login');
 
-            const user = req.session?.user || null;
+      const user = await UserService.getUserById(userId);
+      if (!user) return res.redirect('/pageNotFound');
+let wishlistProductIds = [];
+
+if (user) {
+  wishlistProductIds = await AllProductsService.getWishlistProductIds(user._id);
+}
+
+
 
             res.render('allProducts', {
                 user,
@@ -51,7 +65,8 @@ class AllProductsController {
                 selectedColor: color,
                 minPrice,
                 maxPrice,
-                sort
+                sort,
+                wishlistProductIds
             });
         } catch (error) {
             logger.error('Error loading all products page:', error);
