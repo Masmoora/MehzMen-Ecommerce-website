@@ -214,19 +214,26 @@
 
                     <% if (user) { %>
 
+                                           <li class="nav-item d-flex align-items-center gap-3 ms-3">
                         <!-- Wishlist -->
-                        <div class="d-flex align-items-center gap-3 ms-3">
+                        <a class="nav-link p-0 position-relative" href="/wishlist">
+                            <i class="bi bi-heart fs-5"></i>
+                            <% if ((wishlistItemCount || 0) > 0) { %>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger icon-badge">
+                                    <%= wishlistItemCount %>
+                                </span>
+                            <% } %>
+                        </a>
 
-                            <!-- Wishlist -->
-                            <a class="nav-link p-0" href="/wishlist">
-                                <i class="bi bi-heart fs-5"></i>
-                            </a>
-
-                            <!-- Cart -->
-                            <a class="nav-link p-0" href="/Cart">
-                                <i class="bi bi-cart fs-5"></i>
-                            </a>
-
+                        <!-- Cart -->
+                        <a class="nav-link p-0 position-relative" href="/cart">
+                            <i class="bi bi-cart fs-5"></i>
+                            <% if ((cartItemCount || 0) > 0) { %>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger icon-badge">
+                                    <%= cartItemCount %>
+                                </span>
+                            <% } %>
+                        </a>
                             <!-- User Dropdown -->
                             <div class="dropdown">
                                 <a class="nav-link dropdown-toggle p-0 d-flex align-items-center" href="#"

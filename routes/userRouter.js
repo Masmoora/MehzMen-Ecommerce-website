@@ -11,6 +11,10 @@ import CartController from '../controllers/user/cartController.js';
 import CheckoutController from '../controllers/user/checkoutController.js';
 import OrderController from '../controllers/user/orderController.js';
 import WalletController from '../controllers/user/walletController.js';
+import userHeaderCounts from '../utils/userHeaderCount.js';
+
+
+router.use(userHeaderCounts);
 
 router.get('/',userController.loadHomepage);
 router.get('/pageNotFound',userController.pageNotFound);
@@ -139,5 +143,7 @@ router.get('/orders/:orderId/invoice', AuthMiddleware.checkSession,OrderControll
 router.get('/wallet',  WalletController.loadWalletPage);
 router.post('/wallet/add-money',  WalletController.addMoney);
 router.post('/wallet/verify-payment',  WalletController.verifyPayment);
+
+
 
 export default router;
