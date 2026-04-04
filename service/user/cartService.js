@@ -205,10 +205,43 @@ const best = getBestOffer(variant.price, productOffer, categoryOffer);
 
     if (!cart || !cart.items?.length) return this.getEmptyCartData();
 
-    const items = cart.items.map((item) => {
+    //const items = cart.items.map((item) => {
+      const items = await Promise.all(cart.items.map(async (item) => {
       const product = item.productId;
       const variant = item.variantId;
       const stock = variant?.stock || 0;
+      let price = item.salePrice;
+let discount = item.discount;
+
+if (product && variant) {
+
+  const now = new Date();
+
+  const commonFilter = {
+    status: 'active',
+    startDate: { $lte: now },
+    endDate: { $gte: now }
+  };
+
+  const [productOffer, categoryOffer] = await Promise.all([
+    Offer.findOne({
+      ...commonFilter,
+      offerType: 'product',
+      productId: product._id
+    }).lean(),
+
+    Offer.findOne({
+      ...commonFilter,
+      offerType: 'category',
+      categoryId: product.category
+    }).lean()
+  ]);
+
+  const best = getBestOffer(variant.price, productOffer, categoryOffer);
+
+  price = best.finalPrice;
+  discount = best.discountAmount;
+}
 
       const outOfStock =
         !product ||
@@ -227,18 +260,21 @@ const best = getBestOffer(variant.price, productOffer, categoryOffer);
         color: variant?.color || '-',
         size: variant?.size || '-',
         originalPrice: item.basePrice,//offer
-        price: item.salePrice,
-        discount: item.discount,
+       //price: item.salePrice,
+       // discount: item.discount,
+        price: price,
+        discount: discount,
         discountPercent:
-          item.basePrice > 0 && item.basePrice > item.salePrice
-            ? Math.round(((item.basePrice - item.salePrice) / item.basePrice) * 100)
+          item.basePrice > 0 && item.basePrice > price
+            ? Math.round(((item.basePrice - price) / item.basePrice) * 100)
             : 0,
         quantity: item.quantity,
         stock,
-        lineTotal: item.salePrice * item.quantity,
+        //lineTotal: item.salePrice * item.quantity,
+        lineTotal: price ,
         outOfStock
       };
-    });
+    }));
 
     const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);

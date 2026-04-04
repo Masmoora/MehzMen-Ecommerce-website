@@ -1,11 +1,13 @@
 import Address from "../../models/addressSchema.js";
 import User from "../../models/userSchema.js";
+import Offer from "../../models/offerSchema.js";
 import Cart from "../../models/cartSchema.js";
 import Order from "../../models/orderSchema.js";
 import ProductVariant from "../../models/productVariantSchema.js";
 import * as razorpayService from '../payment/razorpayService.js'
 import walletService from "./walletService.js";
 import Coupon from "../../models/couponSchema.js";
+import { getBestOffer } from "../../utils/offerHelper.js";
 const SHIPPING_FLAT = 50;
 
 class CheckoutService {
@@ -54,40 +56,87 @@ class CheckoutService {
 
     if (!cart || !cart.items?.length) return [];
 
-    return cart.items.map((item) => {
-      const product = item.productId;
-      const variant = item.variantId;
-      const stock = variant?.stock || 0;
+    //return cart.items.map((item) => {
+    const processedItems = await Promise.all(cart.items.map(async (item) => {
 
-      const outOfStock =
-        !product ||
-        product.isBlocked ||
-        product.status !== 'available' ||
-        !variant ||
-        !variant.isActive ||
-        stock <= 0;
+  const product = item.productId;
+  const variant = item.variantId;
+  const stock = variant?.stock || 0;
 
-      return {
-        _id: item._id.toString(),
-        productId: product?._id?.toString() || '',
-        variantId: variant?._id?.toString() || '',
-        productName: product?.name || 'Product',
-        brand: product?.brand?.name || (typeof product?.brand === 'string' ? product.brand : 'N/A'),
-        image: variant?.images?.[0] || '',
-        color: variant?.color || '-',
-        size: variant?.size || '-',
-        quantity: item.quantity,
-        originalPrice: item.basePrice,
-        price: item.salePrice,
-        discount: item.discount,
-        discountPercent:
-          item.basePrice > 0 && item.basePrice > item.salePrice
-            ? Math.round(((item.basePrice - item.salePrice) / item.basePrice) * 100)
-            : 0,
-        itemTotal: item.salePrice * item.quantity,
-        outOfStock
-      };
-    });
+  if (stock <= 0 || !variant?.isActive) {
+  await Cart.updateOne(
+    { userId },
+    { $pull: { items: { _id: item._id } } }
+  );
+  return null;
+}
+
+  let price = item.salePrice;
+  let discount = item.discount;
+
+  if (product && variant) {
+
+    const now = new Date();
+
+    const commonFilter = {
+      status: 'active',
+      startDate: { $lte: now },
+      endDate: { $gte: now }
+    };
+
+    const [productOffer, categoryOffer] = await Promise.all([
+      Offer.findOne({
+        ...commonFilter,
+        offerType: 'product',
+        productId: product._id
+      }).lean(),
+
+      Offer.findOne({
+        ...commonFilter,
+        offerType: 'category',
+        categoryId: product.category
+      }).lean()
+    ]);
+
+    const best = getBestOffer(variant.price, productOffer, categoryOffer);
+
+    price = best.finalPrice;
+    discount = best.discountAmount;
+  }
+
+  const outOfStock =
+    !product ||
+    product.isBlocked ||
+    product.status !== 'available' ||
+    !variant ||
+    !variant.isActive ||
+    stock <= 0;
+
+  return {
+    _id: item._id.toString(),
+    productId: product?._id?.toString() || '',
+    variantId: variant?._id?.toString() || '',
+    productName: product?.name || 'Product',
+    brand: product?.brand?.name || 'N/A',
+    image: variant?.images?.[0] || '',
+    color: variant?.color || '-',
+    size: variant?.size || '-',
+    quantity: item.quantity,
+
+    originalPrice: variant.price,
+    price: price,
+    discount: discount,
+
+    discountPercent:
+      variant.price > price
+        ? Math.round(((variant.price - price) / variant.price) * 100)
+        : 0,
+
+    itemTotal: price * item.quantity,
+    outOfStock
+  };
+}));
+return processedItems.filter(Boolean);
   };
 
   getAddressData = async (userId) => {
