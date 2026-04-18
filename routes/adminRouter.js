@@ -12,20 +12,20 @@ import s3Upload from '../middlewares/multer.js';
 import CouponController from '../controllers/admin/couponController.js';
 import OfferController from '../controllers/admin/offerController.js';
 
-router.get('/pageerror',adminController.pageerror);
+router.get('/pageerror', adminController.pageerror);
 //Login Management
-router.get('/login',AuthMiddleware.isAdminLogin,adminController.loadLogin);
-router.post('/login',adminController.login);
-router.get('/dashboard',AuthMiddleware.adminAuth,adminController.loadDashboard);
-router.get('/logout', AuthMiddleware.adminAuth,adminController.logout);
+router.get('/login', AuthMiddleware.isAdminLogin, adminController.loadLogin);
+router.post('/login', adminController.login);
+router.get('/dashboard', AuthMiddleware.adminAuth, adminController.loadDashboard);
+router.get('/logout', AuthMiddleware.adminAuth, adminController.logout);
 //customer management
-router.get('/customers',AuthMiddleware.adminAuth,customerController.loadCustomers);
-router.get('/blockCustomer',AuthMiddleware.adminAuth,customerController.blockCustomer);
-router.get('/unblockCustomer',AuthMiddleware.adminAuth,customerController.unblockCustomer);
+router.get('/customers', AuthMiddleware.adminAuth, customerController.loadCustomers);
+router.get('/blockCustomer', AuthMiddleware.adminAuth, customerController.blockCustomer);
+router.get('/unblockCustomer', AuthMiddleware.adminAuth, customerController.unblockCustomer);
 //Category management
-router.get('/category',AuthMiddleware.adminAuth,categoryController.loadCategories);
-router.post('/categories/addCategory',AuthMiddleware.adminAuth,s3Upload('categories').single('image'),categoryController.addCategory);
-router.post('/categories/editCategory',AuthMiddleware.adminAuth,s3Upload('categories').single('image'),categoryController.editCategory);
+router.get('/category', AuthMiddleware.adminAuth, categoryController.loadCategories);
+router.post('/categories/addCategory', AuthMiddleware.adminAuth, s3Upload('categories').single('image'), categoryController.addCategory);
+router.post('/categories/editCategory', AuthMiddleware.adminAuth, s3Upload('categories').single('image'), categoryController.editCategory);
 router.post(
   '/categories/list',
   AuthMiddleware.adminAuth,
@@ -47,11 +47,11 @@ router.put("/category/offer/edit", categoryController.editOffer);
 
 router.delete("/category/offer/remove/:categoryId", categoryController.removeOffer);
 //brand Management
-router.get('/brands',AuthMiddleware.adminAuth,brandController.loadBrands);
-router.post('/addBrand',AuthMiddleware.adminAuth,s3Upload('brands').single('logo'),brandController.addBrand);
-router.post('/editBrand',AuthMiddleware.adminAuth,s3Upload('brands').single('logo'),brandController.editBrand);
+router.get('/brands', AuthMiddleware.adminAuth, brandController.loadBrands);
+router.post('/addBrand', AuthMiddleware.adminAuth, s3Upload('brands').single('logo'), brandController.addBrand);
+router.post('/editBrand', AuthMiddleware.adminAuth, s3Upload('brands').single('logo'), brandController.editBrand);
 router.patch(
-  '/brands/toggle/:id',AuthMiddleware.adminAuth,
+  '/brands/toggle/:id', AuthMiddleware.adminAuth,
   brandController.toggleBrandStatus
 );
 //product Management
@@ -62,7 +62,7 @@ router.get(
   productController.loadProductsPage
 );
 // Toggle product block/unblock
-router.patch('/products/:id/block',AuthMiddleware.adminAuth, productController.toggleProductBlock);
+router.patch('/products/:id/block', AuthMiddleware.adminAuth, productController.toggleProductBlock);
 router.get(
   '/addProducts',
   AuthMiddleware.adminAuth,
@@ -94,27 +94,27 @@ router.post(
 );
 
 //
-router.get('/products/:id/edit',AuthMiddleware.adminAuth, productController.loadEditProduct);
+router.get('/products/:id/edit', AuthMiddleware.adminAuth, productController.loadEditProduct);
 
 // Update product
 
-router.post('/products/update/:id',AuthMiddleware.adminAuth,s3Upload('products').any(), productController.updateProduct);
+router.post('/products/update/:id', AuthMiddleware.adminAuth, s3Upload('products').any(), productController.updateProduct);
 
 // Delete variant image (AJAX endpoint)
-router.post('/products/variant/image/delete', AuthMiddleware.adminAuth,s3Upload('products').any(),productController.deleteVariantImage);
+router.post('/products/variant/image/delete', AuthMiddleware.adminAuth, s3Upload('products').any(), productController.deleteVariantImage);
 // Replace variant image (AJAX endpoint, single file)
-router.post('/products/variant/image/replace',AuthMiddleware.adminAuth,s3Upload('products').single('image'), productController.replaceVariantImage);
+router.post('/products/variant/image/replace', AuthMiddleware.adminAuth, s3Upload('products').single('image'), productController.replaceVariantImage);
 // View variants page
 //router.get('/products/:id/variants', productController.loadViewVariants);
 
 // Toggle variant status (AJAX endpoint)
-router.post('/products/variant/toggle-status',  AuthMiddleware.adminAuth,productController.toggleVariantStatus);
+router.post('/products/variant/toggle-status', AuthMiddleware.adminAuth, productController.toggleVariantStatus);
 
 // Update variant (AJAX endpoint)
-router.post('/products/variant/update',  AuthMiddleware.adminAuth,
-  s3Upload('products').any(),productController.updateVariant);
+router.post('/products/variant/update', AuthMiddleware.adminAuth,
+  s3Upload('products').any(), productController.updateVariant);
 
-  //product offer management
+//product offer management
 
 
 router.get(
@@ -142,8 +142,8 @@ router.delete(
 )
 //order Management
 router.get('/orders', AuthMiddleware.adminAuth, AdminOrderController.loadOrders);
-router.get('/orders/:orderId',  AuthMiddleware.adminAuth, AuthMiddleware.adminAuth,AdminOrderController.loadOrderDetails);
-router.patch('/orders/:orderId/status', AuthMiddleware.adminAuth,AdminOrderController.updateOrderStatus);
+router.get('/orders/:orderId', AuthMiddleware.adminAuth, AuthMiddleware.adminAuth, AdminOrderController.loadOrderDetails);
+router.patch('/orders/:orderId/status', AuthMiddleware.adminAuth, AdminOrderController.updateOrderStatus);
 router.patch('/orders/:orderId/cancel', AdminOrderController.cancelOrder);
 router.patch('/orders/:orderId/items/:itemId/status', AdminOrderController.updateItemStatus);
 router.patch('/orders/:orderId/items/:itemId/cancel', AdminOrderController.cancelItem);
@@ -178,6 +178,6 @@ router.get('/toggleCategoryOffer/:id', OfferController.toggleCategoryOffer);
 router.get('/report', adminController.handleReport);
 
 // Same handler, but used for pagination/downloads
-router.get('/report/generate',adminController.handleReport);
+router.get('/report/generate', adminController.handleReport);
 
 export default router;

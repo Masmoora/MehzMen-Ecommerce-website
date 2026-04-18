@@ -8,8 +8,8 @@ class AllProductsController {
     // List all products page
     loadAllProducts = async (req, res) => {
         try {
-            const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
-            const limit = 5;
+            const page = Math.max(parseInt(req.query.page) || 1, 1);
+            const limit = 7;
             const search = (req.query.search || '').trim();
             const category = req.query.category || '';
             const brand = req.query.brand || '';
@@ -30,24 +30,24 @@ class AllProductsController {
                 color
             });
 
-            const [categories, brands,colors] = await Promise.all([
+            const [categories, brands, colors] = await Promise.all([
                 AllProductsService.getCategories(),
                 AllProductsService.getBrands(),
                 AllProductsService.getColors()
             ]);
-console.log( req.session.user)
-            
-           
-const userId = req.session?.user;
-      if (!userId) return res.redirect('/login');
+            console.log(req.session.user)
 
-      const user = await UserService.getUserById(userId);
-      if (!user) return res.redirect('/pageNotFound');
-let wishlistProductIds = [];
 
-if (user) {
-  wishlistProductIds = await AllProductsService.getWishlistProductIds(user._id);
-}
+            const userId = req.session?.user;
+            if (!userId) return res.redirect('/login');
+
+            const user = await UserService.getUserById(userId);
+            if (!user) return res.redirect('/pageNotFound');
+            let wishlistProductIds = [];
+
+            if (user) {
+                wishlistProductIds = await AllProductsService.getWishlistProductIds(user._id);
+            }
 
 
 
@@ -56,7 +56,7 @@ if (user) {
                 products,
                 categories,
                 brands,
-                 colors, 
+                colors,
                 page,
                 totalPages,
                 search,
@@ -92,8 +92,8 @@ if (user) {
 
             const relatedProducts = await AllProductsService.getRelatedProducts(
                 product._id,
-               product.category._id 
-           );
+                product.category._id
+            );
 
 
             const user = req.session?.user || null;

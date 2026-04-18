@@ -117,59 +117,58 @@
                       </button>
                       <% if(!category.hasOffer){ %>
 
-<button class="btn btn-success btn-sm"
-data-bs-toggle="modal"
-data-bs-target="#offerModal"
-data-category-id="<%= category._id %>"
-data-offer-type="add">
-<i class="bi bi-tag"></i> Add Offer
-</button>
+                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#offerModal"
+                          data-category-id="<%= category._id %>" data-offer-type="add">
+                          <i class="bi bi-tag"></i> Add Offer
+                        </button>
 
-<% } else { %>
-
-<button class="btn btn-primary btn-sm editOfferBtn"
-data-category-id="<%= category._id %>">
-<i class="bi bi-pencil"></i> Edit Offer
-</button>
-
-<button class="btn btn-danger btn-sm removeOfferBtn"
-data-category-id="<%= category._id %>">
-<i class="bi bi-trash"></i> Remove Offer
-</button>
-
-<% } %>
-
-
-                      <!-- List/Unlist Button -->
-                      <% if (category.isListed===true || category.isListed===undefined) { %>
-                        <form action="/admin/categories/unlist?id=<%= category._id %>" method="POST" class="d-inline">
-                          <% const formPage=typeof currentPage !=='undefined' ? currentPage : (typeof page
-                            !=='undefined' ? page : 1); %>
-                            <% if (formPage) { %>
-                              <input type="hidden" name="page" value="<%= formPage %>">
-                              <% } %>
-                                <% if (typeof search !=='undefined' && search) { %>
-                                  <input type="hidden" name="search" value="<%= search %>">
-                                  <% } %>
-                                    <button type="submit" class="btn btn-warning btn-sm btn-action" title="Unlist">
-                                      <i class="bi bi-eye-slash"></i>
-                                    </button>
-                        </form>
                         <% } else { %>
-                          <form action="/admin/categories/list?id=<%= category._id %>" method="POST" class="d-inline">
-                            <% const formPage=typeof currentPage !=='undefined' ? currentPage : (typeof page
-                              !=='undefined' ? page : 1); %>
-                              <% if (formPage) { %>
-                                <input type="hidden" name="page" value="<%= formPage %>">
-                                <% } %>
-                                  <% if (typeof search !=='undefined' && search) { %>
-                                    <input type="hidden" name="search" value="<%= search %>">
-                                    <% } %>
-                                      <button type="submit" class="btn btn-success btn-sm btn-action" title="List">
-                                        <i class="bi bi-eye"></i>
-                                      </button>
-                          </form>
+
+                          <button class="btn btn-primary btn-sm editOfferBtn" data-category-id="<%= category._id %>">
+                            <i class="bi bi-pencil"></i> Edit Offer
+                          </button>
+
+                          <button class="btn btn-danger btn-sm removeOfferBtn" data-category-id="<%= category._id %>">
+                            <i class="bi bi-trash"></i> Remove Offer
+                          </button>
+
                           <% } %>
+
+
+                            <!-- List/Unlist Button -->
+                            <% if (category.isListed===true || category.isListed===undefined) { %>
+                              <form action="/admin/categories/unlist?id=<%= category._id %>" method="POST"
+                                class="d-inline">
+                                <% const formPage=typeof currentPage !=='undefined' ? currentPage : (typeof page
+                                  !=='undefined' ? page : 1); %>
+                                  <% if (formPage) { %>
+                                    <input type="hidden" name="page" value="<%= formPage %>">
+                                    <% } %>
+                                      <% if (typeof search !=='undefined' && search) { %>
+                                        <input type="hidden" name="search" value="<%= search %>">
+                                        <% } %>
+                                          <button type="submit" class="btn btn-warning btn-sm btn-action"
+                                            title="Unlist">
+                                            <i class="bi bi-eye-slash"></i>
+                                          </button>
+                              </form>
+                              <% } else { %>
+                                <form action="/admin/categories/list?id=<%= category._id %>" method="POST"
+                                  class="d-inline">
+                                  <% const formPage=typeof currentPage !=='undefined' ? currentPage : (typeof page
+                                    !=='undefined' ? page : 1); %>
+                                    <% if (formPage) { %>
+                                      <input type="hidden" name="page" value="<%= formPage %>">
+                                      <% } %>
+                                        <% if (typeof search !=='undefined' && search) { %>
+                                          <input type="hidden" name="search" value="<%= search %>">
+                                          <% } %>
+                                            <button type="submit" class="btn btn-success btn-sm btn-action"
+                                              title="List">
+                                              <i class="bi bi-eye"></i>
+                                            </button>
+                                </form>
+                                <% } %>
                     </td>
                   </tr>
                   <% }); %>
@@ -339,68 +338,68 @@ data-category-id="<%= category._id %>">
           </div>
         </div>
       </div>
-  <!-- offer modal -->
-   <div class="modal fade" id="offerModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
+      <!-- offer modal -->
+      <div class="modal fade" id="offerModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
 
-      <div class="modal-header">
-        <h5 class="modal-title">Category Offer</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header">
+              <h5 class="modal-title">Category Offer</h5>
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form id="offerForm">
+
+              <div class="modal-body">
+
+                <input type="hidden" id="offerCategoryId">
+
+                <div class="mb-3">
+                  <label>Offer Title</label>
+                  <input type="text" id="offerTitle" class="form-control">
+                  <small id="offerTitleError" class="text-danger"></small>
+                </div>
+
+                <div class="mb-3">
+                  <label>Discount Type</label>
+                  <select id="discountType" class="form-control">
+                    <option value="">Select</option>
+                    <option value="percentage">Percentage</option>
+                    <option value="fixed">Fixed</option>
+                  </select>
+                  <small id="discountTypeError" class="text-danger"></small>
+                </div>
+
+                <div class="mb-3">
+                  <label>Discount Value</label>
+                  <input type="number" id="discountValue" class="form-control">
+                  <small id="discountValueError" class="text-danger"></small>
+                </div>
+
+                <div class="mb-3">
+                  <label>Start Date</label>
+                  <input type="date" id="startDate" class="form-control">
+                  <small id="startDateError" class="text-danger"></small>
+                </div>
+
+                <div class="mb-3">
+                  <label>End Date</label>
+                  <input type="date" id="endDate" class="form-control">
+                  <small id="endDateError" class="text-danger"></small>
+                </div>
+
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary">Save Offer</button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
       </div>
-
-      <form id="offerForm">
-
-        <div class="modal-body">
-
-          <input type="hidden" id="offerCategoryId">
-
-          <div class="mb-3">
-  <label>Offer Title</label>
-  <input type="text" id="offerTitle" class="form-control">
-  <small id="offerTitleError" class="text-danger"></small>
-</div>
-
-<div class="mb-3">
-  <label>Discount Type</label>
-  <select id="discountType" class="form-control">
-    <option value="">Select</option>
-    <option value="percentage">Percentage</option>
-    <option value="fixed">Fixed</option>
-  </select>
-  <small id="discountTypeError" class="text-danger"></small>
-</div>
-
-<div class="mb-3">
-  <label>Discount Value</label>
-  <input type="number" id="discountValue" class="form-control">
-  <small id="discountValueError" class="text-danger"></small>
-</div>
-
-<div class="mb-3">
-  <label>Start Date</label>
-  <input type="date" id="startDate" class="form-control">
-  <small id="startDateError" class="text-danger"></small>
-</div>
-
-<div class="mb-3">
-  <label>End Date</label>
-  <input type="date" id="endDate" class="form-control">
-  <small id="endDateError" class="text-danger"></small>
-</div>
-
-        </div>
-
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-primary">Save Offer</button>
-        </div>
-
-      </form>
-
-    </div>
-  </div>
-</div>
 
 
       <!-- Footer Partial -->
@@ -550,260 +549,260 @@ data-category-id="<%= category._id %>">
             });
           }
         </script>
-<script>
+        <script>
 
-const offerForm = document.getElementById("offerForm")
+          const offerForm = document.getElementById("offerForm")
 
-let editMode = false
+          let editMode = false
 
-// =========================
-// ADD OFFER BUTTON
-// =========================
-document.querySelectorAll('[data-offer-type="add"]').forEach(btn => {
+          // =========================
+          // ADD OFFER BUTTON
+          // =========================
+          document.querySelectorAll('[data-offer-type="add"]').forEach(btn => {
 
-  btn.addEventListener("click", () => {
+            btn.addEventListener("click", () => {
 
-    editMode = false
+              editMode = false
 
-    const categoryId = btn.dataset.categoryId
+              const categoryId = btn.dataset.categoryId
 
-    document.getElementById("offerCategoryId").value = categoryId
+              document.getElementById("offerCategoryId").value = categoryId
 
-    offerForm.reset()
+              offerForm.reset()
 
-  })
+            })
 
-})
+          })
 
 
-// =========================
-// EDIT OFFER BUTTON
-// =========================
-document.querySelectorAll(".editOfferBtn").forEach(btn => {
+          // =========================
+          // EDIT OFFER BUTTON
+          // =========================
+          document.querySelectorAll(".editOfferBtn").forEach(btn => {
 
-  btn.addEventListener("click", async () => {
+            btn.addEventListener("click", async () => {
 
-    editMode = true
+              editMode = true
 
-    const categoryId = btn.dataset.categoryId
+              const categoryId = btn.dataset.categoryId
 
-    try{
+              try {
 
-      const res = await fetch(`/admin/category/offer/${categoryId}`)
+                const res = await fetch(`/admin/category/offer/${categoryId}`)
 
-      const data = await res.json()
+                const data = await res.json()
 
-      if(data.success){
+                if (data.success) {
 
-        const offer = data.offer
+                  const offer = data.offer
 
-        document.getElementById("offerCategoryId").value = categoryId
-        document.getElementById("offerTitle").value = offer.offerTitle
-        document.getElementById("discountType").value = offer.discountType
-        document.getElementById("discountValue").value = offer.discountValue
-        document.getElementById("startDate").value = offer.startDate.split("T")[0]
-        document.getElementById("endDate").value = offer.endDate.split("T")[0]
+                  document.getElementById("offerCategoryId").value = categoryId
+                  document.getElementById("offerTitle").value = offer.offerTitle
+                  document.getElementById("discountType").value = offer.discountType
+                  document.getElementById("discountValue").value = offer.discountValue
+                  document.getElementById("startDate").value = offer.startDate.split("T")[0]
+                  document.getElementById("endDate").value = offer.endDate.split("T")[0]
 
-        new bootstrap.Modal(document.getElementById("offerModal")).show()
+                  new bootstrap.Modal(document.getElementById("offerModal")).show()
 
-      }
+                }
 
-    }catch(err){
-      console.error(err)
-    }
+              } catch (err) {
+                console.error(err)
+              }
 
-  })
+            })
 
-})
+          })
 
 
-// =========================
-// REMOVE OFFER BUTTON
-// =========================
-document.querySelectorAll(".removeOfferBtn").forEach(btn => {
+          // =========================
+          // REMOVE OFFER BUTTON
+          // =========================
+          document.querySelectorAll(".removeOfferBtn").forEach(btn => {
 
-  btn.addEventListener("click", async () => {
+            btn.addEventListener("click", async () => {
 
-    const categoryId = btn.dataset.categoryId
+              const categoryId = btn.dataset.categoryId
 
-    const confirm = await Swal.fire({
-      title:"Remove Offer?",
-      text:"This action cannot be undone",
-      icon:"warning",
-      showCancelButton:true
-    })
+              const confirm = await Swal.fire({
+                title: "Remove Offer?",
+                text: "This action cannot be undone",
+                icon: "warning",
+                showCancelButton: true
+              })
 
-    if(!confirm.isConfirmed) return
+              if (!confirm.isConfirmed) return
 
-    try{
+              try {
 
-      const res = await fetch(`/admin/category/offer/remove/${categoryId}`,{
-        method:"DELETE"
-      })
+                const res = await fetch(`/admin/category/offer/remove/${categoryId}`, {
+                  method: "DELETE"
+                })
 
-      const data = await res.json()
+                const data = await res.json()
 
-      if(data.success){
+                if (data.success) {
 
-        Swal.fire("Success","Offer removed successfully","success")
-        setTimeout(()=>location.reload(),1200)
+                  Swal.fire("Success", "Offer removed successfully", "success")
+                  setTimeout(() => location.reload(), 1200)
 
-      }
+                }
 
-    }catch(err){
+              } catch (err) {
 
-      Swal.fire("Error","Failed to remove offer","error")
+                Swal.fire("Error", "Failed to remove offer", "error")
 
-    }
+              }
 
-  })
+            })
 
-})
+          })
 
 
-// =========================
-// CLIENT VALIDATION
-// =========================
-function clearOfferErrors(){
+          // =========================
+          // CLIENT VALIDATION
+          // =========================
+          function clearOfferErrors() {
 
-  document.getElementById("offerTitleError").textContent = ""
-  document.getElementById("discountTypeError").textContent = ""
-  document.getElementById("discountValueError").textContent = ""
-  document.getElementById("startDateError").textContent = ""
-  document.getElementById("endDateError").textContent = ""
+            document.getElementById("offerTitleError").textContent = ""
+            document.getElementById("discountTypeError").textContent = ""
+            document.getElementById("discountValueError").textContent = ""
+            document.getElementById("startDateError").textContent = ""
+            document.getElementById("endDateError").textContent = ""
 
-}
+          }
 
-function validateOffer(){
+          function validateOffer() {
 
-  clearOfferErrors()
+            clearOfferErrors()
 
-  let valid = true
+            let valid = true
 
-  const title = document.getElementById("offerTitle").value.trim()
-  const discountType = document.getElementById("discountType").value
-  const discountValue = document.getElementById("discountValue").value
-  const startDate = document.getElementById("startDate").value
-  const endDate = document.getElementById("endDate").value
+            const title = document.getElementById("offerTitle").value.trim()
+            const discountType = document.getElementById("discountType").value
+            const discountValue = document.getElementById("discountValue").value
+            const startDate = document.getElementById("startDate").value
+            const endDate = document.getElementById("endDate").value
 
-  if(!title){
+            if (!title) {
 
-    document.getElementById("offerTitleError").textContent = "Offer title is required"
-    valid = false
+              document.getElementById("offerTitleError").textContent = "Offer title is required"
+              valid = false
 
-  }
+            }
 
-  if(!discountType){
+            if (!discountType) {
 
-    document.getElementById("discountTypeError").textContent = "Select discount type"
-    valid = false
+              document.getElementById("discountTypeError").textContent = "Select discount type"
+              valid = false
 
-  }
+            }
 
-  if(!discountValue || discountValue <= 0){
+            if (!discountValue || discountValue <= 0) {
 
-    document.getElementById("discountValueError").textContent = "Discount must be greater than 0"
-    valid = false
+              document.getElementById("discountValueError").textContent = "Discount must be greater than 0"
+              valid = false
 
-  }
+            }
 
-  if(discountType === "percentage" && discountValue > 90){
+            if (discountType === "percentage" && discountValue > 90) {
 
-    document.getElementById("discountValueError").textContent = "Percentage cannot exceed 90%"
-    valid = false
+              document.getElementById("discountValueError").textContent = "Percentage cannot exceed 90%"
+              valid = false
 
-  }
+            }
 
-  if(!startDate){
+            if (!startDate) {
 
-    document.getElementById("startDateError").textContent = "Start date required"
-    valid = false
+              document.getElementById("startDateError").textContent = "Start date required"
+              valid = false
 
-  }
+            }
 
-  if(!endDate){
+            if (!endDate) {
 
-    document.getElementById("endDateError").textContent = "End date required"
-    valid = false
+              document.getElementById("endDateError").textContent = "End date required"
+              valid = false
 
-  }
+            }
 
-  if(startDate && endDate && new Date(startDate) >= new Date(endDate)){
+            if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
 
-    document.getElementById("endDateError").textContent = "End date must be after start date"
-    valid = false
+              document.getElementById("endDateError").textContent = "End date must be after start date"
+              valid = false
 
-  }
+            }
 
-  return valid
+            return valid
 
-}
+          }
 
-// =========================
-// SUBMIT OFFER
-// =========================
-offerForm.addEventListener("submit", async function(e){
+          // =========================
+          // SUBMIT OFFER
+          // =========================
+          offerForm.addEventListener("submit", async function (e) {
 
-  e.preventDefault()
+            e.preventDefault()
 
-  if(!validateOffer()) return
+            if (!validateOffer()) return
 
-  const categoryId = document.getElementById("offerCategoryId").value
+            const categoryId = document.getElementById("offerCategoryId").value
 
-  const body = {
+            const body = {
 
-    categoryId,
-    offerTitle: document.getElementById("offerTitle").value,
-    discountType: document.getElementById("discountType").value,
-    discountValue: document.getElementById("discountValue").value,
-    startDate: document.getElementById("startDate").value,
-    endDate: document.getElementById("endDate").value
+              categoryId,
+              offerTitle: document.getElementById("offerTitle").value,
+              discountType: document.getElementById("discountType").value,
+              discountValue: document.getElementById("discountValue").value,
+              startDate: document.getElementById("startDate").value,
+              endDate: document.getElementById("endDate").value
 
-  }
+            }
 
-  try{
+            try {
 
-    let url = "/admin/category/offer/add"
-    let method = "POST"
+              let url = "/admin/category/offer/add"
+              let method = "POST"
 
-    if(editMode){
+              if (editMode) {
 
-      url = "/admin/category/offer/edit"
-      method = "PUT"
+                url = "/admin/category/offer/edit"
+                method = "PUT"
 
-    }
+              }
 
-    const res = await fetch(url,{
-      method,
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify(body)
-    })
+              const res = await fetch(url, {
+                method,
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+              })
 
-    const data = await res.json()
+              const data = await res.json()
 
-    if(data.success){
+              if (data.success) {
 
-      Swal.fire("Success","Offer saved successfully","success")
+                Swal.fire("Success", "Offer saved successfully", "success")
 
-      setTimeout(()=>location.reload(),1200)
+                setTimeout(() => location.reload(), 1200)
 
-    }else{
+              } else {
 
-      Swal.fire("Error",data.message || "Something went wrong","error")
+                Swal.fire("Error", data.message || "Something went wrong", "error")
 
-    }
+              }
 
-  }catch(err){
+            } catch (err) {
 
-    Swal.fire("Error","Server error","error")
+              Swal.fire("Error", "Server error", "error")
 
-  }
+            }
 
-})
+          })
 
-</script>
+        </script>
 </body>
 
 </html>

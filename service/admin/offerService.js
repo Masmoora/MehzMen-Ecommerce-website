@@ -3,7 +3,7 @@ import Product from '../../models/productSchema.js';
 import Category from '../../models/categorySchema.js'; // not used now, but ready for category offers
 
 class OfferService {
-    //PRODUCT OFFER
+  //PRODUCT OFFER
   async getProducts() {
     // Only show active / unblocked products
     return Product.find({
@@ -81,7 +81,7 @@ class OfferService {
   }
   //CATEGORY OFFER
 
-   async getCategories() {
+  async getCategories() {
     return Category.find({ isListed: true })
       .select('name')
       .sort({ name: 1 })

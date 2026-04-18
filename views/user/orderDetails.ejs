@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,239 +9,263 @@
   <link rel="stylesheet" href="/css/user/orderDetail.css">
 
 </head>
+
 <body>
   <%- include("../partials/user/header") %>
 
-  <main class="container pt-2 pb-4">
-    <% const normalize = (value) => String(value || '').trim().toLowerCase().replace(/\s+/g, '_'); %>
-    <% const isCancellable = (value) => ['pending', 'placed', 'processing', 'confirmed'].includes(normalize(value)); %>
-    <h3 class="mb-4">Order Details</h3>
+    <main class="container pt-2 pb-4">
+      <% const normalize=(value)=> String(value || '').trim().toLowerCase().replace(/\s+/g, '_'); %>
+        <% const isCancellable=(value)=> ['pending', 'placed', 'processing', 'confirmed'].includes(normalize(value)); %>
+          <h3 class="mb-4">Order Details</h3>
 
-    <section class="section-card p-3 mb-4">
-      <div class="row">
-        <div class="col-md-6">
-          <p><strong>Order ID:</strong> <%= order.orderId %></p>
-          <p><strong>Placed Date:</strong> <%= new Date(order.createdAt).toLocaleString() %></p>
-          <p><strong>Payment Method:</strong> <%= String(order.paymentMethod || '').toUpperCase() %></p>
-        </div>
-        <div class="col-md-6">
-          <p><strong>Payment Status:</strong> <%= order.paymentStatus %></p>
-          <p><strong>Order Status:</strong> <%= order.orderStatus %></p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-card p-3 mb-4">
-      <h5>Shipping Address</h5>
-      <p class="mb-1"><strong><%= order.shippingAddress.name %></strong> - <%= order.shippingAddress.phone %></p>
-      <p class="mb-0">
-        <%= order.shippingAddress.houseNo %>, <%= order.shippingAddress.landMark %>,
-        <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> -
-        <%= order.shippingAddress.pincode %>, <%= order.shippingAddress.country %>
-      </p>
-    </section>
-
-    <section class="section-card p-3 mb-4">
-      <h5 class="mb-3">Ordered Items</h5>
-      <% order.items.forEach((item) => { %>
-        <% const normalizedItemStatus = normalize(item.itemStatus); %>
-        <% const normalizedReturnStatus = normalize(item.returnStatus || (normalizedItemStatus === 'return_requested' ? 'requested' : normalizedItemStatus === 'return_approved' ? 'approved' : normalizedItemStatus === 'returned' ? 'returned' : '')); %>
-        <div class="border rounded p-3 mb-3">
-          <div class="d-flex gap-3">
-            <img
-              class="item-img"
-              src="<%= item.image || 'https://via.placeholder.com/72x72?text=No+Image' %>"
-              alt="<%= item.productName %>"
-            >
-            <div class="flex-grow-1">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <h6 class="mb-1"><%= item.productName %></h6>
-                  <div class="small text-muted">Brand: <%= item.brand || 'N/A' %></div>
-                  <div class="small text-muted">Size: <%= item.size %> | Qty: <%= item.quantity %></div>
-                  <div class="small text-muted">Price: ₹<%= item.price %></div>
-                  <div class="small mt-1"><strong>Status:</strong> <%= item.itemStatus %></div>
-                  <% if (normalizedReturnStatus && normalizedReturnStatus !== 'none') { %>
-                    <div class="small mt-2"><strong>Return Status:</strong> <%= normalizedReturnStatus.replace(/_/g, ' ').toUpperCase() %></div>
-                    <% if (item.returnReason) { %>
-                      <div class="small"><strong>Return Reason:</strong> <%= item.returnReason %></div>
-                    <% } %>
-                    <% if (item.returnDescription) { %>
-                      <div class="small"><strong>Return Description:</strong> <%= item.returnDescription %></div>
-                    <% } %>
-                    <% if (normalizedReturnStatus === 'requested') { %>
-                      <div class="alert alert-secondary py-2 mt-2 mb-2">Your return request is under review.</div>
-                    <% } %>
-                    <% if (normalizedReturnStatus === 'approved') { %>
-                      <div class="alert alert-success py-2 mt-2 mb-2">Your return request has been approved and is being processed.</div>
-                    <% } %>
-                    <% if (normalizedReturnStatus === 'rejected') { %>
-                      <div class="alert alert-danger py-2 mt-2 mb-2">
-                        Your return request was rejected.
-                        <% if (item.returnRejectionReason) { %>
-                          <div class="mt-1"><strong>Reason:</strong> <%= item.returnRejectionReason %></div>
-                        <% } %>
-                      </div>
-                    <% } %>
-                    <% if (normalizedReturnStatus === 'returned') { %>
-                      <div class="alert alert-success py-2 mt-2 mb-2">Return completed successfully.</div>
-                    <% } %>
-                    <% if (normalizedReturnStatus === 'cancelled_by_user') { %>
-                      <div class="alert alert-warning py-2 mt-2 mb-2">You cancelled this return request.</div>
-                    <% } %>
-                  <% } %>
-                </div>
-                <div class="text-end">
-                  <div class="fw-bold mb-2">₹<%= item.itemTotal %></div>
-                  <% if (['processing', 'pending', 'confirmed'].includes(normalizedItemStatus)) { %>
-                    <button
-                      class="btn btn-sm btn-outline-danger"
-                      onclick="cancelSingleItem('<%= order.orderId %>', '<%= item._id %>')"
-                    >Cancel Item</button>
-                  <% } %>
-                  <% if (normalizedItemStatus === 'delivered' && ['none', '', 'cancelled_by_user'].includes(normalizedReturnStatus)) { %>
-                    <button
-                      class="btn btn-sm btn-outline-warning mt-2"
-                      onclick="requestItemReturn('<%= order.orderId %>', '<%= item._id %>')"
-                    >Request Return</button>
-                  <% } %>
-                  <% if (normalizedReturnStatus === 'requested' || normalizedItemStatus === 'return_requested') { %>
-                    <button
-                      class="btn btn-sm btn-outline-danger mt-2"
-                      onclick="cancelItemReturnRequest('<%= order.orderId %>', '<%= item._id %>')"
-                    >Cancel Return Request</button>
-                  <% } %>
-                </div>
+          <section class="section-card p-3 mb-4">
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>Order ID:</strong>
+                  <%= order.orderId %>
+                </p>
+                <p><strong>Placed Date:</strong>
+                  <%= new Date(order.createdAt).toLocaleString() %>
+                </p>
+                <p><strong>Payment Method:</strong>
+                  <%= String(order.paymentMethod || '' ).toUpperCase() %>
+                </p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Payment Status:</strong>
+                  <%= order.paymentStatus %>
+                </p>
+                <p><strong>Order Status:</strong>
+                  <%= order.orderStatus %>
+                </p>
               </div>
             </div>
+          </section>
+
+          <section class="section-card p-3 mb-4">
+            <h5>Shipping Address</h5>
+            <p class="mb-1"><strong>
+                <%= order.shippingAddress.name %>
+              </strong> - <%= order.shippingAddress.phone %>
+            </p>
+            <p class="mb-0">
+              <%= order.shippingAddress.houseNo %>, <%= order.shippingAddress.landMark %>,
+                  <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> -
+                      <%= order.shippingAddress.pincode %>, <%= order.shippingAddress.country %>
+            </p>
+          </section>
+
+          <section class="section-card p-3 mb-4">
+            <h5 class="mb-3">Ordered Items</h5>
+            <% order.items.forEach((item)=> { %>
+              <% const normalizedItemStatus=normalize(item.itemStatus); %>
+                <% const normalizedReturnStatus=normalize(item.returnStatus ||
+                  (normalizedItemStatus==='return_requested' ? 'requested' : normalizedItemStatus==='return_approved'
+                  ? 'approved' : normalizedItemStatus==='returned' ? 'returned' : '' )); %>
+                  <div class="border rounded p-3 mb-3">
+                    <div class="d-flex gap-3">
+                      <img class="item-img" src="<%= item.image || 'https://via.placeholder.com/72x72?text=No+Image' %>"
+                        alt="<%= item.productName %>">
+                      <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between">
+                          <div>
+                            <h6 class="mb-1">
+                              <%= item.productName %>
+                            </h6>
+                            <div class="small text-muted">Brand: <%= item.brand || 'N/A' %>
+                            </div>
+                            <div class="small text-muted">Size: <%= item.size %> | Qty: <%= item.quantity %>
+                            </div>
+                            <div class="small text-muted">Price: ₹<%= item.price %>
+                            </div>
+                            <div class="small mt-1"><strong>Status:</strong>
+                              <%= item.itemStatus %>
+                            </div>
+                            <% if (normalizedReturnStatus && normalizedReturnStatus !=='none' ) { %>
+                              <div class="small mt-2"><strong>Return Status:</strong>
+                                <%= normalizedReturnStatus.replace(/_/g, ' ' ).toUpperCase() %>
+                              </div>
+                              <% if (item.returnReason) { %>
+                                <div class="small"><strong>Return Reason:</strong>
+                                  <%= item.returnReason %>
+                                </div>
+                                <% } %>
+                                  <% if (item.returnDescription) { %>
+                                    <div class="small"><strong>Return Description:</strong>
+                                      <%= item.returnDescription %>
+                                    </div>
+                                    <% } %>
+                                      <% if (normalizedReturnStatus==='requested' ) { %>
+                                        <div class="alert alert-secondary py-2 mt-2 mb-2">Your return request is under
+                                          review.</div>
+                                        <% } %>
+                                          <% if (normalizedReturnStatus==='approved' ) { %>
+                                            <div class="alert alert-success py-2 mt-2 mb-2">Your return request has been
+                                              approved and is being processed.</div>
+                                            <% } %>
+                                              <% if (normalizedReturnStatus==='rejected' ) { %>
+                                                <div class="alert alert-danger py-2 mt-2 mb-2">
+                                                  Your return request was rejected.
+                                                  <% if (item.returnRejectionReason) { %>
+                                                    <div class="mt-1"><strong>Reason:</strong>
+                                                      <%= item.returnRejectionReason %>
+                                                    </div>
+                                                    <% } %>
+                                                </div>
+                                                <% } %>
+                                                  <% if (normalizedReturnStatus==='returned' ) { %>
+                                                    <div class="alert alert-success py-2 mt-2 mb-2">Return completed
+                                                      successfully.</div>
+                                                    <% } %>
+                                                      <% if (normalizedReturnStatus==='cancelled_by_user' ) { %>
+                                                        <div class="alert alert-warning py-2 mt-2 mb-2">You cancelled
+                                                          this return request.</div>
+                                                        <% } %>
+                                                          <% } %>
+                          </div>
+                          <div class="text-end">
+                            <div class="fw-bold mb-2">₹<%= item.itemTotal %>
+                            </div>
+                            <% if (['processing', 'pending' , 'confirmed' ].includes(normalizedItemStatus)) { %>
+                              <button class="btn btn-sm btn-outline-danger"
+                                onclick="cancelSingleItem('<%= order.orderId %>', '<%= item._id %>')">Cancel
+                                Item</button>
+                              <% } %>
+                                <% if (normalizedItemStatus==='delivered' && ['none', '' , 'cancelled_by_user'
+                                  ].includes(normalizedReturnStatus)) { %>
+                                  <button class="btn btn-sm btn-outline-warning mt-2"
+                                    onclick="requestItemReturn('<%= order.orderId %>', '<%= item._id %>')">Request
+                                    Return</button>
+                                  <% } %>
+                                    <% if (normalizedReturnStatus==='requested' ||
+                                      normalizedItemStatus==='return_requested' ) { %>
+                                      <button class="btn btn-sm btn-outline-danger mt-2"
+                                        onclick="cancelItemReturnRequest('<%= order.orderId %>', '<%= item._id %>')">Cancel
+                                        Return Request</button>
+                                      <% } %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <% }) %>
+          </section>
+
+          <section class="section-card p-3 mb-4">
+            <h5 class="mb-3">Price Summary</h5>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal</span><span>₹<%= order.pricing.subtotal %></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Shipping Charge</span><span>₹<%= order.pricing.shippingCharge %></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Discount</span><span>₹<%= order.pricing.couponDiscount || 0 %></span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between fw-bold fs-5">
+              <span>Grand Total</span><span>₹<%= order.pricing.finalAmount %></span>
+            </div>
+          </section>
+
+          <div class="d-flex gap-2">
+            <% const canCancelEntireOrder=isCancellable(order.orderStatus) && order.items.some((item)=> ['processing',
+              'pending', 'confirmed'].includes(normalize(item.itemStatus))); %>
+              <% if (canCancelEntireOrder) { %>
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">Cancel
+                  Order</button>
+                <% } %>
+                  <% const hasDeliveredItemsForReturn=order.items.some((item)=> {
+                    const itemStatus = normalize(item.itemStatus);
+                    const returnStatus = normalize(item.returnStatus || '');
+                    return itemStatus === 'delivered' && returnStatus !== 'rejected';
+                    }); %>
+                    <% const hasActiveReturn=order.items.some((item)=> {
+                      const itemStatus = normalize(item.itemStatus);
+                      const returnStatus = normalize(item.returnStatus || '');
+                      return ['requested', 'approved'].includes(returnStatus) || ['return_requested',
+                      'return_approved'].includes(itemStatus);
+                      }); %>
+                      <% if (normalize(order.orderStatus)==='delivered' && hasDeliveredItemsForReturn &&
+                        !hasActiveReturn) { %>
+                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#returnOrderModal">Return
+                          Order</button>
+                        <% } %>
+                          <% const hasReturnRequested=order.items.some(item=> normalize(item.returnStatus) ===
+                            'requested'); %>
+
+                            <% if(hasReturnRequested){ %>
+
+                              <button class="btn btn-outline-danger"
+                                onclick="cancelEntireReturnRequest('<%= order.orderId %>')">
+                                Cancel Entire Return Request
+                              </button>
+
+                              <% } %>
+                                <a class="btn btn-dark" href="/orders/<%= order.orderId %>/invoice">Download Invoice</a>
+          </div>
+    </main>
+
+    <!-- Cancel full order modal -->
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Cancel Order</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <label for="cancelOrderReason" class="form-label">Reason for cancellation</label>
+            <textarea id="cancelOrderReason" class="form-control" rows="4"
+              placeholder="Please tell us why you want to cancel this order"></textarea>
+            <div class="small text-muted mt-2">Reason is optional.</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-danger"
+              onclick="submitCancelEntireOrder('<%= order.orderId %>')">Confirm Cancel</button>
           </div>
         </div>
-      <% }) %>
-    </section>
-
-    <section class="section-card p-3 mb-4">
-      <h5 class="mb-3">Price Summary</h5>
-      <div class="d-flex justify-content-between mb-2">
-        <span>Subtotal</span><span>₹<%= order.pricing.subtotal %></span>
       </div>
-      <div class="d-flex justify-content-between mb-2">
-        <span>Shipping Charge</span><span>₹<%= order.pricing.shippingCharge %></span>
-      </div>
-      <div class="d-flex justify-content-between mb-2">
-        <span>Discount</span><span>₹<%= order.pricing.couponDiscount || 0 %></span>
-      </div>
-      <hr>
-      <div class="d-flex justify-content-between fw-bold fs-5">
-        <span>Grand Total</span><span>₹<%= order.pricing.finalAmount %></span>
-      </div>
-    </section>
-
-    <div class="d-flex gap-2">
-      <% const canCancelEntireOrder =
-        isCancellable(order.orderStatus) &&
-        order.items.some((item) => ['processing', 'pending', 'confirmed'].includes(normalize(item.itemStatus))); %>
-      <% if (canCancelEntireOrder) { %>
-        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">Cancel Order</button>
-      <% } %>
-      <% const hasDeliveredItemsForReturn = order.items.some((item) => {
-        const itemStatus = normalize(item.itemStatus);
-        const returnStatus = normalize(item.returnStatus || '');
-        return itemStatus === 'delivered' && returnStatus !== 'rejected';
-      }); %>
-      <% const hasActiveReturn = order.items.some((item) => {
-        const itemStatus = normalize(item.itemStatus);
-        const returnStatus = normalize(item.returnStatus || '');
-        return ['requested', 'approved'].includes(returnStatus) || ['return_requested', 'return_approved'].includes(itemStatus);
-      }); %>
-      <% if (normalize(order.orderStatus) === 'delivered' && hasDeliveredItemsForReturn && !hasActiveReturn) { %>
-        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#returnOrderModal">Return Order</button>
-      <% } %>
-       <% const hasReturnRequested = order.items.some(item => normalize(item.returnStatus) === 'requested'); %>
-
-      <% if(hasReturnRequested){ %>
-
-<button
-  class="btn btn-outline-danger"
-  onclick="cancelEntireReturnRequest('<%= order.orderId %>')"
->
-Cancel Entire Return Request
-</button>
-
-<% } %>
-      <a class="btn btn-dark" href="/orders/<%= order.orderId %>/invoice">Download Invoice</a>
     </div>
-  </main>
 
-  <!-- Cancel full order modal -->
-  <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Cancel Order</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <label for="cancelOrderReason" class="form-label">Reason for cancellation</label>
-          <textarea
-            id="cancelOrderReason"
-            class="form-control"
-            rows="4"
-            placeholder="Please tell us why you want to cancel this order"
-          ></textarea>
-          <div class="small text-muted mt-2">Reason is optional.</div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-danger" onclick="submitCancelEntireOrder('<%= order.orderId %>')">Confirm Cancel</button>
+    <!-- Return order modal -->
+    <div class="modal fade" id="returnOrderModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Return Order</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <label for="returnOrderReason" class="form-label">Reason for return</label>
+            <textarea id="returnOrderReason" class="form-control" rows="4"
+              placeholder="Please tell us why you want to return this order"></textarea>
+            <div class="small text-muted mt-2">Reason is required to submit return request.</div>
+            <label for="returnOrderDescription" class="form-label mt-3">Description (Optional)</label>
+            <textarea id="returnOrderDescription" class="form-control" rows="3"
+              placeholder="Provide additional return details"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-warning" onclick="submitReturnOrder('<%= order.orderId %>')">Submit
+              Return Request</button>
+
+
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Return order modal -->
-  <div class="modal fade" id="returnOrderModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Return Order</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <label for="returnOrderReason" class="form-label">Reason for return</label>
-          <textarea
-            id="returnOrderReason"
-            class="form-control"
-            rows="4"
-            placeholder="Please tell us why you want to return this order"
-          ></textarea>
-          <div class="small text-muted mt-2">Reason is required to submit return request.</div>
-          <label for="returnOrderDescription" class="form-label mt-3">Description (Optional)</label>
-          <textarea
-            id="returnOrderDescription"
-            class="form-control"
-            rows="3"
-            placeholder="Provide additional return details"
-          ></textarea>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-warning" onclick="submitReturnOrder('<%= order.orderId %>')">Submit Return Request</button>
-         
+    <%- include("../partials/user/footer") %>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script>
+        async function requestItemReturn(orderId, itemId) {
 
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <%- include("../partials/user/footer") %>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-async function requestItemReturn(orderId, itemId) {
-
-  const result = await Swal.fire({
-    title: 'Return Request',
-    html: `
+          const result = await Swal.fire({
+            title: 'Return Request',
+            html: `
       <select id="sw-return-reason" class="swal2-input">
         <option value="">Select reason</option>
         <option value="Wrong size">Wrong size</option>
@@ -256,199 +281,200 @@ async function requestItemReturn(orderId, itemId) {
         placeholder="Description (optional)">
       </textarea>
     `,
-    showCancelButton: true,
-    confirmButtonText: 'Submit',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
 
-    preConfirm: () => {
+            preConfirm: () => {
 
-      const reason = document
-        .getElementById('sw-return-reason')
-        .value
-        .trim();
+              const reason = document
+                .getElementById('sw-return-reason')
+                .value
+                .trim();
 
-      const desc = document
-        .getElementById('sw-return-desc')
-        .value
-        .trim();
+              const desc = document
+                .getElementById('sw-return-desc')
+                .value
+                .trim();
 
-      if (!reason) {
-        Swal.showValidationMessage('Please select reason');
-        return false;
-      }
+              if (!reason) {
+                Swal.showValidationMessage('Please select reason');
+                return false;
+              }
 
-      return { reason, desc };
+              return { reason, desc };
 
-    }
+            }
 
-  });
+          });
 
-  if (!result.isConfirmed) return;
+          if (!result.isConfirmed) return;
 
-  const res = await fetch(`/orders/${orderId}/items/${itemId}/return-request`, {
+          const res = await fetch(`/orders/${orderId}/items/${itemId}/return-request`, {
 
-    method: "PATCH",
+            method: "PATCH",
 
-    headers: {
-      "Content-Type": "application/json"
-    },
+            headers: {
+              "Content-Type": "application/json"
+            },
 
-    body: JSON.stringify({
-      returnReason: result.value.reason,
-      returnDescription: result.value.desc
-    })
+            body: JSON.stringify({
+              returnReason: result.value.reason,
+              returnDescription: result.value.desc
+            })
 
-  });
+          });
 
-  const data = await res.json();
+          const data = await res.json();
 
-  if (!res.ok || !data.success) {
-    Swal.fire("Error", data.message || "Failed", "error");
-    return;
-  }
+          if (!res.ok || !data.success) {
+            Swal.fire("Error", data.message || "Failed", "error");
+            return;
+          }
 
-  await Swal.fire("Success", "Return requested", "success");
+          await Swal.fire("Success", "Return requested", "success");
 
-  location.reload();
-}
-
-    async function cancelItemReturnRequest(orderId, itemId) {
-      const ask = await Swal.fire({
-        title: 'Cancel return request?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, cancel'
-      });
-      if (!ask.isConfirmed) return;
-
-      const res = await fetch(`/orders/${orderId}/items/${itemId}/cancel-return-request`, {
-        method: 'PATCH'
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        Swal.fire('Error', data.message || 'Failed to cancel return request', 'error');
-        return;
-      }
-      await Swal.fire('Success', data.message || 'Return request cancelled', 'success');
-      location.reload();
-    }
-    async function cancelEntireReturnRequest(orderId){
-
-  const confirm = await Swal.fire({
-    title: "Cancel entire return request?",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes cancel"
-  });
-
-  if(!confirm.isConfirmed) return;
-
-  const res = await fetch(`/orders/${orderId}/cancel-return`, {
-    method: "PATCH"
-  });
-
-  const data = await res.json();
-
-  if(!res.ok || !data.success){
-    Swal.fire("Error", data.message || "Failed", "error");
-    return;
-  }
-
-  await Swal.fire("Success", "Return request cancelled", "success");
-
-  location.reload();
-}
-
-    async function cancelSingleItem(orderId, itemId) {
-      const confirm = await Swal.fire({
-        title: 'Cancel this item?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, cancel'
-      });
-      if (!confirm.isConfirmed) return;
-
-      try {
-        const reasonInput = await Swal.fire({
-          title: 'Reason for cancellation',
-          input: 'text',
-          inputPlaceholder: 'Optional reason',
-          showCancelButton: true,
-          confirmButtonText: 'Continue'
-        });
-        if (!reasonInput.isConfirmed) return;
-
-        const res = await fetch(`/orders/${orderId}/items/${itemId}/cancel`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cancelReason: reasonInput.value || '' })
-        });
-        const data = await res.json();
-        if (!res.ok || !data.success) {
-          Swal.fire('Error', data.message || 'Failed to cancel item', 'error');
-          return;
-        }
-        await Swal.fire('Success', data.message || 'Item cancelled', 'success');
-        location.reload();
-      } catch (error) {
-        Swal.fire('Error', 'Something went wrong', 'error');
-      }
-    }
-
-    async function submitCancelEntireOrder(orderId) {
-      const reasonField = document.getElementById('cancelOrderReason');
-      const cancelReason = reasonField ? reasonField.value.trim() : '';
-      try {
-        const res = await fetch(`/orders/${orderId}/cancel`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cancelReason })
-        });
-        const data = await res.json();
-        if (!res.ok || !data.success) {
-          Swal.fire('Error', data.message || 'Failed to cancel order', 'error');
-          return;
-        }
-        const modalEl = document.getElementById('cancelOrderModal');
-        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-        if (modalInstance) modalInstance.hide();
-        await Swal.fire('Success', data.message || 'Order cancelled', 'success');
-        location.reload();
-      } catch (error) {
-        Swal.fire('Error', 'Something went wrong', 'error');
-      }
-    }
-
-    async function submitReturnOrder(orderId) {
-      const reasonField = document.getElementById('returnOrderReason');
-      const descriptionField = document.getElementById('returnOrderDescription');
-      const returnReason = reasonField ? reasonField.value.trim() : '';
-      const returnDescription = descriptionField ? descriptionField.value.trim() : '';
-      if (!returnReason) {
-        Swal.fire('Info', 'Please enter return reason', 'info');
-        return;
-      }
-
-      try {
-        const res = await fetch(`/orders/${orderId}/return`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ returnReason, returnDescription })
-        });
-        const data = await res.json();
-        if (!res.ok || !data.success) {
-          Swal.fire('Error', data.message || 'Failed to submit return request', 'error');
-          return;
+          location.reload();
         }
 
-        const modalEl = document.getElementById('returnOrderModal');
-        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-        if (modalInstance) modalInstance.hide();
-        await Swal.fire('Success', data.message || 'Return request submitted', 'success');
-        location.reload();
-      } catch (error) {
-        Swal.fire('Error', 'Something went wrong', 'error');
-      }
-    }
-  </script>
+        async function cancelItemReturnRequest(orderId, itemId) {
+          const ask = await Swal.fire({
+            title: 'Cancel return request?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, cancel'
+          });
+          if (!ask.isConfirmed) return;
+
+          const res = await fetch(`/orders/${orderId}/items/${itemId}/cancel-return-request`, {
+            method: 'PATCH'
+          });
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            Swal.fire('Error', data.message || 'Failed to cancel return request', 'error');
+            return;
+          }
+          await Swal.fire('Success', data.message || 'Return request cancelled', 'success');
+          location.reload();
+        }
+        async function cancelEntireReturnRequest(orderId) {
+
+          const confirm = await Swal.fire({
+            title: "Cancel entire return request?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes cancel"
+          });
+
+          if (!confirm.isConfirmed) return;
+
+          const res = await fetch(`/orders/${orderId}/cancel-return`, {
+            method: "PATCH"
+          });
+
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            Swal.fire("Error", data.message || "Failed", "error");
+            return;
+          }
+
+          await Swal.fire("Success", "Return request cancelled", "success");
+
+          location.reload();
+        }
+
+        async function cancelSingleItem(orderId, itemId) {
+          const confirm = await Swal.fire({
+            title: 'Cancel this item?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, cancel'
+          });
+          if (!confirm.isConfirmed) return;
+
+          try {
+            const reasonInput = await Swal.fire({
+              title: 'Reason for cancellation',
+              input: 'text',
+              inputPlaceholder: 'Optional reason',
+              showCancelButton: true,
+              confirmButtonText: 'Continue'
+            });
+            if (!reasonInput.isConfirmed) return;
+
+            const res = await fetch(`/orders/${orderId}/items/${itemId}/cancel`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ cancelReason: reasonInput.value || '' })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+              Swal.fire('Error', data.message || 'Failed to cancel item', 'error');
+              return;
+            }
+            await Swal.fire('Success', data.message || 'Item cancelled', 'success');
+            location.reload();
+          } catch (error) {
+            Swal.fire('Error', 'Something went wrong', 'error');
+          }
+        }
+
+        async function submitCancelEntireOrder(orderId) {
+          const reasonField = document.getElementById('cancelOrderReason');
+          const cancelReason = reasonField ? reasonField.value.trim() : '';
+          try {
+            const res = await fetch(`/orders/${orderId}/cancel`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ cancelReason })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+              Swal.fire('Error', data.message || 'Failed to cancel order', 'error');
+              return;
+            }
+            const modalEl = document.getElementById('cancelOrderModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+            await Swal.fire('Success', data.message || 'Order cancelled', 'success');
+            location.reload();
+          } catch (error) {
+            Swal.fire('Error', 'Something went wrong', 'error');
+          }
+        }
+
+        async function submitReturnOrder(orderId) {
+          const reasonField = document.getElementById('returnOrderReason');
+          const descriptionField = document.getElementById('returnOrderDescription');
+          const returnReason = reasonField ? reasonField.value.trim() : '';
+          const returnDescription = descriptionField ? descriptionField.value.trim() : '';
+          if (!returnReason) {
+            Swal.fire('Info', 'Please enter return reason', 'info');
+            return;
+          }
+
+          try {
+            const res = await fetch(`/orders/${orderId}/return`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ returnReason, returnDescription })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+              Swal.fire('Error', data.message || 'Failed to submit return request', 'error');
+              return;
+            }
+
+            const modalEl = document.getElementById('returnOrderModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+            await Swal.fire('Success', data.message || 'Return request submitted', 'success');
+            location.reload();
+          } catch (error) {
+            Swal.fire('Error', 'Something went wrong', 'error');
+          }
+        }
+      </script>
 </body>
+
 </html>

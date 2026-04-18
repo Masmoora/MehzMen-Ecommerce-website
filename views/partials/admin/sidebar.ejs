@@ -56,158 +56,73 @@
           <span>Brands</span>
         </a>
       </li>
-<li class="nav-item">
+      <li class="nav-item">
 
-<a
-class="nav-link d-flex justify-content-between align-items-center"
-data-bs-toggle="collapse"
-href="#offersMenu"
-role="button"
-aria-expanded="false"
-aria-controls="offersMenu"
->
+        <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+          href="#offersMenu" role="button" aria-expanded="false" aria-controls="offersMenu">
 
-<div>
-<i class="bi bi-gift me-2"></i>
-<span>Offers</span>
-</div>
+          <div>
+            <i class="bi bi-gift me-2"></i>
+            <span>Offers</span>
+          </div>
 
-<i class="bi bi-chevron-down toggle-caret"></i>
+          <i class="bi bi-chevron-down toggle-caret"></i>
 
-</a>
+        </a>
 
 
-<div class="collapse" id="offersMenu">
+        <div class="collapse" id="offersMenu">
 
-<ul class="nav flex-column ms-4">
+          <ul class="nav flex-column ms-4">
 
-<li class="nav-item">
-<a href="/admin/productOffers" class="nav-link sub-link">
-Product Offers
-</a>
-</li>
+            <li class="nav-item">
+              <a href="/admin/productOffers" class="nav-link sub-link">
+                Product Offers
+              </a>
+            </li>
 
-<li class="nav-item">
-<a href="/admin/categoryOffers" class="nav-link sub-link">
-Category Offers
-</a>
-</li>
+            <li class="nav-item">
+              <a href="/admin/categoryOffers" class="nav-link sub-link">
+                Category Offers
+              </a>
+            </li>
 
-</ul>
+          </ul>
 
-</div>
+        </div>
 
-</li>
+      </li>
     </ul>
   </nav>
 </aside>
 
-<style>
-  .admin-sidebar {
-    position: fixed;
-    top: 70px;
-    left: 0;
-    height: calc(100vh - 70px);
-    width: 260px;
-    background: #f8fafc;
-    border-right: 1px solid #cbd5e1;
-    box-shadow: 2px 0 12px rgba(15, 23, 42, 0.08);
-    overflow-y: auto;
-    z-index: 1020;
-    transition: all 0.3s ease;
-  }
-
-  .sidebar-nav {
-    padding: 0.6rem 0;
-  }
-
-  .sub-link {
-    font-size: 0.9rem;
-    padding: 6px 20px;
-    color: #64748b;
-  }
-
-  .sub-link:hover {
-    color: #1e3a8a;
-    background: rgba(59, 130, 246, 0.08);
-  }
-
-  .sidebar-nav .nav-link {
-    color: #334155;
-    padding: 0.875rem 1.5rem;
-    display: flex;
-    align-items: center;
-    transition: all 0.25s ease;
-    border-left: 3px solid transparent;
-    text-decoration: none;
-  }
-
-  .sidebar-nav .nav-link:hover {
-    background-color: #e2e8f0;
-    color: #1e293b;
-    border-left-color: #3b82f6;
-    padding-left: 1.75rem;
-  }
-
-  .sidebar-nav .nav-link.active {
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0.06) 100%);
-    color: #1e3a8a;
-    font-weight: 600;
-    border-left-color: #3b82f6;
-  }
-
-  .sidebar-nav .nav-link i {
-    font-size: 1.1rem;
-    width: 24px;
-    text-align: center;
-  }
-
-  .toggle-caret {
-    font-size: 0.85rem;
-    transition: transform 0.2s ease;
-  }
-
-  .nav-link[aria-expanded="true"] .toggle-caret {
-    transform: rotate(180deg);
-  }
-
-  @media (max-width: 768px) {
-    .admin-sidebar {
-      transform: translateX(-100%);
-      width: 240px;
-    }
-
-    .admin-sidebar.show {
-      transform: translateX(0);
-    }
-  }
-</style>
+<link rel="stylesheet" href="/css/admin/adminSidebar.css">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   // Set active menu item based on current route
-  (function() {
+  (function () {
     const currentPath = window.location.pathname;
-    
+
     // Find all nav links
     const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
-    
+
     navLinks.forEach(link => {
       // Remove active class from all links
       link.classList.remove('active');
-      
+
       // Get the href from the link
       const linkHref = link.getAttribute('href') || '';
-      
+
       // Skip links with # or empty href
       if (!linkHref || linkHref === '#') return;
-      
+
       // Check if current path matches or starts with link href
       // This handles sub-routes like /admin/products/add -> highlights Products
       if (currentPath === linkHref || currentPath.startsWith(linkHref + '/')) {
         link.classList.add('active');
       }
     });
-    
+
     // Special case for dashboard (root /admin path)
     if (currentPath === '/admin' || currentPath === '/admin/') {
       const dashboardLink = document.querySelector('[data-route="dashboard"]');
@@ -219,4 +134,3 @@ Category Offers
     }
   })();
 </script>
-

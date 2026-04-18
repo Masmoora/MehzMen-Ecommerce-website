@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,165 +10,177 @@
   <link rel="stylesheet" href="/css/user/wallet.css">
 
 </head>
+
 <body>
   <%- include("../partials/user/header") %>
 
-  <main class="container pt-2 pb-4">
-    <div class="row">
-      <div class="col-lg-3 mb-3">
-        <%- include("../partials/user/profileSidebar", { user, activeItem: "wallet" }) %>
-      </div>
-
-      <div class="col-lg-9">
-        <h4 class="mb-3">My Wallet</h4>
-
-        <div class="card-soft p-4 mb-4">
-          <div class="row g-3 align-items-center">
-            <div class="col-md-8">
-              <div class="wallet-balance-card">
-                <span class="wallet-balance-label">Available Balance</span>
-                <div class="wallet-balance-value" id="walletBalanceText">₹<%= Number(balance || 0).toFixed(2) %></div>
-              </div>
-            </div>
-            <div class="col-md-4 d-flex flex-column align-items-md-end align-items-start gap-2">
-              <button type="button" class="btn btn-primary wallet-add-btn" id="addMoneyBtn" <%= razorpayEnabled ? '' : 'disabled' %>>
-                + Add to Wallet
-              </button>
-              <small class="text-muted d-block">Refunds from cancelled and returned orders are credited here.</small>
-            </div>
-          </div>
+    <main class="container pt-2 pb-4">
+      <div class="row">
+        <div class="col-lg-3 mb-3">
+          <%- include("../partials/user/profileSidebar", { user, activeItem: "wallet" }) %>
         </div>
 
-        <div class="card-soft p-4">
-          <h5 class="mb-3">Transaction History</h5>
-          <% if (!transactions || !transactions.length) { %>
-            <p class="text-muted mb-0">No wallet transactions yet.</p>
-          <% } else { %>
-            <div class="list-group">
-              <% transactions.forEach(function(tx) { %>
-                <% const txType = String(tx.type || '').toLowerCase(); %>
-                <% const txReason = String(tx.reason || '').toLowerCase(); %>
-                <% const isRefund = txType === 'credit' && (txReason.includes('refund') || txReason.includes('return') || txReason.includes('cancel')); %>
-                <div class="tx-card <%= txType === 'debit' ? 'tx-debit' : (isRefund ? 'tx-refund' : 'tx-credit') %>">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                      <div class="fw-semibold mb-1 text-capitalize">
-                        <%= txType === 'debit' ? 'debited' : (isRefund ? 'refund' : 'credited') %>
-                      </div>
-                      <div class="small text-muted mb-1"><%= tx.reason || '-' %></div>
-                      <div class="small text-muted">
-                        <%= new Date(tx.createdAt || tx.date).toLocaleString() %>
-                        <% if (tx.orderId) { %> · Ref: <%= tx.orderId %><% } %>
-                      </div>
-                    </div>
-                    <div class="text-end tx-amount <%= txType === 'debit' ? 'text-danger' : 'text-success' %>">
-                      <%= txType === 'debit' ? '-' : '+' %> ₹<%= Number(tx.amount || 0).toFixed(2) %>
-                    </div>
+        <div class="col-lg-9">
+          <h4 class="mb-3">My Wallet</h4>
+
+          <div class="card-soft p-4 mb-4">
+            <div class="row g-3 align-items-center">
+              <div class="col-md-8">
+                <div class="wallet-balance-card">
+                  <span class="wallet-balance-label">Available Balance</span>
+                  <div class="wallet-balance-value" id="walletBalanceText">₹<%= Number(balance || 0).toFixed(2) %>
                   </div>
                 </div>
-              <% }) %>
+              </div>
+              <div class="col-md-4 d-flex flex-column align-items-md-end align-items-start gap-2">
+                <button type="button" class="btn btn-primary wallet-add-btn" id="addMoneyBtn" <%=razorpayEnabled ? ''
+                  : 'disabled' %>>
+                  + Add to Wallet
+                </button>
+                <small class="text-muted d-block">Refunds from cancelled and returned orders are credited here.</small>
+              </div>
             </div>
-          <% } %>
+          </div>
 
-          <% if (pagination && pagination.totalPages > 1) { %>
-            <nav class="mt-3" aria-label="Wallet transactions pagination">
-              <ul class="pagination pagination-sm mb-0">
-                <li class="page-item <%= pagination.hasPrev ? '' : 'disabled' %>">
-                  <a class="page-link" href="/profile/wallet?page=<%= pagination.page - 1 %>">Prev</a>
-                </li>
-                <% for (let i = 1; i <= pagination.totalPages; i += 1) { %>
-                  <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
-                    <a class="page-link" href="/profile/wallet?page=<%= i %>"><%= i %></a>
-                  </li>
+          <div class="card-soft p-4">
+            <h5 class="mb-3">Transaction History</h5>
+            <% if (!transactions || !transactions.length) { %>
+              <p class="text-muted mb-0">No wallet transactions yet.</p>
+              <% } else { %>
+                <div class="list-group">
+                  <% transactions.forEach(function(tx) { %>
+                    <% const txType=String(tx.type || '' ).toLowerCase(); %>
+                      <% const txReason=String(tx.reason || '' ).toLowerCase(); %>
+                        <% const isRefund=txType==='credit' && (txReason.includes('refund') ||
+                          txReason.includes('return') || txReason.includes('cancel')); %>
+                          <div
+                            class="tx-card <%= txType === 'debit' ? 'tx-debit' : (isRefund ? 'tx-refund' : 'tx-credit') %>">
+                            <div class="d-flex justify-content-between align-items-start">
+                              <div>
+                                <div class="fw-semibold mb-1 text-capitalize">
+                                  <%= txType==='debit' ? 'debited' : (isRefund ? 'refund' : 'credited' ) %>
+                                </div>
+                                <div class="small text-muted mb-1">
+                                  <%= tx.reason || '-' %>
+                                </div>
+                                <div class="small text-muted">
+                                  <%= new Date(tx.createdAt || tx.date).toLocaleString() %>
+                                    <% if (tx.orderId) { %> · Ref: <%= tx.orderId %>
+                                        <% } %>
+                                </div>
+                              </div>
+                              <div
+                                class="text-end tx-amount <%= txType === 'debit' ? 'text-danger' : 'text-success' %>">
+                                <%= txType==='debit' ? '-' : '+' %> ₹<%= Number(tx.amount || 0).toFixed(2) %>
+                              </div>
+                            </div>
+                          </div>
+                          <% }) %>
+                </div>
                 <% } %>
-                <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
-                  <a class="page-link" href="/profile/wallet?page=<%= pagination.page + 1 %>">Next</a>
-                </li>
-              </ul>
-            </nav>
-          <% } %>
+
+                  <% if (pagination && pagination.totalPages> 1) { %>
+                    <nav class="mt-3" aria-label="Wallet transactions pagination">
+                      <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item <%= pagination.hasPrev ? '' : 'disabled' %>">
+                          <a class="page-link" href="/profile/wallet?page=<%= pagination.page - 1 %>">Prev</a>
+                        </li>
+                        <% for (let i=1; i <=pagination.totalPages; i +=1) { %>
+                          <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
+                            <a class="page-link" href="/profile/wallet?page=<%= i %>">
+                              <%= i %>
+                            </a>
+                          </li>
+                          <% } %>
+                            <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
+                              <a class="page-link" href="/profile/wallet?page=<%= pagination.page + 1 %>">Next</a>
+                            </li>
+                      </ul>
+                    </nav>
+                    <% } %>
+          </div>
         </div>
       </div>
-    </div>
-  </main>
+    </main>
 
-  <%- include("../partials/user/footer") %>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <% if (razorpayEnabled) { %>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <% } %>
-  <script>
-    const addMoneyBtn = document.getElementById('addMoneyBtn');
+    <%- include("../partials/user/footer") %>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <% if (razorpayEnabled) { %>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <% } %>
+          <script>
+            const addMoneyBtn = document.getElementById('addMoneyBtn');
 
-    async function askAmount() {
-      const result = await Swal.fire({
-        title: 'Add money to wallet',
-        input: 'number',
-        inputLabel: 'Enter amount (INR)',
-        inputAttributes: { min: '10', step: '1' },
-        inputValue: 100,
-        showCancelButton: true,
-        confirmButtonText: 'Continue'
-      });
-      if (!result.isConfirmed) return null;
-      const amount = Number(result.value || 0);
-      if (!Number.isFinite(amount) || amount < 10) {
-        await Swal.fire('Invalid amount', 'Please enter at least ₹10', 'error');
-        return null;
-      }
-      return amount;
-    }
+            async function askAmount() {
+              const result = await Swal.fire({
+                title: 'Add money to wallet',
+                input: 'number',
+                inputLabel: 'Enter amount (INR)',
+                inputAttributes: { min: '10', step: '1' },
+                inputValue: 100,
+                showCancelButton: true,
+                confirmButtonText: 'Continue'
+              });
+              if (!result.isConfirmed) return null;
+              const amount = Number(result.value || 0);
+              if (!Number.isFinite(amount) || amount < 10) {
+                await Swal.fire('Invalid amount', 'Please enter at least ₹10', 'error');
+                return null;
+              }
+              return amount;
+            }
 
-    addMoneyBtn?.addEventListener('click', async () => {
-      const amount = await askAmount();
-      if (!amount) return;
+            addMoneyBtn?.addEventListener('click', async () => {
+              const amount = await askAmount();
+              if (!amount) return;
 
-      const createRes = await fetch('/wallet/add-money', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount })
-      });
-      const createData = await createRes.json().catch(() => ({}));
-      if (!createRes.ok || !createData.success) {
-        await Swal.fire('Error', createData.message || 'Could not initiate payment', 'error');
-        return;
-      }
+              const createRes = await fetch('/wallet/add-money', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount })
+              });
+              const createData = await createRes.json().catch(() => ({}));
+              if (!createRes.ok || !createData.success) {
+                await Swal.fire('Error', createData.message || 'Could not initiate payment', 'error');
+                return;
+              }
 
-      const options = {
-        key: createData.keyId,
-        amount: createData.amount,
-        currency: createData.currency || 'INR',
-        order_id: createData.razorpayOrderId,
-        name: 'MehzMen',
-        description: 'Wallet top-up',
-        handler: async function (response) {
-          const verifyRes = await fetch('/wallet/verify-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature
-            })
-          });
-          const verifyData = await verifyRes.json().catch(() => ({}));
-          if (!verifyRes.ok || !verifyData.success) {
-            await Swal.fire('Error', verifyData.message || 'Payment verification failed', 'error');
-            return;
-          }
-          await Swal.fire('Success', verifyData.message || 'Money added successfully', 'success');
-          window.location.reload();
-        },
-        theme: { color: '#0083b0' }
-      };
+              const options = {
+                key: createData.keyId,
+                amount: createData.amount,
+                currency: createData.currency || 'INR',
+                order_id: createData.razorpayOrderId,
+                name: 'MehzMen',
+                description: 'Wallet top-up',
+                handler: async function (response) {
+                  const verifyRes = await fetch('/wallet/verify-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      razorpayOrderId: response.razorpay_order_id,
+                      razorpayPaymentId: response.razorpay_payment_id,
+                      razorpaySignature: response.razorpay_signature
+                    })
+                  });
+                  const verifyData = await verifyRes.json().catch(() => ({}));
+                  if (!verifyRes.ok || !verifyData.success) {
+                    await Swal.fire('Error', verifyData.message || 'Payment verification failed', 'error');
+                    return;
+                  }
+                  await Swal.fire('Success', verifyData.message || 'Money added successfully', 'success');
+                  window.location.reload();
+                },
+                theme: { color: '#0083b0' }
+              };
 
-      const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', async function () {
-        await Swal.fire('Failed', 'Payment failed. Please try again.', 'error');
-      });
-      rzp.open();
-    });
-  </script>
+              const rzp = new window.Razorpay(options);
+              rzp.on('payment.failed', async function () {
+                await Swal.fire('Failed', 'Payment failed. Please try again.', 'error');
+              });
+              rzp.open();
+            });
+          </script>
 </body>
+
 </html>

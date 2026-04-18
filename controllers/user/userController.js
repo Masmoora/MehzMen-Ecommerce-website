@@ -18,7 +18,7 @@ class UserController {
 
     loadHomepage = async (req, res) => {
         try {
-            const [ newArrivals, categories, brands] = await Promise.all([
+            const [newArrivals, categories, brands] = await Promise.all([
                 UserService.getNewArrivals(),
                 UserService.getCategories(),
                 UserService.getBrands()
@@ -48,8 +48,8 @@ class UserController {
 
     loadsignup = async (req, res) => {
         try {
-            res.render('signup', { user: null, message: null,referralCode: req.query.referral || '' })
-            
+            res.render('signup', { user: null, message: null, referralCode: req.query.referral || '' })
+
         } catch (error) {
             console.log('Signup page error:', error);
             res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send('Server error');
@@ -106,38 +106,38 @@ class UserController {
 
     signup = async (req, res) => {
         try {
-            let { name, phone, email, password, cpassword,referralCode } = req.body;
+            let { name, phone, email, password, cpassword, referralCode } = req.body;
             console.log(req.body);
             email = email.trim().toLowerCase();
             referralCode = String(referralCode || '').trim().toUpperCase();
 
-            if (password !== cpassword) return res.render('signup', { message: 'Passwords do not match' ,referralCode} );
+            if (password !== cpassword) return res.render('signup', { message: 'Passwords do not match', referralCode });
 
             const existingUser = await UserService.findByEmail(email);
-            if (existingUser) return res.render('signup', { message: 'User already exists' ,referralCode} );
+            if (existingUser) return res.render('signup', { message: 'User already exists', referralCode });
 
-                  let referrer = null;
-      if (referralCode) {
-        referrer = await UserService.findByReferralCode(referralCode);
-        if (!referrer) {
-          return res.render('signup', { user: null, message: 'Invalid referral code', referralCode });
-        }
-        if (
-          String(referrer.email || '').toLowerCase() === email ||
-          (phone && String(referrer.phone || '') === String(phone))
-        ) {
-          return res.render('signup', { user: null, message: 'Self-referral is not allowed', referralCode });
-        }
-      }
+            let referrer = null;
+            if (referralCode) {
+                referrer = await UserService.findByReferralCode(referralCode);
+                if (!referrer) {
+                    return res.render('signup', { user: null, message: 'Invalid referral code', referralCode });
+                }
+                if (
+                    String(referrer.email || '').toLowerCase() === email ||
+                    (phone && String(referrer.phone || '') === String(phone))
+                ) {
+                    return res.render('signup', { user: null, message: 'Self-referral is not allowed', referralCode });
+                }
+            }
 
             const otp = this.generateOtp();
             console.log(otp);
             const emailSent = await this.sendVarificationMail(email, otp);
 
-            if (!emailSent) return res.render('signup', { message: 'Failed to send OTP. Try again.' ,referralCode} );
+            if (!emailSent) return res.render('signup', { message: 'Failed to send OTP. Try again.', referralCode });
 
             // Store temporary signup info in session
-            req.session.userData = { name, phone, email, password ,referredBy: referrer?._id || null};
+            req.session.userData = { name, phone, email, password, referredBy: referrer?._id || null };
             req.session.userotp = otp;
             req.session.otpPurpose = 'signup';
             console.log(' session otp sent', req.session.userotp);
@@ -185,16 +185,16 @@ class UserController {
                     email: newUser.email,
                     phone: newUser.phone,
                     password: hashedPassword,
-                              referralCode: generatedReferralCode,
-          referredBy: newUser.referredBy || null,
-          referralRewardGiven: false
+                    referralCode: generatedReferralCode,
+                    referredBy: newUser.referredBy || null,
+                    referralRewardGiven: false
                 });
-                
-        if (newUser.referredBy && !saveUser.referralRewardGiven) {
-          await UserService.createReferralRewardCoupons(newUser.referredBy, saveUser._id);
-          saveUser.referralRewardGiven = true;
-          await saveUser.save();
-        }
+
+                if (newUser.referredBy && !saveUser.referralRewardGiven) {
+                    await UserService.createReferralRewardCoupons(newUser.referredBy, saveUser._id);
+                    saveUser.referralRewardGiven = true;
+                    await saveUser.save();
+                }
 
                 req.session.user = saveUser._id;
 
@@ -334,7 +334,7 @@ class UserController {
             const user = await UserService.findUserByEmail(email);
             if (!user) {
                 return res.render('forgotPassword', {
-                    message: 'Email not registered'
+                    message: 'Email not found'
                 });
             }
 

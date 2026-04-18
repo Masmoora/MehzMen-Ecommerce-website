@@ -1,17 +1,18 @@
 import AdminService from '../../service/admin/adminService.js';
 import logger from '../../logger.js';
 import HTTP_STATUS from '../../constants/httpStatus.js';
-
 import { generatePdfReport, generateExcelReport } from '../../utils/salesReportHelper.js';
+
 function formatRangeLabel(rangeType, startDate, endDate) {
-  if (rangeType === 'week') return 'This Week';
-  if (rangeType === 'month') return 'This Month';
-  if (rangeType === 'custom') {
-    if (startDate && endDate) return `${startDate} to ${endDate}`;
-    return 'Custom Range';
-  }
-  return 'Today';
+    if (rangeType === 'week') return 'This Week';
+    if (rangeType === 'month') return 'This Month';
+    if (rangeType === 'custom') {
+        if (startDate && endDate) return `${startDate} to ${endDate}`;
+        return 'Custom Range';
+    }
+    return 'Today';
 }
+
 class AdminController {
 
     pageerror = async (req, res) => {
@@ -59,7 +60,7 @@ class AdminController {
             }
         } catch (error) {
             logger.error('page not found', error);
-            return res.redirect('/pageerror');
+            return res.redirect('/admin/pageerror');
 
         }
     };
@@ -84,67 +85,64 @@ class AdminController {
             return res.redirect('/admin/login');
         } catch (error) {
             logger.error('page not found', error);
-            return res.redirect('/admin/pageNotFound');
+            return res.redirect('/admin/pageerror');
         }
     };
-   
+
     //salesReport
 
+    async handleReport(req, res) {
+        try {
+            const {
+                rangeType = 'day',
+                startDate = '',
+                endDate = '',
+                page = 1,
+                format = ''
+            } = req.query || {};
+
+            const report = await AdminService.getSalesReport({
+                rangeType,
+                startDate,
+                endDate,
+                page
+            });
+
+            // Download as PDF / Excel if requested
+            const reportMeta = {
+                websiteName: 'Mehzmen',
+                rangeLabel: formatRangeLabel(rangeType, startDate, endDate),
+                generatedAt: new Date()
+            };
+
+            if (format === 'pdf') {
+                return generatePdfReport(res, report.fullSalesData, report.totals, reportMeta);
+            }
+
+            if (format === 'excel') {
+                return generateExcelReport(res, report.fullSalesData, report.totals, reportMeta);
+            }
 
 
-
-async handleReport(req, res) {
-  try {
-    const {
-      rangeType = 'day',
-      startDate = '',
-      endDate = '',
-      page = 1,
-      format = ''
-    } = req.query || {};
-
-    const report = await AdminService.getSalesReport({
-      rangeType,
-      startDate,
-      endDate,
-      page
-    });
-
-    // Download as PDF / Excel if requested
-    const reportMeta = {
-        websiteName: 'Mehzmen',
-        rangeLabel: formatRangeLabel(rangeType, startDate, endDate),
-        generatedAt: new Date()
-      };
-
-      if (format === 'pdf') {
-        return generatePdfReport(res, report.fullSalesData, report.totals, reportMeta);
-      }
-
-      if (format === 'excel') {
-        return generateExcelReport(res, report.fullSalesData, report.totals, reportMeta);
-      }
-
-
-    // Render HTML page
-    return res.render('salesReport', {
-      salesData: report.salesDataPage,
-      totalSale: report.totals.totalSale,
-      totalAmount: report.totals.totalAmount,
-      totalDiscount: report.totals.totalDiscount,
-      totalOffer: report.totals.totalOffer,
-      currentPage: report.pagination.currentPage,
-      totalPages: report.pagination.totalPages,
-      rangeType,
-      startDate,
-      endDate
-    });
-  } catch (error) {
-    logger?.error?.('Error while loading sales report page', error);
-    console.error('Error while loading sales report page', error);
-    return res.redirect('/admin/pageerror');
-  }
-}
+            // Render HTML page
+            return res.render('salesReport', {
+                salesData: report.salesDataPage,
+                totalSale: report.totals.totalSale,
+                totalAmount: report.totals.totalAmount,
+                totalDiscount: report.totals.totalDiscount,
+                totalOffer: report.totals.totalOffer,
+                currentPage: report.pagination.currentPage,
+                totalPages: report.pagination.totalPages,
+                rangeType,
+                startDate,
+                endDate
+            });
+        } catch (error) {
+            logger?.error?.('Error while loading sales report page', error);
+            console.error('Error while loading sales report page', error);
+            return res.redirect('/admin/pageerror');
+        }
+    }
 
 }
 

@@ -16,10 +16,10 @@ class UserService {
     async createUser(data) {
         return await User.create(data);
     }
-     async findOrCreateGoogleUser(profile) {
+    async findOrCreateGoogleUser(profile) {
         const email = profile.emails[0].value.toLowerCase();
 
-        // 1️⃣ Find user by googleId OR email
+        // 1️ Find user by googleId OR email
         let user = await User.findOne({
             $or: [
                 { googleId: profile.id },
@@ -27,12 +27,12 @@ class UserService {
             ]
         });
 
-        // 2️⃣ If user exists and is BLOCKED → STOP LOGIN
+        // 2️ If user exists and is BLOCKED → STOP LOGIN
         if (user && user.isBlocked) {
             return null;
         }
 
-        // 3️⃣ If user exists and not blocked → attach googleId if missing
+        // 3️ If user exists and not blocked → attach googleId if missing
         if (user) {
             if (!user.googleId) {
                 user.googleId = profile.id;
@@ -41,7 +41,7 @@ class UserService {
             return user;
         }
 
-        // 4️⃣ Create NEW user
+        // 4️ Create NEW user
         user = new User({
             name: profile.displayName,
             email,
@@ -73,53 +73,53 @@ class UserService {
             { $set: { password: password } }
         );
     }
-      findByReferralCode = async (referralCode) => {
-    const code = String(referralCode || '').trim().toUpperCase();
-    if (!code) return null;
-    return User.findOne({ referralCode: code });
-  };
+    findByReferralCode = async (referralCode) => {
+        const code = String(referralCode || '').trim().toUpperCase();
+        if (!code) return null;
+        return User.findOne({ referralCode: code });
+    };
 
-  generateReferralCode = (name = '') => {
-    const clean = String(name || 'USR').replace(/[^a-zA-Z]/g, '');
-    const prefix = (clean.substring(0, 3) || 'USR').toUpperCase();
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `${prefix}${random}`;
-  };
+    generateReferralCode = (name = '') => {
+        const clean = String(name || 'USR').replace(/[^a-zA-Z]/g, '');
+        const prefix = (clean.substring(0, 3) || 'USR').toUpperCase();
+        const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+        return `${prefix}${random}`;
+    };
 
-  generateUniqueReferralCode = async (name = '') => {
-    for (let i = 0; i < 25; i += 1) {
-      const code = this.generateReferralCode(name);
-      const exists = await User.exists({ referralCode: code });
-      if (!exists) return code;
-    }
-    return `USR${Date.now().toString().slice(-6)}`;
-  };
+    generateUniqueReferralCode = async (name = '') => {
+        for (let i = 0; i < 25; i += 1) {
+            const code = this.generateReferralCode(name);
+            const exists = await User.exists({ referralCode: code });
+            if (!exists) return code;
+        }
+        return `USR${Date.now().toString().slice(-6)}`;
+    };
 
-  createReferralRewardCoupons = async (referrerId, newUserId) => {
-    await Coupon.create({
-      code: `REF-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-      type: 'fixed',
-      value: 100,
-      userId: referrerId,
+    createReferralRewardCoupons = async (referrerId, newUserId) => {
+        await Coupon.create({
+            code: `REF-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+            type: 'fixed',
+            value: 100,
+            userId: referrerId,
             usageLimit: 1,
-      usedCount: 0,
-      isActive: true,
-      isReferralReward: true,
-      referralTitle: 'Referral Bonus ₹100 OFF'
-    });
+            usedCount: 0,
+            isActive: true,
+            isReferralReward: true,
+            referralTitle: 'Referral Bonus ₹100 OFF'
+        });
 
-    await Coupon.create({
-      code: `WELCOME-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
-      type: 'fixed',
-      value: 50,
-      userId: newUserId,
+        await Coupon.create({
+            code: `WELCOME-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
+            type: 'fixed',
+            value: 50,
+            userId: newUserId,
             usageLimit: 1,
-      usedCount: 0,
-      isActive: true,
-      isReferralReward: true,
-      referralTitle: 'Welcome Referral Bonus ₹50 OFF'
-    });
-  };
+            usedCount: 0,
+            isActive: true,
+            isReferralReward: true,
+            referralTitle: 'Welcome Referral Bonus ₹50 OFF'
+        });
+    };
 
     // Get newest products with cheapest active variant
     getNewArrivals = async (limit = 12) => {

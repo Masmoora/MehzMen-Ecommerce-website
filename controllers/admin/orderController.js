@@ -97,7 +97,7 @@ class AdminOrderController {
     }
   };
 
- async downloadInvoice(req, res, next) {
+  async downloadInvoice(req, res, next) {
     try {
       const { orderId } = req.params;
 
@@ -110,7 +110,7 @@ class AdminOrderController {
       next(error);
     }
   }
-  
+
 }
 
 export default new AdminOrderController();

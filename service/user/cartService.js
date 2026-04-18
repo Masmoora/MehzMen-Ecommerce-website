@@ -9,8 +9,8 @@ import { getBestOffer } from "../../utils/offerHelper.js";
 const MAX_QTY = 5;
 const SHIPPING_FLAT = 50;
 
-class CartService{
-    toValidQty = (quantity) => {
+class CartService {
+  toValidQty = (quantity) => {
     const qty = Number(quantity);
     if (!Number.isInteger(qty) || qty < 1) {
       throw new Error('Quantity must be a whole number starting from 1');
@@ -48,33 +48,33 @@ class CartService{
     const qtyToAdd = this.toValidQty(quantity);
     if (qtyToAdd > MAX_QTY) throw new Error(`Maximum quantity is ${MAX_QTY}`);
 
-    const {product, variant } = await this.validateProductAndVariant(productId, variantId);
+    const { product, variant } = await this.validateProductAndVariant(productId, variantId);
 
     //offer
     const now = new Date();
-const commonFilter = {
-  status: 'active',
-  startDate: { $lte: now },
-  endDate: { $gte: now }
-};
+    const commonFilter = {
+      status: 'active',
+      startDate: { $lte: now },
+      endDate: { $gte: now }
+    };
 
-const categoryId = product.category;
+    const categoryId = product.category;
 
-const [productOffer, categoryOffer] = await Promise.all([
-  Offer.findOne({
-    ...commonFilter,
-    offerType: 'product',
-    productId
-  }).lean(),
-  categoryId
-    ? Offer.findOne({
+    const [productOffer, categoryOffer] = await Promise.all([
+      Offer.findOne({
         ...commonFilter,
-        offerType: 'category',
-        categoryId
-      }).lean()
-    : Promise.resolve(null)
-]);
-const best = getBestOffer(variant.price, productOffer, categoryOffer);
+        offerType: 'product',
+        productId
+      }).lean(),
+      categoryId
+        ? Offer.findOne({
+          ...commonFilter,
+          offerType: 'category',
+          categoryId
+        }).lean()
+        : Promise.resolve(null)
+    ]);
+    const best = getBestOffer(variant.price, productOffer, categoryOffer);
 
     let cart = await Cart.findOne({ userId });
     if (!cart) cart = new Cart({ userId, items: [] });
@@ -103,7 +103,7 @@ const best = getBestOffer(variant.price, productOffer, categoryOffer);
         quantity: qtyToAdd,
         basePrice: variant.price,
         salePrice: best.finalPrice, //variant.price
-        discount:best.discountAmount ,// 0
+        discount: best.discountAmount,// 0
         total: best.finalPrice * qtyToAdd  //variant.price * qtyToAdd
       });
     }
@@ -129,16 +129,16 @@ const best = getBestOffer(variant.price, productOffer, categoryOffer);
     const item = cart.items.id(itemId);
     if (!item) throw new Error('Cart item not found');
 
-   // const variant = await ProductVariant.findById(item.variantId).lean();
-   // if (!variant || !variant.isActive) throw new Error('Variant not available');
-       const { product, variant } = await this.validateProductAndVariant(
+    // const variant = await ProductVariant.findById(item.variantId).lean();
+    // if (!variant || !variant.isActive) throw new Error('Variant not available');
+    const { product, variant } = await this.validateProductAndVariant(
       item.productId,
       item.variantId
     );
 
     if (qty > variant.stock) throw new Error('Requested quantity exceeds stock');
-//offer
-      const now = new Date();
+    //offer
+    const now = new Date();
     const commonFilter = {
       status: 'active',
       startDate: { $lte: now },
@@ -155,10 +155,10 @@ const best = getBestOffer(variant.price, productOffer, categoryOffer);
       }).lean(),
       categoryId
         ? Offer.findOne({
-            ...commonFilter,
-            offerType: 'category',
-            categoryId
-          }).lean()
+          ...commonFilter,
+          offerType: 'category',
+          categoryId
+        }).lean()
         : Promise.resolve(null)
     ]);
 
@@ -206,42 +206,42 @@ const best = getBestOffer(variant.price, productOffer, categoryOffer);
     if (!cart || !cart.items?.length) return this.getEmptyCartData();
 
     //const items = cart.items.map((item) => {
-      const items = await Promise.all(cart.items.map(async (item) => {
+    const items = await Promise.all(cart.items.map(async (item) => {
       const product = item.productId;
       const variant = item.variantId;
       const stock = variant?.stock || 0;
       let price = item.salePrice;
-let discount = item.discount;
+      let discount = item.discount;
 
-if (product && variant) {
+      if (product && variant) {
 
-  const now = new Date();
+        const now = new Date();
 
-  const commonFilter = {
-    status: 'active',
-    startDate: { $lte: now },
-    endDate: { $gte: now }
-  };
+        const commonFilter = {
+          status: 'active',
+          startDate: { $lte: now },
+          endDate: { $gte: now }
+        };
 
-  const [productOffer, categoryOffer] = await Promise.all([
-    Offer.findOne({
-      ...commonFilter,
-      offerType: 'product',
-      productId: product._id
-    }).lean(),
+        const [productOffer, categoryOffer] = await Promise.all([
+          Offer.findOne({
+            ...commonFilter,
+            offerType: 'product',
+            productId: product._id
+          }).lean(),
 
-    Offer.findOne({
-      ...commonFilter,
-      offerType: 'category',
-      categoryId: product.category
-    }).lean()
-  ]);
+          Offer.findOne({
+            ...commonFilter,
+            offerType: 'category',
+            categoryId: product.category
+          }).lean()
+        ]);
 
-  const best = getBestOffer(variant.price, productOffer, categoryOffer);
+        const best = getBestOffer(variant.price, productOffer, categoryOffer);
 
-  price = best.finalPrice;
-  discount = best.discountAmount;
-}
+        price = best.finalPrice;
+        discount = best.discountAmount;
+      }
 
       const outOfStock =
         !product ||
@@ -260,8 +260,8 @@ if (product && variant) {
         color: variant?.color || '-',
         size: variant?.size || '-',
         originalPrice: item.basePrice,//offer
-       //price: item.salePrice,
-       // discount: item.discount,
+        //price: item.salePrice,
+        // discount: item.discount,
         price: price,
         discount: discount,
         discountPercent:
@@ -271,7 +271,7 @@ if (product && variant) {
         quantity: item.quantity,
         stock,
         //lineTotal: item.salePrice * item.quantity,
-        lineTotal: price ,
+        lineTotal: price,
         outOfStock
       };
     }));

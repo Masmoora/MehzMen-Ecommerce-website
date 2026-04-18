@@ -49,18 +49,12 @@
                         </div>
                         <% } %>
 
-<!-- Referral Section -->
-<label>Referral Code (Optional)</label>
-<input
-  type="text"
-  id="referralCode"
-  name="referralCode"
-  class="form-control mb-0 text-uppercase"
-  placeholder="Enter referral code (optional)"
-  maxlength="20"
-  value="<%= referralCode || '' %>"
->
-<div id="error6" class="error-message"></div>
+                            <!-- Referral Section -->
+                            <label>Referral Code (Optional)</label>
+                            <input type="text" id="referralCode" name="referralCode"
+                                class="form-control mb-0 text-uppercase" placeholder="Enter referral code (optional)"
+                                maxlength="20" value="<%= referralCode || '' %>">
+                            <div id="error6" class="error-message"></div>
 
                             <p class="text-center">
                                 Already have an account?
@@ -169,22 +163,22 @@
             }
         }
         const referralCodeId = document.getElementById('referralCode')
-const error6 = document.getElementById('error6')
+        const error6 = document.getElementById('error6')
 
-function referralValidateChecking() {
-  const referralVal = (referralCodeId?.value || '').trim()
-  if (!referralVal) {
-    error6.innerHTML = ''   // optional field, so empty is valid
-    return
-  }
+        function referralValidateChecking() {
+            const referralVal = (referralCodeId?.value || '').trim()
+            if (!referralVal) {
+                error6.innerHTML = ''   // optional field, so empty is valid
+                return
+            }
 
-  const referralPattern = /^[A-Z0-9]{4,20}$/i
-  if (!referralPattern.test(referralVal)) {
-    error6.innerHTML = 'Referral code format is invalid'
-  } else {
-    error6.innerHTML = ''
-  }
-}
+            const referralPattern = /^[A-Z0-9]{4,20}$/i
+            if (!referralPattern.test(referralVal)) {
+                error6.innerHTML = 'Referral code format is invalid'
+            } else {
+                error6.innerHTML = ''
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', function () {
             signupForm.addEventListener('submit', function (e) {
@@ -206,21 +200,21 @@ function referralValidateChecking() {
             })
         })
     </script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const error = params.get('error');
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const error = params.get('error');
 
-  if (error === 'blocked') {
-    Swal.fire({
-      icon: 'error',
-      title: 'Account Blocked',
-      text: 'Your account has been blocked by admin.',
-      confirmButtonColor: '#d33'
-    });
-  }
-</script>
+        if (error === 'blocked') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Account Blocked',
+                text: 'Your account has been blocked by admin.',
+                confirmButtonColor: '#d33'
+            });
+        }
+    </script>
 
 </body>
 

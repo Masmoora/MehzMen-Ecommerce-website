@@ -11,7 +11,7 @@ import walletService from "./walletService.js";
 
 class OrderService {
   normalizeStatus = (value) => String(value || '').trim().toLowerCase().replace(/\s+/g, '_');
-    isOrderPaid = (order) => {
+  isOrderPaid = (order) => {
     const method = this.normalizeStatus(order.paymentMethod || '');
     const status = this.normalizeStatus(order.paymentStatus || '');
     return (method === 'wallet' || method === 'razorpay') && status === 'completed';
@@ -108,8 +108,8 @@ class OrderService {
     const subtotal = activeItems.reduce((sum, item) => sum + item.itemTotal, 0);
     const shippingCharge = activeItems.length > 0 ? Number(orderDoc.pricing.shippingCharge || 0) : 0;
     const discount = Number(orderDoc.pricing.couponDiscount || 0);
-   // const tax = Number(orderDoc.pricing.tax || 0);
-    const finalAmount = Math.max(0, subtotal + shippingCharge  - discount);
+    // const tax = Number(orderDoc.pricing.tax || 0);
+    const finalAmount = Math.max(0, subtotal + shippingCharge - discount);
 
     orderDoc.pricing.totalItems = activeItems.reduce((sum, item) => sum + item.quantity, 0);
     orderDoc.pricing.subtotal = subtotal;
@@ -141,7 +141,7 @@ class OrderService {
     if (!['processing', 'pending', 'confirmed'].includes(this.normalizeStatus(item.itemStatus))) {
       throw new Error('Only processing items can be cancelled');
     }
-     // Refund to wallet for paid orders (cancel = direct refund)
+    // Refund to wallet for paid orders (cancel = direct refund)
     if (this.isOrderPaid(order)) {
       const refundAmount = this.getProportionalRefund(order, item);
       if (refundAmount > 0) {
@@ -296,93 +296,93 @@ class OrderService {
 
   async generateInvoiceForOrder(userId, orderId) {
 
-  const order = await Order.findOne({ orderId, userId });
+    const order = await Order.findOne({ orderId, userId });
 
-  if (!order) {
-    const error = new Error('Order not found');
-    error.statusCode = 404;
-    throw error;
-  }
-
-  if (order.orderStatus !== 'delivered') {
-    const error = new Error('Invoice available only for delivered orders');
-    error.statusCode = 400;
-    throw error;
-  }
-
-  if (!order.invoiceDate) {
-    order.invoiceDate = new Date();
-    await order.save();
-  }
-
-  const invoiceDir = path.join(process.cwd(), 'public', 'invoices');
-
-  if (!fs.existsSync(invoiceDir)) {
-    fs.mkdirSync(invoiceDir, { recursive: true });
-  }
-
-  const fileName = `invoice-${order.orderId}.pdf`;
-  const filePath = path.join(invoiceDir, fileName);
-
-  const invoiceTemplatePath = path.join(
-    process.cwd(),
-    'views',
-    'user',
-    'invoice.ejs'
-  );
-
-  const html = await ejs.renderFile(invoiceTemplatePath, { order });
-
-  const browser = await puppeteer.launch({ headless: 'new' });
-  const page = await browser.newPage();
-
-  await page.setContent(html, { waitUntil: 'networkidle0' });
-
-  await page.pdf({
-    path: filePath,
-    format: 'A4',
-    printBackground: true
-  });
-
-  await browser.close();
-
-  return { fileName, filePath };
-}
-cancelEntireReturnRequest = async (userId, orderId) => {
-
-  const order = await Order.findOne({ userId, orderId });
-
-  if (!order)
-    throw new Error("Order not found");
-
-  let found = false;
-
-  order.items.forEach(item => {
-
-    if (item.returnStatus === "requested") {
-
-      item.returnStatus = "cancelled_by_user";
-      item.itemStatus = "delivered";
-
-      found = true;
-
+    if (!order) {
+      const error = new Error('Order not found');
+      error.statusCode = 404;
+      throw error;
     }
 
-  });
+    if (order.orderStatus !== 'delivered') {
+      const error = new Error('Invoice available only for delivered orders');
+      error.statusCode = 400;
+      throw error;
+    }
 
-  if (!found)
-    throw new Error("No return request found");
+    if (!order.invoiceDate) {
+      order.invoiceDate = new Date();
+      await order.save();
+    }
 
-  this.refreshOrderStatusFromItems(order);
+    const invoiceDir = path.join(process.cwd(), 'public', 'invoices');
 
-  await order.save();
+    if (!fs.existsSync(invoiceDir)) {
+      fs.mkdirSync(invoiceDir, { recursive: true });
+    }
 
-  return {
-    orderId: order.orderId,
-    orderStatus: order.orderStatus
+    const fileName = `invoice-${order.orderId}.pdf`;
+    const filePath = path.join(invoiceDir, fileName);
+
+    const invoiceTemplatePath = path.join(
+      process.cwd(),
+      'views',
+      'user',
+      'invoice.ejs'
+    );
+
+    const html = await ejs.renderFile(invoiceTemplatePath, { order });
+
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+
+    await page.pdf({
+      path: filePath,
+      format: 'A4',
+      printBackground: true
+    });
+
+    await browser.close();
+
+    return { fileName, filePath };
+  }
+  cancelEntireReturnRequest = async (userId, orderId) => {
+
+    const order = await Order.findOne({ userId, orderId });
+
+    if (!order)
+      throw new Error("Order not found");
+
+    let found = false;
+
+    order.items.forEach(item => {
+
+      if (item.returnStatus === "requested") {
+
+        item.returnStatus = "cancelled_by_user";
+        item.itemStatus = "delivered";
+
+        found = true;
+
+      }
+
+    });
+
+    if (!found)
+      throw new Error("No return request found");
+
+    this.refreshOrderStatusFromItems(order);
+
+    await order.save();
+
+    return {
+      orderId: order.orderId,
+      orderStatus: order.orderStatus
+    };
+
   };
-
-};
 }
 
 export default new OrderService();

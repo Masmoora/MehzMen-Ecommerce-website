@@ -1,224 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add Coupon - Admin</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
-  <style>
-    body { background: #f5f7fb; padding-top: 70px; padding-left: 260px; min-height: 100vh; }
-    .main-content { padding: 2rem; }
-    .error-message { color: red; font-size: 0.85rem; }
-  </style>
+  <link rel="stylesheet" href="/css/admin/addCoupon.css">
 </head>
+
 <body>
-   <%- include("../../views/partials/admin/header") %>
+  <%- include("../../views/partials/admin/header") %>
     <%- include("../../views/partials/admin/sidebar") %>
 
-  <main class="main-content">
-    <div class="container-fluid">
-      <div class="card shadow rounded p-4 mx-auto" style="max-width: 800px;">
-        <h2 class="mb-4 text-center text-uppercase text-primary">Add New Coupon</h2>
+      <main class="main-content">
+        <div class="container-fluid">
+          <div class="card shadow rounded p-4 mx-auto" style="max-width: 800px;">
+            <h2 class="mb-4 text-center text-uppercase text-primary">Add New Coupon</h2>
 
-        <form id="couponForm" novalidate>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Coupon Code</label>
-              <input type="text" name="code" class="form-control" id="code" placeholder="Eg: SAVE20" />
-              <div class="error-message" id="codeError"></div>
-            </div>
+            <form id="couponForm" novalidate>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Coupon Code</label>
+                  <input type="text" name="code" class="form-control" id="code" placeholder="Eg: SAVE20" />
+                  <div class="error-message" id="codeError"></div>
+                </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Coupon Type</label>
-              <select name="type" class="form-select" id="type">
-                <option value="percentage">Percentage (%)</option>
-                <option value="fixed">Fixed Amount (₹)</option>
-              </select>
-              <div class="error-message" id="couponTypeError"></div>
-            </div>
+                <div class="col-md-6">
+                  <label class="form-label">Coupon Type</label>
+                  <select name="type" class="form-select" id="type">
+                    <option value="percentage">Percentage (%)</option>
+                    <option value="fixed">Fixed Amount (₹)</option>
+                  </select>
+                  <div class="error-message" id="couponTypeError"></div>
+                </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Discount Value</label>
-              <div class="input-group">
-                <span class="input-group-text" id="valuePrefix">%</span>
-                <input type="number" name="value" class="form-control" id="value" placeholder="Eg: 10 or 100" />
+                <div class="col-md-6">
+                  <label class="form-label">Discount Value</label>
+                  <div class="input-group">
+                    <span class="input-group-text" id="valuePrefix">%</span>
+                    <input type="number" name="value" class="form-control" id="value" placeholder="Eg: 10 or 100" />
+                  </div>
+                  <div class="error-message" id="discountError"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Minimum Order Amount (₹)</label>
+                  <input type="number" name="minOrderValue" id="minOrderValue" class="form-control"
+                    placeholder="Eg: 500" />
+                  <div class="error-message" id="minAmountError"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Usage Limit (Total)</label>
+                  <input type="number" name="usageLimit" id="usageLimit" class="form-control" value="1" />
+                  <div class="error-message" id="limitError"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Starting Date</label>
+                  <input type="date" name="startDate" id="startDate" class="form-control" />
+                  <div class="error-message" id="startdateError"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Expiry Date</label>
+                  <input type="date" name="endDate" id="endDate" class="form-control" />
+                  <div class="error-message" id="enddateError"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Status</label>
+                  <select name="isActive" id="isActive" class="form-select">
+                    <option value="true" selected>Active</option>
+                    <option value="false">Inactive</option>
+                  </select>
+                  <div class="error-message" id="statusError"></div>
+                </div>
               </div>
-              <div class="error-message" id="discountError"></div>
-            </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Minimum Order Amount (₹)</label>
-              <input type="number" name="minOrderValue" id="minOrderValue" class="form-control" placeholder="Eg: 500" />
-              <div class="error-message" id="minAmountError"></div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Usage Limit (Total)</label>
-              <input type="number" name="usageLimit" id="usageLimit" class="form-control" value="1" />
-              <div class="error-message" id="limitError"></div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Starting Date</label>
-              <input type="date" name="startDate" id="startDate" class="form-control" />
-              <div class="error-message" id="startdateError"></div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Expiry Date</label>
-              <input type="date" name="endDate" id="endDate" class="form-control" />
-              <div class="error-message" id="enddateError"></div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Status</label>
-              <select name="isActive" id="isActive" class="form-select">
-                <option value="true" selected>Active</option>
-                <option value="false">Inactive</option>
-              </select>
-              <div class="error-message" id="statusError"></div>
-            </div>
+              <div class="mt-4 d-flex justify-content-between">
+                <a href="/admin/coupons" class="btn btn-outline-secondary">← Back</a>
+                <button type="submit" class="btn btn-primary px-4">Create Coupon</button>
+              </div>
+            </form>
           </div>
-
-          <div class="mt-4 d-flex justify-content-between">
-            <a href="/admin/coupons" class="btn btn-outline-secondary">← Back</a>
-            <button type="submit" class="btn btn-primary px-4">Create Coupon</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </main>
+        </div>
+      </main>
 
 
-    <%- include("../../views/partials/admin/footer") %>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-    (function () {
-      const form = document.getElementById('couponForm');
-      const typeEl = document.getElementById('type');
-      const valuePrefix = document.getElementById('valuePrefix');
+      <%- include("../../views/partials/admin/footer") %>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+          (function () {
+            const form = document.getElementById('couponForm');
+            const typeEl = document.getElementById('type');
+            const valuePrefix = document.getElementById('valuePrefix');
 
-      typeEl.addEventListener('change', function () {
-        valuePrefix.textContent = this.value === 'fixed' ? '₹' : '%';
-      });
-
-      form.addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const code = document.getElementById('code').value;
-        const type = document.getElementById('type').value;
-        const value = document.getElementById('value').value;
-        const minOrderValue = document.getElementById('minOrderValue').value;
-        const usageLimit = document.getElementById('usageLimit').value;
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-        const isActive = document.getElementById('isActive').value;
-
-        const error1 = document.getElementById('codeError');
-        const error2 = document.getElementById('couponTypeError');
-        const error3 = document.getElementById('discountError');
-        const error4 = document.getElementById('minAmountError');
-        const error5 = document.getElementById('limitError');
-        const error7 = document.getElementById('startdateError');
-        const error8 = document.getElementById('enddateError');
-        const error9 = document.getElementById('statusError');
-
-        const errorFields = [error1, error2, error3, error4, error5, error7, error8, error9];
-        errorFields.forEach(el => el.textContent = '');
-
-        let isValid = true;
-
-        if (!code.trim() || !/^[A-Za-z0-9]{5,}$/.test(code.trim())) {
-          error1.textContent = 'Please enter a valid coupon code (min 5 alphanumeric characters).';
-          isValid = false;
-        }
-
-        if (!type.trim()) {
-          error2.textContent = 'Please select coupon type.';
-          isValid = false;
-        }
-
-        if (!value.trim() || isNaN(value) || Number(value) <= 0) {
-          error3.textContent = 'Please enter a valid discount value.';
-          isValid = false;
-        }
-
-        if (!minOrderValue.trim() || Number(minOrderValue) < 1) {
-          error4.textContent = 'Please enter a valid minimum amount.';
-          isValid = false;
-        }
-
-        if (!usageLimit.trim() || Number(usageLimit) < 1) {
-          error5.textContent = 'Usage limit should be at least 1.';
-          isValid = false;
-        }
-
-        const today = new Date().toISOString().split('T')[0];
-
-        if (!startDate.trim() || startDate < today) {
-          error7.textContent = 'Starting date should be today or later.';
-          isValid = false;
-        }
-
-        if (!endDate.trim() || endDate <= startDate) {
-          error8.textContent = 'Expiry date should be greater than start date.';
-          isValid = false;
-        }
-
-        if (!isActive.trim()) {
-          error9.textContent = 'Please select status.';
-          isValid = false;
-        }
-
-        if (!isValid) return;
-
-        const payload = {
-          code,
-          type,
-          value,
-          minOrderValue,
-          usageLimit,
-          startDate,
-          endDate,
-          isActive
-        };
-
-        try {
-          const response = await fetch('/admin/coupons/add', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          const result = await response.json();
-
-          if (response.ok && result.success) {
-            await Swal.fire({
-              icon: 'success',
-              title: 'Coupon Added',
-              text: result.message || 'Coupon added successfully',
-              timer: 1200,
-              showConfirmButton: false
+            typeEl.addEventListener('change', function () {
+              valuePrefix.textContent = this.value === 'fixed' ? '₹' : '%';
             });
-            window.location.href = '/admin/coupons';
-          } else {
-            Swal.fire({
-              icon: 'warning',
-              title: 'Oops',
-              text: result.message || 'Something went wrong'
+
+            form.addEventListener('submit', async function (e) {
+              e.preventDefault();
+
+              const code = document.getElementById('code').value;
+              const type = document.getElementById('type').value;
+              const value = document.getElementById('value').value;
+              const minOrderValue = document.getElementById('minOrderValue').value;
+              const usageLimit = document.getElementById('usageLimit').value;
+              const startDate = document.getElementById('startDate').value;
+              const endDate = document.getElementById('endDate').value;
+              const isActive = document.getElementById('isActive').value;
+
+              const error1 = document.getElementById('codeError');
+              const error2 = document.getElementById('couponTypeError');
+              const error3 = document.getElementById('discountError');
+              const error4 = document.getElementById('minAmountError');
+              const error5 = document.getElementById('limitError');
+              const error7 = document.getElementById('startdateError');
+              const error8 = document.getElementById('enddateError');
+              const error9 = document.getElementById('statusError');
+
+              const errorFields = [error1, error2, error3, error4, error5, error7, error8, error9];
+              errorFields.forEach(el => el.textContent = '');
+
+              let isValid = true;
+
+              if (!code.trim() || !/^[A-Za-z0-9]{5,}$/.test(code.trim())) {
+                error1.textContent = 'Please enter a valid coupon code (min 5 alphanumeric characters).';
+                isValid = false;
+              }
+
+              if (!type.trim()) {
+                error2.textContent = 'Please select coupon type.';
+                isValid = false;
+              }
+
+              if (!value.trim() || isNaN(value) || Number(value) <= 0) {
+                error3.textContent = 'Please enter a valid discount value.';
+                isValid = false;
+              }
+
+              if (!minOrderValue.trim() || Number(minOrderValue) < 1) {
+                error4.textContent = 'Please enter a valid minimum amount.';
+                isValid = false;
+              }
+
+              if (!usageLimit.trim() || Number(usageLimit) < 1) {
+                error5.textContent = 'Usage limit should be at least 1.';
+                isValid = false;
+              }
+
+              const today = new Date().toISOString().split('T')[0];
+
+              if (!startDate.trim() || startDate < today) {
+                error7.textContent = 'Starting date should be today or later.';
+                isValid = false;
+              }
+
+              if (!endDate.trim() || endDate <= startDate) {
+                error8.textContent = 'Expiry date should be greater than start date.';
+                isValid = false;
+              }
+
+              if (!isActive.trim()) {
+                error9.textContent = 'Please select status.';
+                isValid = false;
+              }
+
+              if (!isValid) return;
+
+              const payload = {
+                code,
+                type,
+                value,
+                minOrderValue,
+                usageLimit,
+                startDate,
+                endDate,
+                isActive
+              };
+
+              try {
+                const response = await fetch('/admin/coupons/add', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                  await Swal.fire({
+                    icon: 'success',
+                    title: 'Coupon Added',
+                    text: result.message || 'Coupon added successfully',
+                    timer: 1200,
+                    showConfirmButton: false
+                  });
+                  window.location.href = '/admin/coupons';
+                } else {
+                  Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops',
+                    text: result.message || 'Something went wrong'
+                  });
+                }
+              } catch (error) {
+                console.error('Error while adding coupon', error);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.message || 'Internal server error'
+                });
+              }
             });
-          }
-        } catch (error) {
-          console.error('Error while adding coupon', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.message || 'Internal server error'
-          });
-        }
-      });
-    })();
-  </script>
+          })();
+        </script>
 </body>
+
 </html>

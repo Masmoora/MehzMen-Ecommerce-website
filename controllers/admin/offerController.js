@@ -268,7 +268,7 @@ class OfferController {
       });
     }
   }
-//CATEGORY OFFER CONTROLLER
+  //CATEGORY OFFER CONTROLLER
   // GET /admin/categoryOffers
   async loadCategoryOffers(req, res) {
     try {

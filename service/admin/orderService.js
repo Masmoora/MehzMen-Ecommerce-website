@@ -10,7 +10,7 @@ class AdminOrderService {
   normalize = (value) => String(value || '').trim().toLowerCase().replace(/\s+/g, '_');
 
   orderFlow = ['pending', 'confirmed', 'shipped', 'out_for_delivery', 'delivered'];
- isOrderPaid = (order) => {
+  isOrderPaid = (order) => {
     const method = this.normalize(order.paymentMethod || '');
     const status = this.normalize(order.paymentStatus || '');
     return (method === 'wallet' || method === 'razorpay') && status === 'completed';
@@ -43,54 +43,54 @@ class AdminOrderService {
   };
 
   calculateOrderStatus = (orderDoc) => {
-  const statuses = (orderDoc.items || []).map((item) =>
-    this.normalize(item.itemStatus)
-  );
+    const statuses = (orderDoc.items || []).map((item) =>
+      this.normalize(item.itemStatus)
+    );
 
-  const activeStatuses = statuses.filter(
-    (status) => !['cancelled', 'returned'].includes(status)
-  );
+    const activeStatuses = statuses.filter(
+      (status) => !['cancelled', 'returned'].includes(status)
+    );
 
-  // All cancelled
-  if (statuses.length && statuses.every((status) => status === 'cancelled')) {
-    return 'cancelled';
-  }
+    // All cancelled
+    if (statuses.length && statuses.every((status) => status === 'cancelled')) {
+      return 'cancelled';
+    }
 
-  // All returned
-  if (statuses.length && statuses.every((status) => status === 'returned')) {
-    return 'returned';
-  }
+    // All returned
+    if (statuses.length && statuses.every((status) => status === 'returned')) {
+      return 'returned';
+    }
 
-  // Any return requested or approved
-  if (
-    statuses.some((status) =>
-      ['return_requested', 'return_approved'].includes(status)
-    )
-  ) {
-    return 'return_requested';
-  }
+    // Any return requested or approved
+    if (
+      statuses.some((status) =>
+        ['return_requested', 'return_approved'].includes(status)
+      )
+    ) {
+      return 'return_requested';
+    }
 
-  // Some returned
-  if (statuses.some((status) => status === 'returned')) {
-    return 'partially_returned';
-  }
+    // Some returned
+    if (statuses.some((status) => status === 'returned')) {
+      return 'partially_returned';
+    }
 
-  // All active delivered
-  if (
-    activeStatuses.length &&
-    activeStatuses.every((status) => status === 'delivered')
-  ) {
-    return 'delivered';
-  }
+    // All active delivered
+    if (
+      activeStatuses.length &&
+      activeStatuses.every((status) => status === 'delivered')
+    ) {
+      return 'delivered';
+    }
 
-  // Some delivered
-  if (activeStatuses.some((status) => status === 'delivered')) {
-    return 'partially_delivered';
-  }
+    // Some delivered
+    if (activeStatuses.some((status) => status === 'delivered')) {
+      return 'partially_delivered';
+    }
 
-  //return orderDoc.orderStatus || 'pending';
-  return 'processing'
-};
+    //return orderDoc.orderStatus || 'pending';
+    return 'processing'
+  };
 
   buildFilter = async ({ search = '', status = '' }) => {
     const filter = {};
@@ -127,7 +127,7 @@ class AdminOrderService {
     };
 
     const filter = await this.buildFilter({ search, status });
-    
+
 
     const [orders, totalOrders] = await Promise.all([
       Order.find(filter)
@@ -167,20 +167,20 @@ class AdminOrderService {
     if (!order) throw new Error('Order not found');
     return order;
   };
-getHighestItemFlowIndex(order) {
-  let highestIndex = -1;
+  getHighestItemFlowIndex(order) {
+    let highestIndex = -1;
 
-  for (const item of order.items || []) {
-    const normalized = this.normalize(item.itemStatus);
-    const index = this.orderFlow.indexOf(normalized);
+    for (const item of order.items || []) {
+      const normalized = this.normalize(item.itemStatus);
+      const index = this.orderFlow.indexOf(normalized);
 
-    if (index > highestIndex) {
-      highestIndex = index;
+      if (index > highestIndex) {
+        highestIndex = index;
+      }
     }
-  }
 
-  return highestIndex;
-}
+    return highestIndex;
+  }
   updateOrderStatus = async (orderId, nextStatus) => {
     const order = await Order.findOne({ orderId });
     if (!order) throw new Error('Order not found');
@@ -188,17 +188,17 @@ getHighestItemFlowIndex(order) {
     const currentStatus = this.normalize(order.orderStatus);
     const targetStatus = this.normalize(nextStatus);
     const highestItemIndex = this.getHighestItemFlowIndex(order);
-const targetIndex = this.orderFlow.indexOf(targetStatus);
+    const targetIndex = this.orderFlow.indexOf(targetStatus);
 
-// 🚫 Prevent downgrade below any delivered/shipped item
-if (targetIndex < highestItemIndex) {
-  throw new Error(
-    `Cannot downgrade order below existing item progress.`
-  );
-}
-    if (['returned', 'cancelled','return_requested', 'return_approved'].includes(currentStatus)) {
-  throw new Error('Cannot update returned or cancelled order');
-}
+    // 🚫 Prevent downgrade below any delivered/shipped item
+    if (targetIndex < highestItemIndex) {
+      throw new Error(
+        `Cannot downgrade order below existing item progress.`
+      );
+    }
+    if (['returned', 'cancelled', 'return_requested', 'return_approved'].includes(currentStatus)) {
+      throw new Error('Cannot update returned or cancelled order');
+    }
 
     //if (!this.orderFlow.includes(targetStatus)) throw new Error('Invalid status');
     if (currentStatus === 'cancelled') throw new Error('Cannot update cancelled order');
@@ -226,7 +226,7 @@ if (targetIndex < highestItemIndex) {
     if (['cancelled', 'delivered', 'returned'].includes(currentStatus)) {
       throw new Error('Cannot cancel this order');
     }
-        if (this.isOrderPaid(order)) {
+    if (this.isOrderPaid(order)) {
       const refundAmount = Number(order.pricing?.finalAmount || 0);
       if (refundAmount > 0 && order.userId) {
         await walletService.refundToWallet(order.userId, refundAmount, order.orderId, 'Order cancelled by admin');
@@ -263,9 +263,9 @@ if (targetIndex < highestItemIndex) {
     const currentStatus = this.normalize(item.itemStatus);
     const targetStatus = this.normalize(nextStatus);
 
-  if (['returned', 'cancelled'].includes(currentStatus)) {
-    throw new Error('Cannot update a returned or cancelled item');
-  }
+    if (['returned', 'cancelled'].includes(currentStatus)) {
+      throw new Error('Cannot update a returned or cancelled item');
+    }
 
     if (!this.orderFlow.includes(targetStatus)) throw new Error('Invalid status');
     if (currentStatus === 'cancelled') throw new Error('Cannot update cancelled item');
@@ -286,7 +286,7 @@ if (targetIndex < highestItemIndex) {
     const item = order.items.id(itemId);
     if (!item) throw new Error('Order item not found');
     if (this.normalize(item.itemStatus) === 'cancelled') throw new Error('Item already cancelled');
-if (['delivered', 'returned', 'return_requested', 'return_approved'].includes(itemStatus)) {
+    if (['delivered', 'returned', 'return_requested', 'return_approved'].includes(itemStatus)) {
       throw new Error('Delivered/returned/return-requested items cannot be cancelled');
     }
     if (['requested', 'approved', 'rejected', 'returned'].includes(returnStatus)) {
@@ -330,7 +330,7 @@ if (['delivered', 'returned', 'return_requested', 'return_approved'].includes(it
 
     item.returnStatus = 'approved';
     item.itemStatus = 'return_approved';
-        // Refund on admin approval (not on request).
+    // Refund on admin approval (not on request).
     if (this.isOrderPaid(order)) {
       const refundAmount = this.getProportionalRefund(order, item);
       if (refundAmount > 0 && order.userId) {
@@ -392,7 +392,7 @@ if (['delivered', 'returned', 'return_requested', 'return_approved'].includes(it
     await order.save();
     return order;
   };
-   async generateInvoiceForAdmin(orderId) {
+  async generateInvoiceForAdmin(orderId) {
 
     // 1️⃣ Find order (NO userId check for admin)
     const order = await Order.findOne({ orderId });
@@ -453,7 +453,7 @@ if (['delivered', 'returned', 'return_requested', 'return_approved'].includes(it
     return { fileName, filePath };
   }
 
-  
+
 }
 
 export default new AdminOrderService();

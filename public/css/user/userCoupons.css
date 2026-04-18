@@ -1,0 +1,97 @@
+    body {
+      background: #f6f7fb;
+      padding-top: 52px;
+    }
+    .card-soft {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #e9ecef;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    }
+    .coupon-banner {
+      border-radius: 14px;
+      color: #fff;
+      background: linear-gradient(135deg, #4f46e5, #2563eb);
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
+    }
+    .coupon-ticket {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #e6ebff;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff, #fbfdff);
+      padding: 16px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .coupon-ticket:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.08);
+    }
+    .coupon-ticket::before,
+    .coupon-ticket::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      margin-top: -7px;
+      border-radius: 50%;
+      background: #f6f7fb;
+      border: 1px solid #e6ebff;
+    }
+    .coupon-ticket::before {
+      left: -8px;
+    }
+    .coupon-ticket::after {
+      right: -8px;
+    }
+    .coupon-code-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 700;
+      font-size: 0.92rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1px dashed #c7d2fe;
+    }
+    .coupon-title {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #111827;
+      margin-top: 10px;
+      margin-bottom: 6px;
+    }
+    .coupon-meta {
+      font-size: 0.88rem;
+      color: #6c757d;
+    }
+    .coupon-pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid #d1fae5;
+      color: #047857;
+      background: #ecfdf5;
+    }
+    .coupon-copy-btn {
+      min-width: 98px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .empty-wrap {
+      border: 1px dashed #cfd6e4;
+      border-radius: 12px;
+      text-align: center;
+      padding: 26px 18px;
+      background: #fafbff;
+    }

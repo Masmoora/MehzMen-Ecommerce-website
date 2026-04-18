@@ -1,8 +1,8 @@
 import WishlistService from "../../service/user/wishlistService.js"
 import UserService from "../../service/user/userService.js"
 import logger from '../../logger.js';
-class WishlistController{
-   // GET /wishlist
+class WishlistController {
+  // GET /wishlist
   loadWishlist = async (req, res) => {
     try {
       const userId = req.session?.user;

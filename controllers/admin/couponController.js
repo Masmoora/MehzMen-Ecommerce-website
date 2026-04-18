@@ -1,7 +1,7 @@
 import couponService from "../../service/admin/couponService.js";
 import logger from '../../logger.js';
-class CouponController{
-      loadCoupons = async (req, res) => {
+class CouponController {
+  loadCoupons = async (req, res) => {
     try {
       const { page = 1, search = '' } = req.query || {};
       const result = await couponService.getCoupons({ page, limit: 10, search });
@@ -43,6 +43,7 @@ class CouponController{
         usageLimit: usageLimit ? Number(usageLimit) : null,
         isActive: isActive === 'on' || isActive === true || isActive === 'true'
       };
+ 
 
       if (!data.code || !data.value) {
         if (req.is('application/json')) {
@@ -52,6 +53,11 @@ class CouponController{
           error: 'Code and value are required',
           old: req.body
         });
+      }
+      console.log("helloo",value)
+      console.log(minOrderValue)
+           if(value>minOrderValue){
+        return res.status(400).json({ success: false, message: 'min order should be greater than value' });
       }
 
       if (startDate) data.startDate = new Date(startDate);

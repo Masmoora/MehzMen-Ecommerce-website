@@ -2,7 +2,7 @@ import UserService from '../../service/user/userService.js';
 import OrderService from '../../service/user/orderService.js';
 import logger from '../../logger.js';
 
-class OrderController{
+class OrderController {
   isValidOrderId = (orderId) => typeof orderId === 'string' && orderId.trim().length >= 10;
   loadOrders = async (req, res) => {
     try {
@@ -46,7 +46,7 @@ class OrderController{
     }
   };
 
- cancelSingleItem = async (req, res) => {
+  cancelSingleItem = async (req, res) => {
     try {
       const userId = req.session?.user;
       if (!userId) return res.status(401).json({ success: false, message: 'Login required' });
@@ -102,34 +102,34 @@ class OrderController{
       return res.status(400).json({ success: false, message: error.message || 'Failed to request return' });
     }
   };
-downloadInvoice = async (req, res) => {
-  try {
-    const userId = req.session?.user;
-    if (!userId) return res.redirect('/login');
+  downloadInvoice = async (req, res) => {
+    try {
+      const userId = req.session?.user;
+      if (!userId) return res.redirect('/login');
 
-    const { orderId } = req.params || {};
-    if (!this.isValidOrderId(orderId)) {
-      return res.status(400).send('Invalid order id');
-    }
-
-    const { fileName, filePath } = await OrderService.generateInvoiceForOrder(userId, orderId);
-
-    return res.download(filePath, fileName, (err) => {
-      if (err) {
-        console.error('Error sending invoice file:', err);
-        if (!res.headersSent) return res.status(500).send('Error sending invoice');
+      const { orderId } = req.params || {};
+      if (!this.isValidOrderId(orderId)) {
+        return res.status(400).send('Invalid order id');
       }
-    });
-  } catch (error) {
-    console.error('Error downloading invoice:', error);
-    return res.status(error.statusCode || 500).send(error.message || 'Error generating invoice');
-  }
-};
+
+      const { fileName, filePath } = await OrderService.generateInvoiceForOrder(userId, orderId);
+
+      return res.download(filePath, fileName, (err) => {
+        if (err) {
+          console.error('Error sending invoice file:', err);
+          if (!res.headersSent) return res.status(500).send('Error sending invoice');
+        }
+      });
+    } catch (error) {
+      console.error('Error downloading invoice:', error);
+      return res.status(error.statusCode || 500).send(error.message || 'Error generating invoice');
+    }
+  };
   loadOrderSuccess = async (req, res) => {
     try {
       const userId = req.session?.user;
       if (!userId) return res.redirect('/login');
-      
+
 
       const user = await UserService.getUserById(userId);
       if (!user) return res.redirect('/pageNotFound');
@@ -158,107 +158,107 @@ downloadInvoice = async (req, res) => {
     }
   };
   requestItemReturn = async (req, res) => {
-  try {
+    try {
 
-    const userId = req.session?.user;
-    if (!userId)
-      return res.status(401).json({ success: false, message: "Login required" });
+      const userId = req.session?.user;
+      if (!userId)
+        return res.status(401).json({ success: false, message: "Login required" });
 
-    const { orderId, itemId } = req.params;
-    const { returnReason = "", returnDescription = "" } = req.body;
+      const { orderId, itemId } = req.params;
+      const { returnReason = "", returnDescription = "" } = req.body;
 
-    const result = await OrderService.requestItemReturn(
-      userId,
-      orderId,
-      itemId,
-      returnReason,
-      returnDescription
-    );
+      const result = await OrderService.requestItemReturn(
+        userId,
+        orderId,
+        itemId,
+        returnReason,
+        returnDescription
+      );
 
-    return res.json({
-      success: true,
-      message: "Return request submitted",
-      data: result
-    });
+      return res.json({
+        success: true,
+        message: "Return request submitted",
+        data: result
+      });
 
-  } catch (error) {
+    } catch (error) {
 
-    logger.error("Error requesting item return:", error);
+      logger.error("Error requesting item return:", error);
 
-    return res.status(400).json({
-      success: false,
-      message: error.message || "Failed to request return"
-    });
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Failed to request return"
+      });
 
-  }
-};
-cancelItemReturnRequest = async (req, res) => {
+    }
+  };
+  cancelItemReturnRequest = async (req, res) => {
 
-  try {
+    try {
 
-    const userId = req.session?.user;
+      const userId = req.session?.user;
 
-    if (!userId)
-      return res.status(401).json({ success: false, message: "Login required" });
+      if (!userId)
+        return res.status(401).json({ success: false, message: "Login required" });
 
-    const { orderId, itemId } = req.params;
+      const { orderId, itemId } = req.params;
 
-    const result = await OrderService.cancelItemReturnRequest(
-      userId,
-      orderId,
-      itemId
-    );
+      const result = await OrderService.cancelItemReturnRequest(
+        userId,
+        orderId,
+        itemId
+      );
 
-    return res.json({
-      success: true,
-      message: "Return request cancelled",
-      data: result
-    });
+      return res.json({
+        success: true,
+        message: "Return request cancelled",
+        data: result
+      });
 
-  } catch (error) {
+    } catch (error) {
 
-    logger.error("Error cancelling return request:", error);
+      logger.error("Error cancelling return request:", error);
 
-    return res.status(400).json({
-      success: false,
-      message: error.message || "Failed to cancel return request"
-    });
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Failed to cancel return request"
+      });
 
-  }
-};
-cancelEntireReturnRequest = async (req, res) => {
+    }
+  };
+  cancelEntireReturnRequest = async (req, res) => {
 
-  try {
+    try {
 
-    const userId = req.session?.user;
+      const userId = req.session?.user;
 
-    if (!userId)
-      return res.status(401).json({ success: false, message: "Login required" });
+      if (!userId)
+        return res.status(401).json({ success: false, message: "Login required" });
 
-    const { orderId } = req.params;
+      const { orderId } = req.params;
 
-    const result = await OrderService.cancelEntireReturnRequest(
-      userId,
-      orderId
-    );
+      const result = await OrderService.cancelEntireReturnRequest(
+        userId,
+        orderId
+      );
 
-    return res.json({
-      success: true,
-      message: "Entire return request cancelled",
-      data: result
-    });
+      return res.json({
+        success: true,
+        message: "Entire return request cancelled",
+        data: result
+      });
 
-  } catch (error) {
+    } catch (error) {
 
-    logger.error("Error cancelling entire return:", error);
+      logger.error("Error cancelling entire return:", error);
 
-    return res.status(400).json({
-      success: false,
-      message: error.message || "Failed to cancel return request"
-    });
+      return res.status(400).json({
+        success: false,
+        message: error.message || "Failed to cancel return request"
+      });
 
-  }
+    }
 
-};
+  };
 }
 export default new OrderController();

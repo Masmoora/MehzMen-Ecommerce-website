@@ -91,7 +91,7 @@
                   <th>Product Name</th>
                   <th>Brand</th>
                   <th>Category</th>
-                  
+
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -109,7 +109,7 @@
                       <%= product.category ? product.category.name : 'N/A' %>
                     </td>
 
-                   
+
                     <td>
                       <% if (product.isBlocked) { %>
                         <span class="badge bg-danger">
@@ -320,103 +320,103 @@
           });
         </script>
         <script>
-          let isEdit =false
+          let isEdit = false
 
-                      document.getElementById("offerForm").addEventListener("submit", async function (e) {
+          document.getElementById("offerForm").addEventListener("submit", async function (e) {
 
-              e.preventDefault()
+            e.preventDefault()
 
-              clearErrors()
+            clearErrors()
 
-              const productId = document.getElementById("productId").value
-              const title = document.getElementById("offerTitle").value.trim()
-              const type = document.getElementById("discountType").value
-              const value = document.getElementById("discountValue").value
-              const startDate = document.getElementById("startDate").value
-              const endDate = document.getElementById("endDate").value
+            const productId = document.getElementById("productId").value
+            const title = document.getElementById("offerTitle").value.trim()
+            const type = document.getElementById("discountType").value
+            const value = document.getElementById("discountValue").value
+            const startDate = document.getElementById("startDate").value
+            const endDate = document.getElementById("endDate").value
 
-              let valid = true
+            let valid = true
 
-              if (!title) {
-                document.getElementById("titleError").innerText = "Offer title required"
-                valid = false
-              }
+            if (!title) {
+              document.getElementById("titleError").innerText = "Offer title required"
+              valid = false
+            }
 
-              if (!type) {
-                document.getElementById("typeError").innerText = "Select discount type"
-                valid = false
-              }
+            if (!type) {
+              document.getElementById("typeError").innerText = "Select discount type"
+              valid = false
+            }
 
-              if (!value || value <= 0) {
-                document.getElementById("valueError").innerText = "Enter valid value"
-                valid = false
-              }
+            if (!value || value <= 0) {
+              document.getElementById("valueError").innerText = "Enter valid value"
+              valid = false
+            }
 
-              if (type === "percentage" && value > 90) {
-                document.getElementById("valueError").innerText = "Max percentage 90%"
-                valid = false
-              }
+            if (type === "percentage" && value > 90) {
+              document.getElementById("valueError").innerText = "Max percentage 90%"
+              valid = false
+            }
 
-              if (!startDate) {
-                document.getElementById("startError").innerText = "Start date required"
-                valid = false
-              }
+            if (!startDate) {
+              document.getElementById("startError").innerText = "Start date required"
+              valid = false
+            }
 
-              if (!endDate) {
-                document.getElementById("endError").innerText = "End date required"
-                valid = false
-              }
+            if (!endDate) {
+              document.getElementById("endError").innerText = "End date required"
+              valid = false
+            }
 
-              if (new Date(startDate) >= new Date(endDate)) {
-                document.getElementById("endError").innerText = "End date must be after start date"
-                valid = false
-              }
+            if (new Date(startDate) >= new Date(endDate)) {
+              document.getElementById("endError").innerText = "End date must be after start date"
+              valid = false
+            }
 
-              if (!valid) return
+            if (!valid) return
 
-              try {
+            try {
 
-                const res = await fetch(`/admin/products/${productId}/offer`, {
+              const res = await fetch(`/admin/products/${productId}/offer`, {
 
-                  method: isEdit ? "PUT":"POST",
+                method: isEdit ? "PUT" : "POST",
 
-                  headers: {
-                    "Content-Type": "application/json"
-                  },
+                headers: {
+                  "Content-Type": "application/json"
+                },
 
-                  body: JSON.stringify({
-                    offerTitle: title,
-                    discountType: type,
-                    discountValue: value,
-                    startDate,
-                    endDate
-                  })
-
+                body: JSON.stringify({
+                  offerTitle: title,
+                  discountType: type,
+                  discountValue: value,
+                  startDate,
+                  endDate
                 })
 
-                const data = await res.json()
+              })
 
-                if (res.ok) {
+              const data = await res.json()
 
-                  Swal.fire("Success", data.message, "success")
+              if (res.ok) {
 
-                  bootstrap.Modal.getInstance(document.getElementById("offerModal")).hide()
+                Swal.fire("Success", data.message, "success")
 
-                  setTimeout(() => location.reload(), 1000)
+                bootstrap.Modal.getInstance(document.getElementById("offerModal")).hide()
 
-                } else {
+                setTimeout(() => location.reload(), 1000)
 
-                  Swal.fire("Error", data.message, "error")
+              } else {
 
-                }
-
-              } catch (err) {
-
-                Swal.fire("Error", "Something went wrong", "error")
+                Swal.fire("Error", data.message, "error")
 
               }
 
-            })
+            } catch (err) {
+
+              Swal.fire("Error", "Something went wrong", "error")
+
+            }
+
+          })
           // Open Offer Modal
           async function openOfferModal(productId) {
 
@@ -431,7 +431,7 @@
               const data = await res.json()
 
               if (data.offer) {
-                isEdit =true
+                isEdit = true
 
                 document.getElementById("offerModalTitle").innerText = "Edit Product Offer"
 

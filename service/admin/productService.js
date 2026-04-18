@@ -33,16 +33,16 @@ class ProductService {
     ]);
     const productIds = products.map(p => p._id);
 
-  const offers = await Offer.find({
-    offerType: "product",
-    productId: { $in: productIds }
-  }).lean();
+    const offers = await Offer.find({
+      offerType: "product",
+      productId: { $in: productIds }
+    }).lean();
 
-  products.forEach(product => {
-    product.hasOffer = offers.some(
-      offer => offer.productId.toString() === product._id.toString()
-    );
-  })
+    products.forEach(product => {
+      product.hasOffer = offers.some(
+        offer => offer.productId.toString() === product._id.toString()
+      );
+    })
 
     return {
       products,
@@ -345,41 +345,41 @@ class ProductService {
       throw error;
     }
   };
-  async getProductOffer(productId){
+  async getProductOffer(productId) {
 
     return await Offer.findOne({
       productId,
-      offerType:"product"
+      offerType: "product"
     })
 
   }
 
 
-  async createProductOffer(data){
+  async createProductOffer(data) {
 
     const existing = await Offer.findOne({
-      productId:data.productId
+      productId: data.productId
     })
 
-    if(existing){
+    if (existing) {
       throw new Error("Offer already exists")
     }
 
     const offer = new Offer({
 
-      offerType:"product",
+      offerType: "product",
 
-      productId:data.productId,
+      productId: data.productId,
 
-      offerTitle:data.offerTitle,
+      offerTitle: data.offerTitle,
 
-      discountType:data.discountType,
+      discountType: data.discountType,
 
-      discountValue:data.discountValue,
+      discountValue: data.discountValue,
 
-      startDate:data.startDate,
+      startDate: data.startDate,
 
-      endDate:data.endDate
+      endDate: data.endDate
 
     })
 
@@ -391,13 +391,14 @@ class ProductService {
 
 
 
-  async updateProductOffer(productId,data){
+  async updateProductOffer(productId, data) {
 
-    const offer = await Offer.findOne({productId,
-      offerType:"product"
+    const offer = await Offer.findOne({
+      productId,
+      offerType: "product"
     })
 
-    if(!offer){
+    if (!offer) {
       throw new Error("Offer not found")
     }
 
@@ -415,41 +416,44 @@ class ProductService {
 
 
 
-  async deleteProductOffer(productId){
+  async deleteProductOffer(productId) {
 
-    return await Offer.deleteOne({productId,
-      offerType:"product"
+    return await Offer.deleteOne({
+      productId,
+      offerType: "product"
     })
 
   }
-//offer
-getBestVariantPricing = async (product, variants) => {
-  const now = new Date();
-  const commonFilter = {
-    status: 'active',
-    startDate: { $lte: now },
-    endDate: { $gte: now }
+  //offer
+  getBestVariantPricing = async (product, variants) => {
+    const now = new Date();
+    const commonFilter = {
+      status: 'active',
+      startDate: { $lte: now },
+      endDate: { $gte: now }
+    };
+    const categoryId = product.category?._id || product.category || null;
+
+    const [productOffer, categoryOffer] = await Promise.all([
+      Offer.findOne({ ...commonFilter, offerType: 'product', productId: product._id }).lean(),
+      categoryId
+        ? Offer.findOne({ ...commonFilter, offerType: 'category', categoryId }).lean()
+        : Promise.resolve(null)
+    ]);
+
+    return variants.map((v) => {
+      const best = getBestOffer(v.price, productOffer, categoryOffer);
+      const discountPercent =
+        best.discountAmount > 0 && best.originalPrice > 0
+          ? Math.round((best.discountAmount / best.originalPrice) * 100)
+          : 0;
+
+      return {
+        ...v, originalPrice: best.originalPrice, finalPrice: best.finalPrice,
+        discountAmount: best.discountAmount, discountPercent, appliedOfferType: best.appliedOfferType
+      };
+    });
   };
-  const categoryId = product.category?._id || product.category || null;
-
-  const [productOffer, categoryOffer] = await Promise.all([
-    Offer.findOne({ ...commonFilter, offerType: 'product', productId: product._id }).lean(),
-    categoryId
-      ? Offer.findOne({ ...commonFilter, offerType: 'category', categoryId }).lean()
-      : Promise.resolve(null)
-  ]);
-
-  return variants.map((v) => {
-    const best = getBestOffer(v.price, productOffer, categoryOffer);
-    const discountPercent =
-      best.discountAmount > 0 && best.originalPrice > 0
-        ? Math.round((best.discountAmount / best.originalPrice) * 100)
-        : 0;
-
-    return { ...v, originalPrice: best.originalPrice, finalPrice: best.finalPrice,
-             discountAmount: best.discountAmount, discountPercent, appliedOfferType: best.appliedOfferType };
-  });
-};
 
 };
 export default new ProductService();

@@ -62,14 +62,14 @@
             <%= product.description %>
           </p>
 
-         <!--<div class="mb-3">
+          <!--<div class="mb-3">
             <span class="price-text">₹<span id="priceText"></span></span>
           </div>-->
           <div class="mb-3">
-        <span id="priceBlock">
-          <span class="price-text">₹<span id="priceText"></span></span>
-        </span>
-      </div>
+            <span id="priceBlock">
+              <span class="price-text">₹<span id="priceText"></span></span>
+            </span>
+          </div>
 
           <div class="mb-3">
             <span id="stockBadge" class="badge badge-availability"></span>
@@ -245,7 +245,7 @@
 
         function applyVariant() {
           //priceText.textContent = selectedVariant.price;
-           renderPrice();
+          renderPrice();
           renderImages(selectedVariant.images || []);
           renderOptions();
 
@@ -270,26 +270,26 @@
           }
         }
         //offer
-         function renderPrice() {
-    if (!selectedVariant) return;
+        function renderPrice() {
+          if (!selectedVariant) return;
 
-    const hasDiscount = selectedVariant.discountAmount && selectedVariant.discountAmount > 0;
-    const original = selectedVariant.originalPrice || selectedVariant.price;
-    const final = selectedVariant.finalPrice || selectedVariant.price;
-    const percent = selectedVariant.discountPercent || 0;
+          const hasDiscount = selectedVariant.discountAmount && selectedVariant.discountAmount > 0;
+          const original = selectedVariant.originalPrice || selectedVariant.price;
+          const final = selectedVariant.finalPrice || selectedVariant.price;
+          const percent = selectedVariant.discountPercent || 0;
 
-    if (hasDiscount) {
-      document.getElementById('priceBlock').innerHTML = `
+          if (hasDiscount) {
+            document.getElementById('priceBlock').innerHTML = `
         <span class="text-muted text-decoration-line-through me-2">₹${original}</span>
         <span class="price-text text-danger">₹<span id="priceText">${final}</span></span>
         <span class="badge bg-success ms-1">-${percent}%</span>
       `;
-    } else {
-      document.getElementById('priceBlock').innerHTML = `
+          } else {
+            document.getElementById('priceBlock').innerHTML = `
         <span class="price-text">₹<span id="priceText">${final}</span></span>
       `;
-    }
-  }
+          }
+        }
 
         function moveLens(e) {
           const rect = mainImage.getBoundingClientRect();

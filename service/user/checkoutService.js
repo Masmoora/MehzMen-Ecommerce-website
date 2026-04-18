@@ -11,7 +11,7 @@ import { getBestOffer } from "../../utils/offerHelper.js";
 const SHIPPING_FLAT = 50;
 
 class CheckoutService {
- reserveStockForOrder = async (items) => {
+  reserveStockForOrder = async (items) => {
     const reservedItems = [];
 
     for (const item of items) {
@@ -59,84 +59,84 @@ class CheckoutService {
     //return cart.items.map((item) => {
     const processedItems = await Promise.all(cart.items.map(async (item) => {
 
-  const product = item.productId;
-  const variant = item.variantId;
-  const stock = variant?.stock || 0;
+      const product = item.productId;
+      const variant = item.variantId;
+      const stock = variant?.stock || 0;
 
-  if (stock <= 0 || !variant?.isActive) {
-  await Cart.updateOne(
-    { userId },
-    { $pull: { items: { _id: item._id } } }
-  );
-  return null;
-}
+      if (stock <= 0 || !variant?.isActive) {
+        await Cart.updateOne(
+          { userId },
+          { $pull: { items: { _id: item._id } } }
+        );
+        return null;
+      }
 
-  let price = item.salePrice;
-  let discount = item.discount;
+      let price = item.salePrice;
+      let discount = item.discount;
 
-  if (product && variant) {
+      if (product && variant) {
 
-    const now = new Date();
+        const now = new Date();
 
-    const commonFilter = {
-      status: 'active',
-      startDate: { $lte: now },
-      endDate: { $gte: now }
-    };
+        const commonFilter = {
+          status: 'active',
+          startDate: { $lte: now },
+          endDate: { $gte: now }
+        };
 
-    const [productOffer, categoryOffer] = await Promise.all([
-      Offer.findOne({
-        ...commonFilter,
-        offerType: 'product',
-        productId: product._id
-      }).lean(),
+        const [productOffer, categoryOffer] = await Promise.all([
+          Offer.findOne({
+            ...commonFilter,
+            offerType: 'product',
+            productId: product._id
+          }).lean(),
 
-      Offer.findOne({
-        ...commonFilter,
-        offerType: 'category',
-        categoryId: product.category
-      }).lean()
-    ]);
+          Offer.findOne({
+            ...commonFilter,
+            offerType: 'category',
+            categoryId: product.category
+          }).lean()
+        ]);
 
-    const best = getBestOffer(variant.price, productOffer, categoryOffer);
+        const best = getBestOffer(variant.price, productOffer, categoryOffer);
 
-    price = best.finalPrice;
-    discount = best.discountAmount;
-  }
+        price = best.finalPrice;
+        discount = best.discountAmount;
+      }
 
-  const outOfStock =
-    !product ||
-    product.isBlocked ||
-    product.status !== 'available' ||
-    !variant ||
-    !variant.isActive ||
-    stock <= 0;
+      const outOfStock =
+        !product ||
+        product.isBlocked ||
+        product.status !== 'available' ||
+        !variant ||
+        !variant.isActive ||
+        stock <= 0;
 
-  return {
-    _id: item._id.toString(),
-    productId: product?._id?.toString() || '',
-    variantId: variant?._id?.toString() || '',
-    productName: product?.name || 'Product',
-    brand: product?.brand?.name || 'N/A',
-    image: variant?.images?.[0] || '',
-    color: variant?.color || '-',
-    size: variant?.size || '-',
-    quantity: item.quantity,
+      return {
+        _id: item._id.toString(),
+        productId: product?._id?.toString() || '',
+        variantId: variant?._id?.toString() || '',
+        productName: product?.name || 'Product',
+        brand: product?.brand?.name || 'N/A',
+        image: variant?.images?.[0] || '',
+        color: variant?.color || '-',
+        size: variant?.size || '-',
+        quantity: item.quantity,
 
-    originalPrice: variant.price,
-    price: price,
-    discount: discount,
+        originalPrice: variant.price,
+        price: price,
+        discount: discount,
 
-    discountPercent:
-      variant.price > price
-        ? Math.round(((variant.price - price) / variant.price) * 100)
-        : 0,
+        discountPercent:
+          variant.price > price
+            ? Math.round(((variant.price - price) / variant.price) * 100)
+            : 0,
 
-    itemTotal: price * item.quantity,
-    outOfStock
-  };
-}));
-return processedItems.filter(Boolean);
+        itemTotal: price * item.quantity,
+        outOfStock
+      };
+    }));
+    return processedItems.filter(Boolean);
   };
 
   getAddressData = async (userId) => {
@@ -150,7 +150,7 @@ return processedItems.filter(Boolean);
     };
   };
 
- 
+
   getValidCoupon = async (code, subtotal = 0, userId = null) => {
     const raw = String(code || '').trim();
     if (!raw) return null;
@@ -163,7 +163,7 @@ return processedItems.filter(Boolean);
     const now = new Date();
     if (coupon.startDate && new Date(coupon.startDate) > now) return null;
     if (coupon.endDate && new Date(coupon.endDate) < now) return null;
-        // Referral reward coupons are strictly one-time use.
+    // Referral reward coupons are strictly one-time use.
     if (coupon.isReferralReward && Number(coupon.usedCount || 0) >= 1) return null;
     if (coupon.usageLimit != null && (coupon.usedCount || 0) >= coupon.usageLimit) return null;
     if (Number(coupon.minOrderValue || 0) > subtotal) return null;
@@ -216,8 +216,8 @@ return processedItems.filter(Boolean);
       .filter((coupon) => {
         if (coupon.startDate && new Date(coupon.startDate) > now) return false;
         if (coupon.endDate && new Date(coupon.endDate) < now) return false;
-            // Referral reward coupons are strictly one-time use.
-    if (coupon.isReferralReward && Number(coupon.usedCount || 0) >= 1) return null;
+        // Referral reward coupons are strictly one-time use.
+        if (coupon.isReferralReward && Number(coupon.usedCount || 0) >= 1) return null;
         if (coupon.usageLimit != null && (coupon.usedCount || 0) >= coupon.usageLimit) return false;
         return true;
       })
@@ -438,7 +438,7 @@ return processedItems.filter(Boolean);
     let summary = this.buildSummary(items);
     if (couponCode) {
       const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
-      const coupon = await this.getValidCoupon(couponCode, subtotal,userId);
+      const coupon = await this.getValidCoupon(couponCode, subtotal, userId);
       if (coupon) summary = this.buildSummary(items, coupon);
     }
     const razorpayOrder = await razorpayService.createOrder(summary.finalTotal, `checkout_${userId}`);
@@ -469,7 +469,7 @@ return processedItems.filter(Boolean);
 
   placeOrder = async (userId, orderData) => {
     //const { addressId, paymentMethod = 'cod', paymentStatus = 'Pending', couponCode: orderCouponCode = '' } = orderData || {};
-        const {
+    const {
       addressId,
       paymentMethod = 'cod',
       paymentStatus: incomingPaymentStatus = '',
@@ -499,7 +499,7 @@ return processedItems.filter(Boolean);
     let summary = this.buildSummary(items);
     if (orderCouponCode) {
       const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
-      const coupon = await this.getValidCoupon(orderCouponCode, subtotal,userId);
+      const coupon = await this.getValidCoupon(orderCouponCode, subtotal, userId);
       if (coupon) {
         summary = this.buildSummary(items, coupon);
         await Coupon.updateOne({ _id: coupon._id }, { $inc: { usedCount: 1 } });
@@ -512,14 +512,14 @@ return processedItems.filter(Boolean);
         throw new Error(`Insufficient wallet balance. Your balance is ₹${balance}, order total is ₹${summary.finalTotal}.`);
       }
     }
-    
+
     const resolvedPaymentStatus =
       String(incomingPaymentStatus || '').trim() ||
       (paymentMethod === 'cod' ? 'Pending' : 'Completed');
 
     const reservedItems = await this.reserveStockForOrder(items);
 
-  const orderItems = items.map((item) => {
+    const orderItems = items.map((item) => {
       const original = Number(item.originalPrice) || 0;
       const sale = Number(item.price) || 0;
       const qty = Number(item.quantity) || 0;

@@ -1,5 +1,5 @@
 import Coupon from '../../models/couponSchema.js';
-class CouponService{
+class CouponService {
   getCoupons = async ({ search = '', page = 1, limit = 10 }) => {
     const safePage = Math.max(1, Number(page) || 1);
     const safeLimit = Math.max(1, Math.min(50, Number(limit) || 10));
@@ -18,9 +18,9 @@ class CouponService{
     ]);
     //chech if coupon is expired
     const today = new Date()
-    items.forEach(coupon =>{
-      if(coupon.endDate && new Date(coupon.endDate)<today){
-        coupon.status ="Expired"
+    items.forEach(coupon => {
+      if (coupon.endDate && new Date(coupon.endDate) < today) {
+        coupon.status = "Expired"
       }
     })
 

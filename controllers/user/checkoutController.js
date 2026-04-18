@@ -1,8 +1,8 @@
 import UserService from '../../service/user/userService.js';
 import CheckoutService from '../../service/user/checkoutService.js';
 import logger from '../../logger.js';
-class CheckoutController{
-    loadCheckout = async (req, res) => {
+class CheckoutController {
+  loadCheckout = async (req, res) => {
     try {
       const userId = req.session?.user;
       if (!userId) return res.redirect('/login');
@@ -20,7 +20,7 @@ class CheckoutController{
         summary: data.summary,
         walletBalance: data.walletBalance ?? 0,
         availableCoupons: data.availableCoupons || [],
-         referralCode: data.referralCode || '',
+        referralCode: data.referralCode || '',
         referralCoupons: data.referralCoupons || [],
         availableCoupons: data.availableCoupons || [],
         allCoupons: data.allCoupons || []
@@ -110,9 +110,9 @@ class CheckoutController{
       return res.json({
         success: true,
         message: 'Order placed successfully',
-        orderId: result.orderId,redirectUrl: `/orders/success?orderId=${encodeURIComponent(result.orderId)}`
+        orderId: result.orderId, redirectUrl: `/orders/success?orderId=${encodeURIComponent(result.orderId)}`
       });
-        
+
     } catch (error) {
       logger.error('Error placing order:', error);
       return res.status(400).json({ success: false, message: error.message || 'Failed to place order' });

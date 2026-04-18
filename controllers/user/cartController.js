@@ -2,7 +2,7 @@ import CartService from "../../service/user/cartService.js"
 import UserService from "../../service/user/userService.js"
 import logger from '../../logger.js';
 
-class CartController{
+class CartController {
   // GET /cart
   loadCart = async (req, res) => {
     try {

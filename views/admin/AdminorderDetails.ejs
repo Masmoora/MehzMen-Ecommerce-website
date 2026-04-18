@@ -46,23 +46,25 @@
                       </span></p>
                   </div>
                   <div class="d-flex gap-2 flex-wrap">
-                    <% const orderStatus = normalize(order.orderStatus); %>
+                    <% const orderStatus=normalize(order.orderStatus); %>
 
-<% if (!['cancelled','returned','return_requested','return_approved','delivered'].includes(orderStatus)) { %>
-<button class="btn btn-primary btn-sm"
-  onclick="updateOrderStatus('<%= order.orderId %>', '<%= orderStatus %>')">
-  Update Status
-</button>
-<% } %>
-                   <% if (!['cancelled','returned','delivered'].includes(orderStatus)) { %>
-<button class="btn btn-danger btn-sm"
-  onclick="cancelOrder('<%= order.orderId %>')">
-  Cancel Order
-</button>
-<% } %>
-                    <a class="btn btn-outline-dark btn-sm" href="/admin/orders/<%= order.orderId %>/invoice">Download
-                      Invoice</a>
-                    <a class="btn btn-dark btn-sm" href="/admin/orders">Back to Orders</a>
+                      <% if
+                        (!['cancelled','returned','return_requested','return_approved','delivered'].includes(orderStatus))
+                        { %>
+                        <button class="btn btn-primary btn-sm"
+                          onclick="updateOrderStatus('<%= order.orderId %>', '<%= orderStatus %>')">
+                          Update Status
+                        </button>
+                        <% } %>
+                          <% if (!['cancelled','returned','delivered'].includes(orderStatus)) { %>
+                            <button class="btn btn-danger btn-sm" onclick="cancelOrder('<%= order.orderId %>')">
+                              Cancel Order
+                            </button>
+                            <% } %>
+                              <a class="btn btn-outline-dark btn-sm"
+                                href="/admin/orders/<%= order.orderId %>/invoice">Download
+                                Invoice</a>
+                              <a class="btn btn-dark btn-sm" href="/admin/orders">Back to Orders</a>
                   </div>
                 </div>
               </section>
@@ -132,34 +134,37 @@
                         </div>
                       </div>
                       <div class="d-flex gap-2 align-items-start">
-                       <% const itemStatus = normalize(item.itemStatus); %>
+                        <% const itemStatus=normalize(item.itemStatus); %>
 
-<% if (!['cancelled','returned','delivered'].includes(itemStatus)) { %>
-<button class="btn btn-primary btn-sm"
-  onclick="updateItemStatus('<%= order.orderId %>', '<%= item._id %>', '<%= itemStatus %>')">
-  Update
-</button>
-<% } %>
+                          <% if (!['cancelled','returned','delivered'].includes(itemStatus)) { %>
+                            <button class="btn btn-primary btn-sm"
+                              onclick="updateItemStatus('<%= order.orderId %>', '<%= item._id %>', '<%= itemStatus %>')">
+                              Update
+                            </button>
+                            <% } %>
 
 
-<% if (!['cancelled','returned','delivered'].includes(itemStatus)) { %>
-<button class="btn btn-danger btn-sm"
-  onclick="cancelItem('<%= order.orderId %>', '<%= item._id %>')">
-  Cancel
-</button>
-<% } %>
-                        <% if (normalize(item.returnStatus)==='requested' ||
-                          normalize(item.itemStatus)==='return_requested' ) { %>
-                          <button class="btn btn-success btn-sm"
-                            onclick="approveReturn('<%= order.orderId %>', '<%= item._id %>')">Approve Return</button>
-                          <button class="btn btn-warning btn-sm"
-                            onclick="rejectReturn('<%= order.orderId %>', '<%= item._id %>')">Reject Return</button>
-                          <% } %>
-                            <% if (normalize(item.returnStatus)==='approved' ||
-                              normalize(item.itemStatus)==='return_approved' ) { %>
-                              <button class="btn btn-dark btn-sm"
-                                onclick="markReturned('<%= order.orderId %>', '<%= item._id %>')">Mark Returned</button>
-                              <% } %>
+                              <% if (!['cancelled','returned','delivered'].includes(itemStatus)) { %>
+                                <button class="btn btn-danger btn-sm"
+                                  onclick="cancelItem('<%= order.orderId %>', '<%= item._id %>')">
+                                  Cancel
+                                </button>
+                                <% } %>
+                                  <% if (normalize(item.returnStatus)==='requested' ||
+                                    normalize(item.itemStatus)==='return_requested' ) { %>
+                                    <button class="btn btn-success btn-sm"
+                                      onclick="approveReturn('<%= order.orderId %>', '<%= item._id %>')">Approve
+                                      Return</button>
+                                    <button class="btn btn-warning btn-sm"
+                                      onclick="rejectReturn('<%= order.orderId %>', '<%= item._id %>')">Reject
+                                      Return</button>
+                                    <% } %>
+                                      <% if (normalize(item.returnStatus)==='approved' ||
+                                        normalize(item.itemStatus)==='return_approved' ) { %>
+                                        <button class="btn btn-dark btn-sm"
+                                          onclick="markReturned('<%= order.orderId %>', '<%= item._id %>')">Mark
+                                          Returned</button>
+                                        <% } %>
                       </div>
                     </div>
                   </div>

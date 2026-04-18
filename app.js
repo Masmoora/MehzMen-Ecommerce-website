@@ -11,8 +11,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import userRouter from './routes/userRouter.js';
 import adminRouter from './routes/adminRouter.js';
-import AuthMiddleware from './middlewares/auth.js'
-
 
 connectDB();
 app.use(express.json());

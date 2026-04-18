@@ -1,8 +1,8 @@
 import User from '../../models/userSchema.js';
 import Wallet from '../../models/walletSchema.js';
 
-class WalletService{
-normalizeAmount = (amount) => {
+class WalletService {
+  normalizeAmount = (amount) => {
     const parsed = Number(amount);
     if (!Number.isFinite(parsed)) return 0;
     return Math.round(parsed * 100) / 100;

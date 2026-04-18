@@ -75,12 +75,12 @@ class ProductController {
     try {
       const { product, variants } =
         await ProductService.getProductWithVariants(req.params.id);
-        //for offer
-        const enrichedVariants = await ProductService.getBestVariantPricing(product, variants);
+      //for offer
+      const enrichedVariants = await ProductService.getBestVariantPricing(product, variants);
 
       res.render('viewVariants', {
         product,
-        variants: enrichedVariants 
+        variants: enrichedVariants
       });
     } catch (err) {
       console.error(err.message);
@@ -391,7 +391,7 @@ class ProductController {
     }
   };
   // Replace variant image (AJAX endpoint) – one image swapped for a new upload
- // Replace variant image (AJAX endpoint) – one image swapped for a new upload
+  // Replace variant image (AJAX endpoint) – one image swapped for a new upload
   replaceVariantImage = async (req, res) => {
     try {
       const { variantId, imageUrl } = req.body;
@@ -411,7 +411,7 @@ class ProductController {
       }
 
       // Support S3 (file.location), local disk (file.path), or custom URL (file.url)
-      const newImageUrl = req.file.location ;
+      const newImageUrl = req.file.location;
 
       if (!newImageUrl) {
         return res.status(400).json({
@@ -572,38 +572,38 @@ class ProductController {
     }
   };
   // GET OFFER
-  async getProductOffer(req,res){
-    try{
+  async getProductOffer(req, res) {
+    try {
 
       const productId = req.params.id
 
       const offer = await ProductService.getProductOffer(productId)
 
-      res.json({offer})
+      res.json({ offer })
 
-    }catch(error){
+    } catch (error) {
       console.error(error)
-      res.status(500).json({message:"Server error"})
+      res.status(500).json({ message: "Server error" })
     }
   }
 
 
   // ADD OFFER
-  async addProductOffer(req,res){
+  async addProductOffer(req, res) {
 
-    try{
+    try {
 
       const productId = req.params.id
 
-      const {offerTitle,discountType,discountValue,startDate,endDate} = req.body
+      const { offerTitle, discountType, discountValue, startDate, endDate } = req.body
 
       // validation
-      if(!offerTitle || !discountType || !discountValue || !startDate || !endDate){
-        return res.status(400).json({message:"All fields required"})
+      if (!offerTitle || !discountType || !discountValue || !startDate || !endDate) {
+        return res.status(400).json({ message: "All fields required" })
       }
 
-      if(discountType === "percentage" && discountValue > 90){
-        return res.status(400).json({message:"Percentage cannot exceed 90"})
+      if (discountType === "percentage" && discountValue > 90) {
+        return res.status(400).json({ message: "Percentage cannot exceed 90" })
       }
 
       const offer = await ProductService.createProductOffer({
@@ -616,17 +616,17 @@ class ProductController {
       })
 
       res.json({
-        success:true,
-        message:"Offer added",
+        success: true,
+        message: "Offer added",
         offer
       })
 
-    }catch(error){
+    } catch (error) {
 
       console.error(error)
 
       res.status(500).json({
-        message:"Internal server error"
+        message: "Internal server error"
       })
     }
 
@@ -634,15 +634,15 @@ class ProductController {
 
 
   // UPDATE OFFER
-  async updateProductOffer(req,res){
+  async updateProductOffer(req, res) {
 
-    try{
+    try {
 
       const productId = req.params.id
 
-      const {offerTitle,discountType,discountValue,startDate,endDate} = req.body
+      const { offerTitle, discountType, discountValue, startDate, endDate } = req.body
 
-      const offer = await ProductService.updateProductOffer(productId,{
+      const offer = await ProductService.updateProductOffer(productId, {
         offerTitle,
         discountType,
         discountValue,
@@ -651,17 +651,17 @@ class ProductController {
       })
 
       res.json({
-        success:true,
-        message:"Offer updated",
+        success: true,
+        message: "Offer updated",
         offer
       })
 
-    }catch(error){
+    } catch (error) {
 
       console.error(error)
 
       res.status(500).json({
-        message:"Internal server error"
+        message: "Internal server error"
       })
 
     }
@@ -670,31 +670,31 @@ class ProductController {
 
 
   // DELETE OFFER
-  async deleteProductOffer(req,res){
+  async deleteProductOffer(req, res) {
 
-    try{
+    try {
 
       const productId = req.params.id
 
       await ProductService.deleteProductOffer(productId)
 
       res.json({
-        success:true,
-        message:"Offer removed"
+        success: true,
+        message: "Offer removed"
       })
 
-    }catch(error){
+    } catch (error) {
 
       console.error(error)
 
       res.status(500).json({
-        message:"Internal server error"
+        message: "Internal server error"
       })
 
     }
 
   }
-  
+
 }
 
 export default new ProductController();

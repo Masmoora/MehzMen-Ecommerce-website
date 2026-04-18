@@ -1,263 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Coupons</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <style>
-    body {
-      background: #f6f7fb;
-      padding-top: 52px;
-    }
-    .card-soft {
-      background: #fff;
-      border-radius: 14px;
-      border: 1px solid #e9ecef;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-    }
-    .coupon-banner {
-      border-radius: 14px;
-      color: #fff;
-      background: linear-gradient(135deg, #4f46e5, #2563eb);
-      padding: 18px 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
-    }
-    .coupon-ticket {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid #e6ebff;
-      border-radius: 14px;
-      background: linear-gradient(180deg, #ffffff, #fbfdff);
-      padding: 16px;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-    .coupon-ticket:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 22px rgba(15, 23, 42, 0.08);
-    }
-    .coupon-ticket::before,
-    .coupon-ticket::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 14px;
-      height: 14px;
-      margin-top: -7px;
-      border-radius: 50%;
-      background: #f6f7fb;
-      border: 1px solid #e6ebff;
-    }
-    .coupon-ticket::before {
-      left: -8px;
-    }
-    .coupon-ticket::after {
-      right: -8px;
-    }
-    .coupon-code-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: #eef2ff;
-      color: #3730a3;
-      font-weight: 700;
-      font-size: 0.92rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      border: 1px dashed #c7d2fe;
-    }
-    .coupon-title {
-      font-size: 1.02rem;
-      font-weight: 700;
-      color: #111827;
-      margin-top: 10px;
-      margin-bottom: 6px;
-    }
-    .coupon-meta {
-      font-size: 0.88rem;
-      color: #6c757d;
-    }
-    .coupon-pill {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      border: 1px solid #d1fae5;
-      color: #047857;
-      background: #ecfdf5;
-    }
-    .coupon-copy-btn {
-      min-width: 98px;
-      border-radius: 10px;
-      font-weight: 600;
-    }
-    .empty-wrap {
-      border: 1px dashed #cfd6e4;
-      border-radius: 12px;
-      text-align: center;
-      padding: 26px 18px;
-      background: #fafbff;
-    }
-  </style>
+  <link rel="stylesheet" href="/css/user/userCoupons.css">
 </head>
+
 <body>
   <%- include("../partials/user/header") %>
 
-  <main class="container pt-2 pb-4">
-    <div class="row">
-      <div class="col-lg-3 mb-3">
-        <%- include("../partials/user/profileSidebar", { user, activeItem: "coupons" }) %>
-      </div>
+    <main class="container pt-2 pb-4">
+      <div class="row">
+        <div class="col-lg-3 mb-3">
+          <%- include("../partials/user/profileSidebar", { user, activeItem: "coupons" }) %>
+        </div>
 
-      <div class="col-lg-9">
-        <h4 class="mb-3">My Coupons</h4>
-        <div class="card-soft p-4">
-          <% if (referralCode) { %>
-            <div class="border rounded p-3 mb-4" style="border-left: 4px solid #198754;">
-              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div>
-                  <div class="fw-semibold">Invite &amp; Earn</div>
-                  <div class="small text-muted">Share your referral code with friends. You&apos;ll earn a coupon when they sign up.</div>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                  <span class="coupon-code-badge"><%= referralCode %></span>
-                  <button type="button" class="btn btn-sm btn-primary copy-coupon-btn" data-code="<%= referralCode %>">Copy Code</button>
+        <div class="col-lg-9">
+          <h4 class="mb-3">My Coupons</h4>
+          <div class="card-soft p-4">
+            <% if (referralCode) { %>
+              <div class="border rounded p-3 mb-4" style="border-left: 4px solid #198754;">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                  <div>
+                    <div class="fw-semibold">Invite &amp; Earn</div>
+                    <div class="small text-muted">Share your referral code with friends. You&apos;ll earn a coupon when
+                      they sign up.</div>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="coupon-code-badge">
+                      <%= referralCode %>
+                    </span>
+                    <button type="button" class="btn btn-sm btn-primary copy-coupon-btn"
+                      data-code="<%= referralCode %>">Copy Code</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          <% } %>
+              <% } %>
 
-          <div class="coupon-banner d-flex justify-content-between align-items-start gap-3">
-            <div>
-              <div class="fw-semibold mb-1">Save More On Your Next Order</div>
-              <div class="small opacity-75">Use any available coupon code during checkout and click apply.</div>
-            </div>
-            <span class="badge text-bg-light text-dark">Active: <%= Array.isArray(coupons) ? coupons.length : 0 %></span>
+                <div class="coupon-banner d-flex justify-content-between align-items-start gap-3">
+                  <div>
+                    <div class="fw-semibold mb-1">Save More On Your Next Order</div>
+                    <div class="small opacity-75">Use any available coupon code during checkout and click apply.</div>
+                  </div>
+                  <span class="badge text-bg-light text-dark">Active: <%= Array.isArray(coupons) ? coupons.length : 0 %>
+                      </span>
+                </div>
+
+                <% if (referralCoupons && referralCoupons.length) { %>
+                  <h6 class="mb-3">Referral Coupons</h6>
+                  <div class="d-flex flex-column gap-3 mb-4">
+                    <% referralCoupons.forEach((coupon)=> { %>
+                      <div class="coupon-ticket" style="border-left: 4px solid #198754;">
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+                          <div>
+                            <div class="coupon-code-badge">
+                              <i class="bi bi-ticket-perforated"></i>
+                              <span>
+                                <%= coupon.code %>
+                              </span>
+                            </div>
+                            <div class="coupon-title">
+                              <%= coupon.referralTitle || 'Referral Bonus' %>
+                            </div>
+                            <div class="coupon-meta mt-1">
+                              Flat ₹<%= coupon.value %> OFF
+                                <span> • Min order: ₹<%= coupon.minOrderValue || 0 %></span>
+                            </div>
+                          </div>
+                          <button type="button" class="btn btn-sm btn-success coupon-copy-btn copy-coupon-btn"
+                            data-code="<%= coupon.code %>">Copy Code</button>
+                        </div>
+                      </div>
+                      <% }) %>
+                  </div>
+                  <% } %>
+
+                    <h6 class="mb-3">Available Coupons</h6>
+                    <% if (!availableCoupons || !availableCoupons.length) { %>
+                      <div class="empty-wrap">
+                        <div class="fs-5 fw-semibold mb-2">No Active Coupons</div>
+                        <p class="text-muted mb-0">New offers will appear here. Please check back later.</p>
+                      </div>
+                      <% } else { %>
+                        <div class="d-flex flex-column gap-3">
+                          <% availableCoupons.forEach((coupon)=> { %>
+                            <div class="coupon-ticket">
+                              <div class="d-flex justify-content-between align-items-start gap-3">
+                                <div>
+                                  <div class="coupon-code-badge">
+                                    <i class="bi bi-ticket-perforated"></i>
+                                    <span>
+                                      <%= coupon.code %>
+                                    </span>
+                                  </div>
+                                  <div class="coupon-title">
+                                    <% if (coupon.type==='percentage' ) { %>
+                                      Get <%= coupon.value %>% OFF
+                                        <% } else { %>
+                                          Flat ₹<%= coupon.value %> OFF
+                                            <% } %>
+                                  </div>
+                                  <div class="coupon-meta mt-1">
+                                    <span>Min order: ₹<%= coupon.minOrderValue || 0 %></span>
+                                    <% if (coupon.type==='percentage' && coupon.maxDiscount !=null) { %>
+                                      <span> • Max discount: ₹<%= coupon.maxDiscount %></span>
+                                      <% } %>
+                                  </div>
+                                  <div class="coupon-meta mt-2 d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="coupon-pill">
+                                      <i class="bi bi-patch-check me-1"></i>Active
+                                    </span>
+                                    <% if (coupon.endDate) { %>
+                                      <span>Valid till: <%= new Date(coupon.endDate).toLocaleDateString() %></span>
+                                      <% } else { %>
+                                        <span>No expiry date</span>
+                                        <% } %>
+                                  </div>
+                                </div>
+
+                                <button type="button"
+                                  class="btn btn-sm btn-outline-primary coupon-copy-btn copy-coupon-btn"
+                                  data-code="<%= coupon.code %>">
+                                  <i class="bi bi-copy me-1"></i>Copy
+                                </button>
+                              </div>
+                            </div>
+                            <% }) %>
+                        </div>
+                        <% } %>
           </div>
-
-          <% if (referralCoupons && referralCoupons.length) { %>
-            <h6 class="mb-3">Referral Coupons</h6>
-            <div class="d-flex flex-column gap-3 mb-4">
-              <% referralCoupons.forEach((coupon) => { %>
-                <div class="coupon-ticket" style="border-left: 4px solid #198754;">
-                  <div class="d-flex justify-content-between align-items-start gap-3">
-                    <div>
-                      <div class="coupon-code-badge">
-                        <i class="bi bi-ticket-perforated"></i>
-                        <span><%= coupon.code %></span>
-                      </div>
-                      <div class="coupon-title"><%= coupon.referralTitle || 'Referral Bonus' %></div>
-                      <div class="coupon-meta mt-1">
-                        Flat ₹<%= coupon.value %> OFF
-                        <span> • Min order: ₹<%= coupon.minOrderValue || 0 %></span>
-                      </div>
-                    </div>
-                    <button type="button" class="btn btn-sm btn-success coupon-copy-btn copy-coupon-btn" data-code="<%= coupon.code %>">Copy Code</button>
-                  </div>
-                </div>
-              <% }) %>
-            </div>
-          <% } %>
-
-          <h6 class="mb-3">Available Coupons</h6>
-          <% if (!availableCoupons || !availableCoupons.length) { %>
-            <div class="empty-wrap">
-              <div class="fs-5 fw-semibold mb-2">No Active Coupons</div>
-              <p class="text-muted mb-0">New offers will appear here. Please check back later.</p>
-            </div>
-          <% } else { %>
-            <div class="d-flex flex-column gap-3">
-              <% availableCoupons.forEach((coupon) => { %>
-                <div class="coupon-ticket">
-                  <div class="d-flex justify-content-between align-items-start gap-3">
-                    <div>
-                      <div class="coupon-code-badge">
-                        <i class="bi bi-ticket-perforated"></i>
-                        <span><%= coupon.code %></span>
-                      </div>
-                      <div class="coupon-title">
-                        <% if (coupon.type === 'percentage') { %>
-                          Get <%= coupon.value %>% OFF
-                        <% } else { %>
-                          Flat ₹<%= coupon.value %> OFF
-                        <% } %>
-                      </div>
-                      <div class="coupon-meta mt-1">
-                        <span>Min order: ₹<%= coupon.minOrderValue || 0 %></span>
-                        <% if (coupon.type === 'percentage' && coupon.maxDiscount != null) { %>
-                          <span> • Max discount: ₹<%= coupon.maxDiscount %></span>
-                        <% } %>
-                      </div>
-                      <div class="coupon-meta mt-2 d-flex align-items-center gap-2 flex-wrap">
-                        <span class="coupon-pill">
-                          <i class="bi bi-patch-check me-1"></i>Active
-                        </span>
-                        <% if (coupon.endDate) { %>
-                          <span>Valid till: <%= new Date(coupon.endDate).toLocaleDateString() %></span>
-                        <% } else { %>
-                          <span>No expiry date</span>
-                        <% } %>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-primary coupon-copy-btn copy-coupon-btn"
-                      data-code="<%= coupon.code %>"
-                    >
-                      <i class="bi bi-copy me-1"></i>Copy
-                    </button>
-                  </div>
-                </div>
-              <% }) %>
-            </div>
-          <% } %>
         </div>
       </div>
-    </div>
-  </main>
+    </main>
 
-  <%- include("../partials/user/footer") %>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    function fallbackCopy(text) {
-      const input = document.createElement('input');
-      input.value = text;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand('copy');
-      input.remove();
-    }
-
-    document.querySelectorAll('.copy-coupon-btn').forEach((button) => {
-      button.addEventListener('click', async () => {
-        const code = button.dataset.code || '';
-        if (!code) return;
-
-        try {
-          await navigator.clipboard.writeText(code);
-        } catch (error) {
-          fallbackCopy(code);
+    <%- include("../partials/user/footer") %>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      <script>
+        function fallbackCopy(text) {
+          const input = document.createElement('input');
+          input.value = text;
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand('copy');
+          input.remove();
         }
 
-        const previousHtml = button.innerHTML;
-        button.innerHTML = '<i class="bi bi-check2 me-1"></i>Copied';
-        button.classList.remove('btn-outline-primary');
-        button.classList.add('btn-success');
+        document.querySelectorAll('.copy-coupon-btn').forEach((button) => {
+          button.addEventListener('click', async () => {
+            const code = button.dataset.code || '';
+            if (!code) return;
 
-        setTimeout(() => {
-          button.innerHTML = previousHtml;
-          button.classList.remove('btn-success');
-          button.classList.add('btn-outline-primary');
-        }, 1400);
-      });
-    });
-  </script>
+            try {
+              await navigator.clipboard.writeText(code);
+            } catch (error) {
+              fallbackCopy(code);
+            }
+
+            const previousHtml = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-check2 me-1"></i>Copied';
+            button.classList.remove('btn-outline-primary');
+            button.classList.add('btn-success');
+
+            setTimeout(() => {
+              button.innerHTML = previousHtml;
+              button.classList.remove('btn-success');
+              button.classList.add('btn-outline-primary');
+            }, 1400);
+          });
+        });
+      </script>
 </body>
+
 </html>

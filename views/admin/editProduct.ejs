@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Edit Product</title>
@@ -13,301 +14,225 @@
   <!-- SweetAlert -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <style>
-    body {
-      background-color: #f5f7fa;
-      padding-top: 70px;
-      padding-left: 260px;
-    }
-    .variant-box {
-      border: 1px dashed #ccc;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      background: #fff;
-      position: relative;
-    }
-    .preview-wrapper {
-      position: relative;
-      display: inline-block;
-      margin-right: 6px;
-      margin-bottom: 6px;
-    }
-    .preview-img {
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-    .delete-img, .replace-img {
-      position: absolute;
-      top: -6px;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
-    .delete-img {
-      right: -6px;
-      background: #dc3545;
-    }
-    .replace-img {
-      right: 14px;
-      background: #0d6efd;
-      font-size: 10px;
-      padding: 0;
-    }
-    .existing-images {
-      margin-bottom: 10px;
-      padding: 10px;
-      background: #f8f9fa;
-      border-radius: 6px;
-    }
-    .existing-images-label {
-      font-size: 0.875rem;
-      color: #6c757d;
-      margin-bottom: 8px;
-    }
-    #cropModal .modal-body {
-      max-height: 70vh;
-      overflow: hidden;
-    }
-    #cropImage {
-      max-height: 70vh;
-      width: 100%;
-    }
-    .page-title {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #2d3748;
-      margin-bottom: 2rem;
-    }
-    .delete-variant-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="/css/admin/editProduct.css">
 </head>
+
 <body>
 
-<%- include("../partials/admin/header") %>
-<%- include("../partials/admin/sidebar") %>
+  <%- include("../partials/admin/header") %>
+    <%- include("../partials/admin/sidebar") %>
 
-<main class="p-4">
-<h1 class="page-title mb-3">Edit Product</h1>
+      <main class="p-4">
+        <h1 class="page-title mb-3">Edit Product</h1>
 
-<form id="productForm" method="post" enctype="multipart/form-data" action="/admin/products/update/<%= product._id %>">
+        <form id="productForm" method="post" enctype="multipart/form-data"
+          action="/admin/products/update/<%= product._id %>">
 
-<input type="hidden" name="_method" value="PUT">
+          <input type="hidden" name="_method" value="PUT">
 
-<div class="card p-3 mb-4">
-  <h5 class="mb-3">Product Details</h5>
-  <div class="mb-2">
-    <label class="form-label">Product Name</label>
-    <input class="form-control" name="name" value="<%= product.name %>" required>
-  </div>
-  <div class="mb-2">
-    <label class="form-label">Product Description</label>
-    <textarea class="form-control" name="description" rows="3" required><%= product.description %></textarea>
-  </div>
+          <div class="card p-3 mb-4">
+            <h5 class="mb-3">Product Details</h5>
+            <div class="mb-2">
+              <label class="form-label">Product Name</label>
+              <input class="form-control" name="name" value="<%= product.name %>" required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Product Description</label>
+              <textarea class="form-control" name="description" rows="3" required><%= product.description %></textarea>
+            </div>
 
-  <div class="mb-2">
-    <label class="form-label">Brand</label>
-    <select class="form-select" name="brand" required>
-      <option value="">Select Brand</option>
-      <% if (brands && Array.isArray(brands)) { %>
-        <% brands.forEach(b => { %>
-          <% 
-            const brandId = b._id ? b._id.toString() : '';
-            const productBrandId = product.brand && product.brand._id ? product.brand._id.toString() : (typeof product.brand === 'string' ? product.brand : product.brand ? product.brand.toString() : '');
-          %>
-          <option value="<%= brandId %>" <%= brandId === productBrandId ? 'selected' : '' %>><%= b.name %></option>
-        <% }) %>
-      <% } %>
-    </select>
-  </div>
+            <div class="mb-2">
+              <label class="form-label">Brand</label>
+              <select class="form-select" name="brand" required>
+                <option value="">Select Brand</option>
+                <% if (brands && Array.isArray(brands)) { %>
+                  <% brands.forEach(b=> { %>
+                    <% const brandId=b._id ? b._id.toString() : '' ; const productBrandId=product.brand &&
+                      product.brand._id ? product.brand._id.toString() : (typeof product.brand==='string' ?
+                      product.brand : product.brand ? product.brand.toString() : '' ); %>
+                      <option value="<%= brandId %>" <%=brandId===productBrandId ? 'selected' : '' %>><%= b.name %>
+                      </option>
+                      <% }) %>
+                        <% } %>
+              </select>
+            </div>
 
-  <div class="mb-2">
-    <label class="form-label">Category</label>
-    <select class="form-select" name="category" required>
-      <option value="">Select Category</option>
-      <% if (categories && Array.isArray(categories)) { %>
-        <% categories.forEach(c => { %>
-          <% 
-            const categoryId = c._id ? c._id.toString() : '';
-            const productCategoryId = product.category && product.category._id ? product.category._id.toString() : (typeof product.category === 'string' ? product.category : product.category ? product.category.toString() : '');
-          %>
-          <option value="<%= categoryId %>" <%= categoryId === productCategoryId ? 'selected' : '' %>><%= c.name %></option>
-        <% }) %>
-      <% } %>
-    </select>
-  </div>
+            <div class="mb-2">
+              <label class="form-label">Category</label>
+              <select class="form-select" name="category" required>
+                <option value="">Select Category</option>
+                <% if (categories && Array.isArray(categories)) { %>
+                  <% categories.forEach(c=> { %>
+                    <% const categoryId=c._id ? c._id.toString() : '' ; const productCategoryId=product.category &&
+                      product.category._id ? product.category._id.toString() : (typeof product.category==='string' ?
+                      product.category : product.category ? product.category.toString() : '' ); %>
+                      <option value="<%= categoryId %>" <%=categoryId===productCategoryId ? 'selected' : '' %>><%=
+                          c.name %>
+                      </option>
+                      <% }) %>
+                        <% } %>
+              </select>
+            </div>
 
-  <div class="mb-2">
-    <label class="form-label">Product Status</label>
-    <select class="form-select" name="status" required>
-      <option value="">Select Status</option>
-      <option value="available" <%= product.status === 'available' ? 'selected' : '' %>>Available</option>
-      <option value="out_of_stock" <%= product.status === 'out_of_stock' ? 'selected' : '' %>>Out of Stock</option>
-      <option value="discontinued" <%= product.status === 'discontinued' ? 'selected' : '' %>>Discontinued</option>
-    </select>
-  </div>
-</div>
-
-<div class="card p-3">
-  <div class="d-flex justify-content-between">
-    <h5>Variants</h5>
-    <button type="button" class="btn btn-success btn-sm" onclick="addVariant()">+ Add Variant</button>
-  </div>
-  <div id="variantContainer">
-    <% if (variants && Array.isArray(variants)) { %>
-      <% variants.forEach((variant, index) => { %>
-      <div class="variant-box" data-variant-id="<%= variant._id %>">
-        <button type="button" class="btn btn-danger btn-sm delete-variant-btn" onclick="deleteVariant('<%= variant._id %>', this, true)">
-          <i class="bi bi-trash"></i> Delete
-        </button>
-        <input type="hidden" name="variants[<%= index %>][variantId]" value="<%= variant._id %>">
-        
-        <div class="row g-2 mb-2">
-          <div class="col-md-3">
-            <label class="form-label">Size</label>
-            <select class="form-select" name="variants[<%= index %>][size]" required>
-              <option value="">Select Size</option>
-              <option value="S" <%= variant.size === 'S' ? 'selected' : '' %>>S</option>
-              <option value="M" <%= variant.size === 'M' ? 'selected' : '' %>>M</option>
-              <option value="L" <%= variant.size === 'L' ? 'selected' : '' %>>L</option>
-              <option value="XL" <%= variant.size === 'XL' ? 'selected' : '' %>>XL</option>
-            </select>
+            <div class="mb-2">
+              <label class="form-label">Product Status</label>
+              <select class="form-select" name="status" required>
+                <option value="">Select Status</option>
+                <option value="available" <%=product.status==='available' ? 'selected' : '' %>>Available</option>
+                <option value="out_of_stock" <%=product.status==='out_of_stock' ? 'selected' : '' %>>Out of Stock
+                </option>
+                <option value="discontinued" <%=product.status==='discontinued' ? 'selected' : '' %>>Discontinued
+                </option>
+              </select>
+            </div>
           </div>
-          <div class="col-md-3">
-            <label class="form-label">Color</label>
-            <select class="form-select" name="variants[<%= index %>][color]" required>
-              <option value="">Select Color</option>
-              <option value="Black" <%= variant.color === 'Black' ? 'selected' : '' %>>Black</option>
-              <option value="Blue" <%= variant.color === 'Blue' ? 'selected' : '' %>>Blue</option>
-              <option value="White" <%= variant.color === 'White' ? 'selected' : '' %>>White</option>
-              <option value="Green" <%= variant.color === 'Green' ? 'selected' : '' %>>Green</option>
-              <option value="Yellow" <%= variant.color === 'Yellow' ? 'selected' : '' %>>Yellow</option>
-            </select>
+
+          <div class="card p-3">
+            <div class="d-flex justify-content-between">
+              <h5>Variants</h5>
+              <button type="button" class="btn btn-success btn-sm" onclick="addVariant()">+ Add Variant</button>
+            </div>
+            <div id="variantContainer">
+              <% if (variants && Array.isArray(variants)) { %>
+                <% variants.forEach((variant, index)=> { %>
+                  <div class="variant-box" data-variant-id="<%= variant._id %>">
+                    <button type="button" class="btn btn-danger btn-sm delete-variant-btn"
+                      onclick="deleteVariant('<%= variant._id %>', this, true)">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                    <input type="hidden" name="variants[<%= index %>][variantId]" value="<%= variant._id %>">
+
+                    <div class="row g-2 mb-2">
+                      <div class="col-md-3">
+                        <label class="form-label">Size</label>
+                        <select class="form-select" name="variants[<%= index %>][size]" required>
+                          <option value="">Select Size</option>
+                          <option value="S" <%=variant.size==='S' ? 'selected' : '' %>>S</option>
+                          <option value="M" <%=variant.size==='M' ? 'selected' : '' %>>M</option>
+                          <option value="L" <%=variant.size==='L' ? 'selected' : '' %>>L</option>
+                          <option value="XL" <%=variant.size==='XL' ? 'selected' : '' %>>XL</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label class="form-label">Color</label>
+                        <select class="form-select" name="variants[<%= index %>][color]" required>
+                          <option value="">Select Color</option>
+                          <option value="Black" <%=variant.color==='Black' ? 'selected' : '' %>>Black</option>
+                          <option value="Blue" <%=variant.color==='Blue' ? 'selected' : '' %>>Blue</option>
+                          <option value="White" <%=variant.color==='White' ? 'selected' : '' %>>White</option>
+                          <option value="Green" <%=variant.color==='Green' ? 'selected' : '' %>>Green</option>
+                          <option value="Yellow" <%=variant.color==='Yellow' ? 'selected' : '' %>>Yellow</option>
+                        </select>
+                      </div>
+                      <div class="col-md-2">
+                        <label class="form-label">Price</label>
+                        <input type="number" step="0.01" class="form-control" name="variants[<%= index %>][price]"
+                          value="<%= variant.price %>" required>
+                      </div>
+                      <div class="col-md-2">
+                        <label class="form-label">Stock</label>
+                        <input type="number" class="form-control" name="variants[<%= index %>][stock]"
+                          value="<%= variant.stock %>" required>
+                      </div>
+                      <div class="col-md-2">
+                        <label class="form-label">Active</label>
+                        <select class="form-select" name="variants[<%= index %>][isActive]">
+                          <option value="true" <%=variant.isActive ? 'selected' : '' %>>Yes</option>
+                          <option value="false" <%=!variant.isActive ? 'selected' : '' %>>No</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="mb-2">
+                      <label class="form-label">SKU</label>
+                      <input type="text" class="form-control" name="variants[<%= index %>][sku]"
+                        value="<%= (variant.sku || '') %>" placeholder="SKU Code">
+                    </div>
+
+                    <!-- Existing Images -->
+                    <div class="existing-images">
+                      <div class="existing-images-label">Existing Images (<%= variant.images.length %>)</div>
+                      <div id="existing-images-<%= variant._id %>">
+                        <% variant.images.forEach((imgUrl, imgIndex)=> { %>
+                          <div class="preview-wrapper" data-image-url="<%= imgUrl %>"
+                            data-variant-id="<%= variant._id %>">
+                            <img src="<%= imgUrl %>" class="preview-img" alt="Image">
+                            <button type="button" class="replace-img" onclick="startReplaceImage(this)"
+                              title="Replace Image">↻</button>
+                            <button type="button" class="delete-img" onclick="deleteExistingImage(this)"
+                              title="Delete Image">×</button>
+                          </div>
+                          <% }) %>
+                      </div>
+                    </div>
+
+                    <!-- New Images Upload -->
+                    <div class="mb-2">
+                      <label class="form-label">Add New Images (3 minimum required)</label>
+                      <input type="file" name="variants[<%= index %>][images]" multiple accept="image/*"
+                        class="form-control" data-variant-id="<%= variant._id %>" data-variant-index="<%= index %>"
+                        onchange="handleImages(this)">
+                    </div>
+
+                    <div id="preview-<%= variant._id %>" class="mt-2"></div>
+                  </div>
+                  <% }) %>
+                    <% } %>
+            </div>
           </div>
-          <div class="col-md-2">
-            <label class="form-label">Price</label>
-            <input type="number" step="0.01" class="form-control" name="variants[<%= index %>][price]" value="<%= variant.price %>" required>
-          </div>
-          <div class="col-md-2">
-            <label class="form-label">Stock</label>
-            <input type="number" class="form-control" name="variants[<%= index %>][stock]" value="<%= variant.stock %>" required>
-          </div>
-          <div class="col-md-2">
-            <label class="form-label">Active</label>
-            <select class="form-select" name="variants[<%= index %>][isActive]">
-              <option value="true" <%= variant.isActive ? 'selected' : '' %>>Yes</option>
-              <option value="false" <%= !variant.isActive ? 'selected' : '' %>>No</option>
-            </select>
+
+          <button type="submit" class="btn btn-primary mt-3">Update Product</button>
+        </form>
+      </main>
+
+      <input type="file" id="replaceImageInput" accept="image/*" style="display: none">
+
+      <div class="modal fade" id="cropModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-body"><img id="cropImage"></div>
+            <div class="modal-footer">
+              <button id="cropSave" class="btn btn-success">Crop</button>
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
           </div>
         </div>
-
-        <div class="mb-2">
-          <label class="form-label">SKU</label>
-          <input type="text" class="form-control" name="variants[<%= index %>][sku]" value="<%= (variant.sku || '') %>" placeholder="SKU Code">
-        </div>
-
-        <!-- Existing Images -->
-        <div class="existing-images">
-          <div class="existing-images-label">Existing Images (<%= variant.images.length %>)</div>
-          <div id="existing-images-<%= variant._id %>">
-            <% variant.images.forEach((imgUrl, imgIndex) => { %>
-              <div class="preview-wrapper" data-image-url="<%= imgUrl %>" data-variant-id="<%= variant._id %>">
-                <img src="<%= imgUrl %>" class="preview-img" alt="Image">
-                <button type="button" class="replace-img" onclick="startReplaceImage(this)" title="Replace Image">↻</button>
-                <button type="button" class="delete-img" onclick="deleteExistingImage(this)" title="Delete Image">×</button>
-              </div>
-            <% }) %>
-          </div>
-        </div>
-
-        <!-- New Images Upload -->
-        <div class="mb-2">
-          <label class="form-label">Add New Images (3 minimum required)</label>
-          <input
-            type="file"
-            name="variants[<%= index %>][images]"
-            multiple
-            accept="image/*"
-            class="form-control"
-            data-variant-id="<%= variant._id %>"
-            data-variant-index="<%= index %>"
-            onchange="handleImages(this)"
-          >
-        </div>
-
-        <div id="preview-<%= variant._id %>" class="mt-2"></div>
       </div>
-      <% }) %>
-    <% } %>
-  </div>
-</div>
 
-<button type="submit" class="btn btn-primary mt-3">Update Product</button>
-</form>
-</main>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-<input type="file" id="replaceImageInput" accept="image/*" style="display: none">
+      <!-- Embed variants JSON to avoid EJS inside JS -->
+      <script type="application/json" id="variants-json"><%- JSON.stringify(variants || []) %></script>
 
-<div class="modal fade" id="cropModal" tabindex="-1">
-  <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-body"><img id="cropImage"></div>
-      <div class="modal-footer">
-        <button id="cropSave" class="btn btn-success">Crop</button>
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
+      <script>
+        // Parse variants data from embedded JSON
+        const variantsData = JSON.parse(document.getElementById('variants-json').textContent || '[]');
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        // Initialize variables
+        let variantCount = Array.isArray(variantsData) ? variantsData.length : 0;
+        let cropper;
+        let imageQueue = [];
+        let currentIndex = 0;
+        let activeVariantId;
+        let activeVariantIndex;
+        let croppedImagesMap = {};
+        let replaceTarget = null; // { variantId, imageUrl, wrapper } when replacing an existing image
 
-<!-- Embed variants JSON to avoid EJS inside JS -->
-<script type="application/json" id="variants-json"><%- JSON.stringify(variants || []) %></script>
+        const cropModalEl = document.getElementById('cropModal');
+        const cropModal = new bootstrap.Modal(cropModalEl);
+        const cropImageEl = document.getElementById('cropImage');
+        const cropSaveBtn = document.getElementById('cropSave');
 
-<script>
-// Parse variants data from embedded JSON
-const variantsData = JSON.parse(document.getElementById('variants-json').textContent || '[]');
+        // Initialize cropped images map for existing variants
+        variantsData.forEach((variant) => {
+          croppedImagesMap[variant._id] = [];
+        });
 
-// Initialize variables
-let variantCount = Array.isArray(variantsData) ? variantsData.length : 0;
-let cropper;
-let imageQueue = [];
-let currentIndex = 0;
-let activeVariantId;
-let activeVariantIndex;
-let croppedImagesMap = {};
-let replaceTarget = null; // { variantId, imageUrl, wrapper } when replacing an existing image
-
-const cropModalEl = document.getElementById('cropModal');
-const cropModal = new bootstrap.Modal(cropModalEl);
-const cropImageEl = document.getElementById('cropImage');
-const cropSaveBtn = document.getElementById('cropSave');
-
-// Initialize cropped images map for existing variants
-variantsData.forEach((variant) => {
-  croppedImagesMap[variant._id] = [];
-});
-
-// Add new variant
-function addVariant() {
-  const html = `
+        // Add new variant
+        function addVariant() {
+          const html = `
   <div class="variant-box" data-variant-id="new-${variantCount}">
     <button type="button" class="btn btn-danger btn-sm delete-variant-btn" onclick="deleteVariant('new-${variantCount}', this, false)">
       <i class="bi bi-trash"></i> Delete
@@ -373,360 +298,361 @@ function addVariant() {
     <div id="preview-new-${variantCount}" class="mt-2"></div>
   </div>`;
 
-  document.getElementById('variantContainer').insertAdjacentHTML('beforeend', html);
-  croppedImagesMap[`new-${variantCount}`] = [];
-  variantCount++;
-}
-
-// Handle image selection - FIXED: Now properly extracts variantId and variantIndex from input element
-function handleImages(input) {
-  // Extract variant ID and index from input element data attributes
-  activeVariantId = input.dataset.variantId;
-  activeVariantIndex = parseInt(input.dataset.variantIndex);
-  
-  // Get files and start cropping process
-  imageQueue = Array.from(input.files);
-  currentIndex = 0;
-  
-  if (imageQueue.length > 0) {
-    openCropper();
-  }
-}
-
-// Open cropper modal
-function openCropper() {
-  const reader = new FileReader();
-  reader.onload = e => {
-    cropImageEl.src = e.target.result;
-    cropModal.show();
-  };
-  reader.readAsDataURL(imageQueue[currentIndex]);
-}
-
-// Initialize cropper when modal is shown
-cropModalEl.addEventListener('shown.bs.modal', () => {
-  if (cropper) cropper.destroy();
-  cropper = new Cropper(cropImageEl, {
-    aspectRatio: NaN,
-    viewMode: 1,
-    autoCropArea: 1,
-    movable: true,
-    zoomable: true,
-    cropBoxMovable: true,
-    cropBoxResizable: true,
-    ready() {
-      const data = this.cropper.getImageData();
-      this.cropper.setCropBoxData({
-        left: data.left,
-        top: data.top,
-        width: data.width,
-        height: data.height
-      });
-    }
-  });
-});
-
-// Save cropped image – either replace existing or add new
-cropSaveBtn.addEventListener('click', () => {
-  cropper.getCroppedCanvas({ width: 800, height: 800 }).toBlob(blob => {
-    const file = new File([blob], `img-${Date.now()}.jpg`, { type: 'image/jpeg' });
-
-    // Replace existing image flow
-    if (replaceTarget) {
-      const { variantId, imageUrl, wrapper } = replaceTarget;
-      const formData = new FormData();
-      formData.append('variantId', variantId);
-      formData.append('imageUrl', imageUrl);
-      formData.append('image', file);
-
-      axios.post('/admin/products/variant/image/replace', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      }).then(response => {
-        if (response.data.success && response.data.newImageUrl) {
-          const img = wrapper.querySelector('img');
-          if (img) img.src = response.data.newImageUrl;
-          wrapper.dataset.imageUrl = response.data.newImageUrl;
-          Swal.fire('Replaced!', 'Image has been replaced.', 'success');
+          document.getElementById('variantContainer').insertAdjacentHTML('beforeend', html);
+          croppedImagesMap[`new-${variantCount}`] = [];
+          variantCount++;
         }
-      }).catch(error => {
-        Swal.fire('Error', error.response?.data?.message || 'Failed to replace image', 'error');
-      }).finally(() => {
-        replaceTarget = null;
-        cropModal.hide();
-      });
-      return;
-    }
 
-    // Add new image flow
-    if (!croppedImagesMap[activeVariantId]) {
-      croppedImagesMap[activeVariantId] = [];
-    }
-    croppedImagesMap[activeVariantId].push(file);
+        // Handle image selection - FIXED: Now properly extracts variantId and variantIndex from input element
+        function handleImages(input) {
+          // Extract variant ID and index from input element data attributes
+          activeVariantId = input.dataset.variantId;
+          activeVariantIndex = parseInt(input.dataset.variantIndex);
 
-    const previewWrapper = document.createElement('div');
-    previewWrapper.className = 'preview-wrapper';
-    previewWrapper.dataset.fileIndex = croppedImagesMap[activeVariantId].length - 1;
-    previewWrapper.dataset.variantId = activeVariantId;
+          // Get files and start cropping process
+          imageQueue = Array.from(input.files);
+          currentIndex = 0;
 
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(blob);
-    img.className = 'preview-img';
-    img.alt = 'Image';
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.type = 'button';
-    deleteBtn.className = 'delete-img';
-    deleteBtn.title = 'Delete Image';
-    deleteBtn.innerHTML = '×';
-    deleteBtn.onclick = function() { deleteNewImage(this); };
-
-    previewWrapper.appendChild(img);
-    previewWrapper.appendChild(deleteBtn);
-
-    const previewDiv = document.getElementById(`preview-${activeVariantId}`);
-    if (previewDiv) previewDiv.appendChild(previewWrapper);
-
-    cropModal.hide();
-    currentIndex++;
-
-    if (currentIndex < imageQueue.length) {
-      openCropper();
-    } else {
-      const fileInput = document.querySelector(`input[data-variant-id="${activeVariantId}"]`);
-      if (fileInput) fileInput.value = '';
-    }
-  });
-});
-
-// Delete new (cropped) image before submission - FIXED: Properly removes from map and DOM
-function deleteNewImage(buttonElement) {
-  const wrapper = buttonElement.closest('.preview-wrapper');
-  const fileIndex = parseInt(wrapper.dataset.fileIndex);
-  const variantId = wrapper.dataset.variantId;
-  
-  // Remove from croppedImagesMap
-  if (croppedImagesMap[variantId] && croppedImagesMap[variantId][fileIndex]) {
-    // Revoke object URL to free memory
-    const img = wrapper.querySelector('img');
-    if (img && img.src.startsWith('blob:')) {
-      URL.revokeObjectURL(img.src);
-    }
-    
-    // Remove file from array
-    croppedImagesMap[variantId].splice(fileIndex, 1);
-    
-    // Remove from DOM
-    wrapper.remove();
-    
-    // Reindex remaining images
-    const previewDiv = document.getElementById(`preview-${variantId}`);
-    if (previewDiv) {
-      const remainingWrappers = previewDiv.querySelectorAll('.preview-wrapper');
-      remainingWrappers.forEach((w, idx) => {
-        w.dataset.fileIndex = idx;
-      });
-    }
-  }
-}
-
-// Start replace flow: user will pick a file, then crop, then we POST replace
-function startReplaceImage(buttonElement) {
-  const wrapper = buttonElement.closest('.preview-wrapper');
-  const variantId = wrapper.dataset.variantId;
-  const imageUrl = wrapper.dataset.imageUrl;
-  if (!variantId || !imageUrl) return;
-  replaceTarget = { variantId, imageUrl, wrapper };
-  document.getElementById('replaceImageInput').click();
-}
-
-// When user selects a file for replace, open cropper with that file
-document.getElementById('replaceImageInput').addEventListener('change', function() {
-  if (!replaceTarget || !this.files || !this.files.length) return;
-  imageQueue = [this.files[0]];
-  currentIndex = 0;
-  openCropper();
-  this.value = '';
-});
-
-// Delete existing image via AJAX (variantId/imageUrl from wrapper data)
-async function deleteExistingImage(buttonElement) {
-  const wrapper = buttonElement.closest('.preview-wrapper');
-  const variantId = wrapper.dataset.variantId;
-  const imageUrl = wrapper.dataset.imageUrl;
-  if (!variantId || !imageUrl) return;
-  try {
-    const result = await Swal.fire({
-      title: 'Delete Image?',
-      text: 'Are you sure you want to delete this image?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#dc3545',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, delete it!'
-    });
-
-    if (result.isConfirmed) {
-      const response = await axios.post('/admin/products/variant/image/delete', {
-        variantId,
-        imageUrl
-      });
-
-      if (response.data.success) {
-        wrapper.remove();
-        Swal.fire('Deleted!', 'Image has been deleted.', 'success');
-      }
-    }
-  } catch (error) {
-    Swal.fire(
-      'Error',
-      error.response?.data?.message || 'Failed to delete image',
-      'error'
-    );
-  }
-}
-
-// Delete variant - NEW FEATURE
-async function deleteVariant(variantId, buttonElement, isExisting) {
-  try {
-    const result = await Swal.fire({
-      title: 'Delete Variant?',
-      text: isExisting 
-        ? 'This will mark the variant as inactive. Continue?' 
-        : 'Are you sure you want to remove this variant?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#dc3545',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, delete it!'
-    });
-
-    if (result.isConfirmed) {
-      if (isExisting) {
-        // For existing variants, mark as inactive (soft delete)
-        // Update the isActive select to false
-        const variantBox = buttonElement.closest('.variant-box');
-        const isActiveSelect = variantBox.querySelector('select[name*="[isActive]"]');
-        if (isActiveSelect) {
-          isActiveSelect.value = 'false';
-        }
-        Swal.fire('Updated!', 'Variant has been marked as inactive.', 'success');
-      } else {
-        // For new variants, remove from DOM and clean up
-        const variantBox = buttonElement.closest('.variant-box');
-        
-        // Clean up cropped images map
-        if (croppedImagesMap[variantId]) {
-          // Revoke all blob URLs
-          const previewDiv = document.getElementById(`preview-${variantId}`);
-          if (previewDiv) {
-            const imgs = previewDiv.querySelectorAll('img');
-            imgs.forEach(img => {
-              if (img.src.startsWith('blob:')) {
-                URL.revokeObjectURL(img.src);
-              }
-            });
+          if (imageQueue.length > 0) {
+            openCropper();
           }
-          delete croppedImagesMap[variantId];
         }
-        
-        // Remove variant box
-        variantBox.remove();
-        Swal.fire('Deleted!', 'Variant has been removed.', 'success');
-      }
-    }
-  } catch (error) {
-    Swal.fire(
-      'Error',
-      'Failed to delete variant',
-      'error'
-    );
-  }
-}
 
-// Form submission - FIXED: Validation now properly checks both existing and new variants
-document.getElementById('productForm').addEventListener('submit', async e => {
-  e.preventDefault();
+        // Open cropper modal
+        function openCropper() {
+          const reader = new FileReader();
+          reader.onload = e => {
+            cropImageEl.src = e.target.result;
+            cropModal.show();
+          };
+          reader.readAsDataURL(imageQueue[currentIndex]);
+        }
 
-  const formData = new FormData(e.target);
+        // Initialize cropper when modal is shown
+        cropModalEl.addEventListener('shown.bs.modal', () => {
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(cropImageEl, {
+            aspectRatio: NaN,
+            viewMode: 1,
+            autoCropArea: 1,
+            movable: true,
+            zoomable: true,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            ready() {
+              const data = this.cropper.getImageData();
+              this.cropper.setCropBoxData({
+                left: data.left,
+                top: data.top,
+                width: data.width,
+                height: data.height
+              });
+            }
+          });
+        });
 
-  // Map variant IDs to their form indices
-  const variantIndexMap = {};
-  document.querySelectorAll('.variant-box').forEach(box => {
-    const variantId = box.dataset.variantId;
-    const variantInput = box.querySelector('input[name*="[variantId]"], select[name*="[size]"]');
-    if (variantInput) {
-      const match = variantInput.name.match(/^variants\[(\d+)\]/);
-      if (match) {
-        variantIndexMap[variantId] = match[1];
-      }
-    }
-  });
+        // Save cropped image – either replace existing or add new
+        cropSaveBtn.addEventListener('click', () => {
+          cropper.getCroppedCanvas({ width: 800, height: 800 }).toBlob(blob => {
+            const file = new File([blob], `img-${Date.now()}.jpg`, { type: 'image/jpeg' });
 
-  // Add cropped images to form data
-  Object.keys(croppedImagesMap).forEach(variantId => {
-    const images = croppedImagesMap[variantId];
-    if (images.length > 0 && variantIndexMap[variantId] !== undefined) {
-      const variantIndex = variantIndexMap[variantId];
-      images.forEach(file => {
-        formData.append(`variants[${variantIndex}][images]`, file);
-      });
-    }
-  });
+            // Replace existing image flow
+            if (replaceTarget) {
+              const { variantId, imageUrl, wrapper } = replaceTarget;
+              const formData = new FormData();
+              formData.append('variantId', variantId);
+              formData.append('imageUrl', imageUrl);
+              formData.append('image', file);
 
-  // Validate minimum images per variant - FIXED: Properly counts existing + new images
-  let hasError = false;
-  const variantBoxes = document.querySelectorAll('.variant-box');
-  
-  for (const box of variantBoxes) {
-    const variantId = box.dataset.variantId;
-    
-    // Count existing images (only for existing variants, not new ones)
-    const existingImagesContainer = box.querySelector(`#existing-images-${variantId}`);
-    const existingImagesCount = existingImagesContainer 
-      ? existingImagesContainer.querySelectorAll('.preview-wrapper').length 
-      : 0;
-    
-    // Count new cropped images
-    const newImagesCount = croppedImagesMap[variantId] ? croppedImagesMap[variantId].length : 0;
-    
-    // Total images
-    const totalImages = existingImagesCount + newImagesCount;
+              axios.post('/admin/products/variant/image/replace', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+              }).then(response => {
+                if (response.data.success && response.data.newImageUrl) {
+                  const img = wrapper.querySelector('img');
+                  if (img) img.src = response.data.newImageUrl;
+                  wrapper.dataset.imageUrl = response.data.newImageUrl;
+                  Swal.fire('Replaced!', 'Image has been replaced.', 'success');
+                }
+              }).catch(error => {
+                Swal.fire('Error', error.response?.data?.message || 'Failed to replace image', 'error');
+              }).finally(() => {
+                replaceTarget = null;
+                cropModal.hide();
+              });
+              return;
+            }
 
-    if (totalImages < 3) {
-      hasError = true;
-      const variantLabel = variantId.startsWith('new-') ? 'New variant' : `Variant ${variantId}`;
-      Swal.fire(
-        'Validation Error',
-        `${variantLabel} must have at least 3 images. Currently has ${totalImages} image(s).`,
-        'error'
-      );
-      break; // Stop checking after first error
-    }
-  }
+            // Add new image flow
+            if (!croppedImagesMap[activeVariantId]) {
+              croppedImagesMap[activeVariantId] = [];
+            }
+            croppedImagesMap[activeVariantId].push(file);
 
-  if (hasError) {
-    return;
-  }
+            const previewWrapper = document.createElement('div');
+            previewWrapper.className = 'preview-wrapper';
+            previewWrapper.dataset.fileIndex = croppedImagesMap[activeVariantId].length - 1;
+            previewWrapper.dataset.variantId = activeVariantId;
 
-  // Submit form
-  try {
-    const productId = '<%= product._id %>';
-    const response = await axios.post(`/admin/products/update/${productId}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(blob);
+            img.className = 'preview-img';
+            img.alt = 'Image';
 
-    Swal.fire('Success', response.data.message, 'success')
-      .then(() => window.location.href = '/admin/products');
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'delete-img';
+            deleteBtn.title = 'Delete Image';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.onclick = function () { deleteNewImage(this); };
 
-  } catch (error) {
-    Swal.fire(
-      'Error',
-      error.response?.data?.message || 'Something went wrong',
-      'error'
-    );
-  }
-});
-</script>
+            previewWrapper.appendChild(img);
+            previewWrapper.appendChild(deleteBtn);
+
+            const previewDiv = document.getElementById(`preview-${activeVariantId}`);
+            if (previewDiv) previewDiv.appendChild(previewWrapper);
+
+            cropModal.hide();
+            currentIndex++;
+
+            if (currentIndex < imageQueue.length) {
+              openCropper();
+            } else {
+              const fileInput = document.querySelector(`input[data-variant-id="${activeVariantId}"]`);
+              if (fileInput) fileInput.value = '';
+            }
+          });
+        });
+
+        // Delete new (cropped) image before submission - FIXED: Properly removes from map and DOM
+        function deleteNewImage(buttonElement) {
+          const wrapper = buttonElement.closest('.preview-wrapper');
+          const fileIndex = parseInt(wrapper.dataset.fileIndex);
+          const variantId = wrapper.dataset.variantId;
+
+          // Remove from croppedImagesMap
+          if (croppedImagesMap[variantId] && croppedImagesMap[variantId][fileIndex]) {
+            // Revoke object URL to free memory
+            const img = wrapper.querySelector('img');
+            if (img && img.src.startsWith('blob:')) {
+              URL.revokeObjectURL(img.src);
+            }
+
+            // Remove file from array
+            croppedImagesMap[variantId].splice(fileIndex, 1);
+
+            // Remove from DOM
+            wrapper.remove();
+
+            // Reindex remaining images
+            const previewDiv = document.getElementById(`preview-${variantId}`);
+            if (previewDiv) {
+              const remainingWrappers = previewDiv.querySelectorAll('.preview-wrapper');
+              remainingWrappers.forEach((w, idx) => {
+                w.dataset.fileIndex = idx;
+              });
+            }
+          }
+        }
+
+        // Start replace flow: user will pick a file, then crop, then we POST replace
+        function startReplaceImage(buttonElement) {
+          const wrapper = buttonElement.closest('.preview-wrapper');
+          const variantId = wrapper.dataset.variantId;
+          const imageUrl = wrapper.dataset.imageUrl;
+          if (!variantId || !imageUrl) return;
+          replaceTarget = { variantId, imageUrl, wrapper };
+          document.getElementById('replaceImageInput').click();
+        }
+
+        // When user selects a file for replace, open cropper with that file
+        document.getElementById('replaceImageInput').addEventListener('change', function () {
+          if (!replaceTarget || !this.files || !this.files.length) return;
+          imageQueue = [this.files[0]];
+          currentIndex = 0;
+          openCropper();
+          this.value = '';
+        });
+
+        // Delete existing image via AJAX (variantId/imageUrl from wrapper data)
+        async function deleteExistingImage(buttonElement) {
+          const wrapper = buttonElement.closest('.preview-wrapper');
+          const variantId = wrapper.dataset.variantId;
+          const imageUrl = wrapper.dataset.imageUrl;
+          if (!variantId || !imageUrl) return;
+          try {
+            const result = await Swal.fire({
+              title: 'Delete Image?',
+              text: 'Are you sure you want to delete this image?',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#dc3545',
+              cancelButtonColor: '#6c757d',
+              confirmButtonText: 'Yes, delete it!'
+            });
+
+            if (result.isConfirmed) {
+              const response = await axios.post('/admin/products/variant/image/delete', {
+                variantId,
+                imageUrl
+              });
+
+              if (response.data.success) {
+                wrapper.remove();
+                Swal.fire('Deleted!', 'Image has been deleted.', 'success');
+              }
+            }
+          } catch (error) {
+            Swal.fire(
+              'Error',
+              error.response?.data?.message || 'Failed to delete image',
+              'error'
+            );
+          }
+        }
+
+        // Delete variant - NEW FEATURE
+        async function deleteVariant(variantId, buttonElement, isExisting) {
+          try {
+            const result = await Swal.fire({
+              title: 'Delete Variant?',
+              text: isExisting
+                ? 'This will mark the variant as inactive. Continue?'
+                : 'Are you sure you want to remove this variant?',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#dc3545',
+              cancelButtonColor: '#6c757d',
+              confirmButtonText: 'Yes, delete it!'
+            });
+
+            if (result.isConfirmed) {
+              if (isExisting) {
+                // For existing variants, mark as inactive (soft delete)
+                // Update the isActive select to false
+                const variantBox = buttonElement.closest('.variant-box');
+                const isActiveSelect = variantBox.querySelector('select[name*="[isActive]"]');
+                if (isActiveSelect) {
+                  isActiveSelect.value = 'false';
+                }
+                Swal.fire('Updated!', 'Variant has been marked as inactive.', 'success');
+              } else {
+                // For new variants, remove from DOM and clean up
+                const variantBox = buttonElement.closest('.variant-box');
+
+                // Clean up cropped images map
+                if (croppedImagesMap[variantId]) {
+                  // Revoke all blob URLs
+                  const previewDiv = document.getElementById(`preview-${variantId}`);
+                  if (previewDiv) {
+                    const imgs = previewDiv.querySelectorAll('img');
+                    imgs.forEach(img => {
+                      if (img.src.startsWith('blob:')) {
+                        URL.revokeObjectURL(img.src);
+                      }
+                    });
+                  }
+                  delete croppedImagesMap[variantId];
+                }
+
+                // Remove variant box
+                variantBox.remove();
+                Swal.fire('Deleted!', 'Variant has been removed.', 'success');
+              }
+            }
+          } catch (error) {
+            Swal.fire(
+              'Error',
+              'Failed to delete variant',
+              'error'
+            );
+          }
+        }
+
+        // Form submission - FIXED: Validation now properly checks both existing and new variants
+        document.getElementById('productForm').addEventListener('submit', async e => {
+          e.preventDefault();
+
+          const formData = new FormData(e.target);
+
+          // Map variant IDs to their form indices
+          const variantIndexMap = {};
+          document.querySelectorAll('.variant-box').forEach(box => {
+            const variantId = box.dataset.variantId;
+            const variantInput = box.querySelector('input[name*="[variantId]"], select[name*="[size]"]');
+            if (variantInput) {
+              const match = variantInput.name.match(/^variants\[(\d+)\]/);
+              if (match) {
+                variantIndexMap[variantId] = match[1];
+              }
+            }
+          });
+
+          // Add cropped images to form data
+          Object.keys(croppedImagesMap).forEach(variantId => {
+            const images = croppedImagesMap[variantId];
+            if (images.length > 0 && variantIndexMap[variantId] !== undefined) {
+              const variantIndex = variantIndexMap[variantId];
+              images.forEach(file => {
+                formData.append(`variants[${variantIndex}][images]`, file);
+              });
+            }
+          });
+
+          // Validate minimum images per variant - FIXED: Properly counts existing + new images
+          let hasError = false;
+          const variantBoxes = document.querySelectorAll('.variant-box');
+
+          for (const box of variantBoxes) {
+            const variantId = box.dataset.variantId;
+
+            // Count existing images (only for existing variants, not new ones)
+            const existingImagesContainer = box.querySelector(`#existing-images-${variantId}`);
+            const existingImagesCount = existingImagesContainer
+              ? existingImagesContainer.querySelectorAll('.preview-wrapper').length
+              : 0;
+
+            // Count new cropped images
+            const newImagesCount = croppedImagesMap[variantId] ? croppedImagesMap[variantId].length : 0;
+
+            // Total images
+            const totalImages = existingImagesCount + newImagesCount;
+
+            if (totalImages < 3) {
+              hasError = true;
+              const variantLabel = variantId.startsWith('new-') ? 'New variant' : `Variant ${variantId}`;
+              Swal.fire(
+                'Validation Error',
+                `${variantLabel} must have at least 3 images. Currently has ${totalImages} image(s).`,
+                'error'
+              );
+              break; // Stop checking after first error
+            }
+          }
+
+          if (hasError) {
+            return;
+          }
+
+          // Submit form
+          try {
+            const productId = '<%= product._id %>';
+            const response = await axios.post(`/admin/products/update/${productId}`, formData, {
+              headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            Swal.fire('Success', response.data.message, 'success')
+              .then(() => window.location.href = '/admin/products');
+
+          } catch (error) {
+            Swal.fire(
+              'Error',
+              error.response?.data?.message || 'Something went wrong',
+              'error'
+            );
+          }
+        });
+      </script>
 
 </body>
+
 </html>

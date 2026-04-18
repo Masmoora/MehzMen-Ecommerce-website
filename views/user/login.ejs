@@ -10,25 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/user/login.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-<style>
-    .password-wrapper {
-  position: relative;
-}
-
-.password-wrapper input {
-  padding-right: 45px;
-}
-
-.toggle-password {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #777;
-  font-size: 18px;
-}
-</style>
+    
 </head>
 
 <body>
@@ -48,13 +30,13 @@
 
             <form action="/login" method="POST">
                 <input type="email" name="email" class="form-control" placeholder="Email" required>
-                <!--<input type="password" name="password" class="form-control" placeholder="Password" required>-->
-<div class="password-wrapper">
-    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
-    <span class="toggle-password" onclick="togglePassword()">
-        <i id="eyeIcon" class="bi bi-eye"></i>
-    </span>
-</div>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Password"
+                        required>
+                    <span class="toggle-password" onclick="togglePassword()">
+                        <i id="eyeIcon" class="bi bi-eye"></i>
+                    </span>
+                </div>
                 <!-- Error Message -->
                 <% if(locals.message && message.length> 0){ %>
                     <div class="alert alert-danger text-center mt-2">
@@ -81,24 +63,24 @@
         </div>
 
     </div>
-<script>
-function togglePassword() {
+    <script>
+        function togglePassword() {
 
-    const password = document.getElementById("password");
-    const eyeIcon = document.getElementById("eyeIcon");
+            const password = document.getElementById("password");
+            const eyeIcon = document.getElementById("eyeIcon");
 
-    if(password.type === "password"){
-        password.type = "text";
-        eyeIcon.classList.remove("bi-eye");
-        eyeIcon.classList.add("bi-eye-slash");
-    } else {
-        password.type = "password";
-        eyeIcon.classList.remove("bi-eye-slash");
-        eyeIcon.classList.add("bi-eye");
-    }
+            if (password.type === "password") {
+                password.type = "text";
+                eyeIcon.classList.remove("bi-eye");
+                eyeIcon.classList.add("bi-eye-slash");
+            } else {
+                password.type = "password";
+                eyeIcon.classList.remove("bi-eye-slash");
+                eyeIcon.classList.add("bi-eye");
+            }
 
-}
-</script>
+        }
+    </script>
 </body>
 
 </html>

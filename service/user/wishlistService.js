@@ -1,9 +1,9 @@
 import Wishlist from "../../models/wishlistSchema.js"
 import Product from '../../models/productSchema.js';
 import ProductVariant from '../../models/productVariantSchema.js';
-class WishlistService{
+class WishlistService {
   // Get wishlist cards for page (with cheapest active variant details)
-    // Get wishlist cards for page (with cheapest active variant details)
+  // Get wishlist cards for page (with cheapest active variant details)
   getWishlistCards = async (userId) => {
     const wishlist = await Wishlist.findOne({ userId })
       .populate({

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,169 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Nanum+Myeongjo&display=swap"
         rel="stylesheet">
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding-top: 80px;
-        }
-
-        /* Navbar - Matching Admin Header */
-        .custom-navbar {
-            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
-            color: #F8FAFC;
-            
-           padding: 0.7rem 1.5rem;
-            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.18);
-            border-bottom: 1px solid #334155;
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #F8FAFC;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            letter-spacing: 0.5px;
-            text-decoration: none;
-        }
-
-        .logo-text:hover {
-            color: #E2E8F0;
-        }
-
-        /* Links */
-        .navbar-nav .nav-link {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #F8FAFC;
-            margin: 0 10px;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            padding: 0.5rem 0.75rem;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: #BFDBFE;
-            background-color: rgba(255, 255, 255, 0.10);
-            border-radius: 6px;
-        }
-
-        /* Buttons */
-        .btn-login {
-            border: 1px solid rgba(248, 250, 252, 0.55);
-            color: #F8FAFC;
-            padding: 6px 16px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            background: transparent;
-        }
-
-        .btn-login:hover {
-            background: rgba(248, 250, 252, 0.12);
-            color: #F8FAFC;
-            border-color: rgba(248, 250, 252, 0.8);
-        }
-
-        .signup-btn {
-            background-color: #3B82F6;
-            color: #FFFFFF;
-            border: 1px solid #60A5FA;
-            border-radius: 6px;
-            padding: 7px 18px;
-            transition: all 0.3s ease;
-        }
-
-        .signup-btn:hover {
-            background-color: #2563EB;
-            color: #FFFFFF;
-            border-color: #3B82F6;
-        }
-
-        /* Dropdown */
-        .dropdown-toggle {
-            color: #F8FAFC !important;
-        }
-
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin-top: 0.5rem;
-        }
-
-        .dropdown-item {
-            padding: 0.75rem 1.25rem;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-item:hover {
-            background-color: #f8f9fa;
-            padding-left: 1.5rem;
-        }
-
-        .dropdown-item i {
-            color: #3B82F6;
-        }
-
-        /* Icons */
-        .navbar-nav .nav-link i {
-            color: #F8FAFC;
-            transition: all 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover i {
-            color: #BFDBFE;
-        }
-
-        /* Toggler Icon */
-        .navbar-toggler {
-            border: 1px solid rgba(248, 250, 252, 0.35);
-            padding: 0.25rem 0.5rem;
-        }
-
-        .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-        }
-
-        /* Footer - Matching Admin Footer */
-        .custom-footer {
-            background-color: #f8f9fa;
-            padding: 1.5rem 0;
-            margin-top: auto;
-            border-top: 1px solid #e9ecef;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-
-        .custom-footer p {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* Responsive */
-        @media (max-width: 992px) {
-            .custom-navbar {
-                padding: 1rem 1.5rem;
-            }
-
-            .logo-text {
-                font-size: 1.3rem;
-            }
-
-            .navbar-nav .nav-link {
-                margin: 0.25rem 0;
-            }
-        }
-
-    </style>
+    <link rel="stylesheet" href="/css/user/userHeader.css">
 </head>
 
 <body>
@@ -214,26 +51,28 @@
 
                     <% if (user) { %>
 
-                                           <li class="nav-item d-flex align-items-center gap-3 ms-3">
-                        <!-- Wishlist -->
-                        <a class="nav-link p-0 position-relative" href="/wishlist">
-                            <i class="bi bi-heart fs-5"></i>
-                            <% if ((wishlistItemCount || 0) > 0) { %>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger icon-badge">
-                                    <%= wishlistItemCount %>
-                                </span>
-                            <% } %>
-                        </a>
+                        <li class="nav-item d-flex align-items-center gap-3 ms-3">
+                            <!-- Wishlist -->
+                            <a class="nav-link p-0 position-relative" href="/wishlist">
+                                <i class="bi bi-heart fs-5"></i>
+                                <% if ((wishlistItemCount || 0)> 0) { %>
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger icon-badge">
+                                        <%= wishlistItemCount %>
+                                    </span>
+                                    <% } %>
+                            </a>
 
-                        <!-- Cart -->
-                        <a class="nav-link p-0 position-relative" href="/cart">
-                            <i class="bi bi-cart fs-5"></i>
-                            <% if ((cartItemCount || 0) > 0) { %>
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger icon-badge">
-                                    <%= cartItemCount %>
-                                </span>
-                            <% } %>
-                        </a>
+                            <!-- Cart -->
+                            <a class="nav-link p-0 position-relative" href="/cart">
+                                <i class="bi bi-cart fs-5"></i>
+                                <% if ((cartItemCount || 0)> 0) { %>
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger icon-badge">
+                                        <%= cartItemCount %>
+                                    </span>
+                                    <% } %>
+                            </a>
                             <!-- User Dropdown -->
                             <div class="dropdown">
                                 <a class="nav-link dropdown-toggle p-0 d-flex align-items-center" href="#"
@@ -243,35 +82,38 @@
                                 </a>
 
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" href="/userProfile"><i class="bi bi-person me-2"></i>Account</a></li>
-                                    <li><a class="dropdown-item" href="/orders"><i class="bi bi-bag me-2"></i>Orders</a></li>
+                                    <li><a class="dropdown-item" href="/userProfile"><i
+                                                class="bi bi-person me-2"></i>Account</a></li>
+                                    <li><a class="dropdown-item" href="/orders"><i class="bi bi-bag me-2"></i>Orders</a>
+                                    </li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                                    <li><a class="dropdown-item" href="/logout"><i
+                                                class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                                 </ul>
                             </div>
 
-                        </div>
-
-
-                        <% } else { %>
-
-                            <!-- Login -->
-                            <li class="nav-item ms-3">
-                                <a href="/login" class="btn btn-login">Login</a>
-                            </li>
-
-                            <!-- Signup -->
-                            <li class="nav-item ms-2">
-                                <a href="/signup" class="btn signup-btn">Sign Up</a>
-                            </li>
-
-                            <% } %>
-
-                </ul>
-
             </div>
+
+
+            <% } else { %>
+
+                <!-- Login -->
+                <li class="nav-item ms-3">
+                    <a href="/login" class="btn btn-login">Login</a>
+                </li>
+
+                <!-- Signup -->
+                <li class="nav-item ms-2">
+                    <a href="/signup" class="btn signup-btn">Sign Up</a>
+                </li>
+
+                <% } %>
+
+                    </ul>
+
+        </div>
         </div>
     </nav>
 

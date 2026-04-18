@@ -10,16 +10,16 @@ import { getBestOffer } from '../../utils/offerHelper.js'
 class AllProductsService {
 
     getWishlistProductIds = async (userId) => {
-  if (!userId) return [];
+        if (!userId) return [];
 
-  const wishlist = await Wishlist.findOne({ userId })
-    .select('products.productId')
-    .lean();
+        const wishlist = await Wishlist.findOne({ userId })
+            .select('products.productId')
+            .lean();
 
-  if (!wishlist) return [];
+        if (!wishlist) return [];
 
-  return wishlist.products.map(item => item.productId.toString());
-};
+        return wishlist.products.map(item => item.productId.toString());
+    };
     // Get products for listing page with filters, sorting, and pagination
     getAllProducts = async ({
         page,
@@ -136,7 +136,7 @@ class AllProductsService {
                 discountAmount: best.discountAmount,
                 discountPercent,
                 appliedOfferType: best.appliedOfferType,
-                outOfStock:allOutOfStock
+                outOfStock: allOutOfStock
             });
         }
 
@@ -286,17 +286,17 @@ class AllProductsService {
             const cheapest = variants[0];
             //offer
             const now = new Date();
-            const commonFilter = { status: 'active', startDate: { $lte: now }, endDate: { $gte: now } }; 
-            const [productOffer, categoryOffer] = await Promise.all([Offer.findOne({ ...commonFilter, offerType: 'product', productId: product._id }).lean(), categoryId ? Offer.findOne({ ...commonFilter, offerType: 'category', categoryId: categoryId }).lean() : Promise.resolve(null)]); 
+            const commonFilter = { status: 'active', startDate: { $lte: now }, endDate: { $gte: now } };
+            const [productOffer, categoryOffer] = await Promise.all([Offer.findOne({ ...commonFilter, offerType: 'product', productId: product._id }).lean(), categoryId ? Offer.findOne({ ...commonFilter, offerType: 'category', categoryId: categoryId }).lean() : Promise.resolve(null)]);
             const best = getBestOffer(cheapest.price, productOffer, categoryOffer);
-            
+
 
             related.push({
                 _id: product._id,
                 name: product.name,
                 brandName: product.brand?.name || 'N/A',
                 image: cheapest.images?.[0] || '',
-               // price: cheapest.price || 0
+                // price: cheapest.price || 0
                 price: best.finalPrice || 0//offer
             });
         }

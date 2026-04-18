@@ -1,0 +1,14 @@
+body {
+    background: #f5f7fb;
+    padding-top: 70px;
+    padding-left: 260px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    margin-bottom: 80px;
+}
