@@ -65,14 +65,7 @@ class AdminController {
         }
     };
 
-    loadDashboard = async (req, res) => {
-        try {
-            return res.render('dashboard');
-        } catch (error) {
-            logger.error('page not found', error);
-            return res.redirect('/admin/pageerror');
-        }
-    };
+
 
     logout = async (req, res) => {
         try {

@@ -1,6 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import adminController from '../controllers/admin/adminController.js';
+import dashboardController from '../controllers/admin/dashboardController.js';
 import AuthMiddleware from '../middlewares/auth.js';
 import customerController from '../controllers/admin/customerController.js';
 import categoryController from '../controllers/admin/categoryController.js';
@@ -12,11 +13,12 @@ import s3Upload from '../middlewares/multer.js';
 import CouponController from '../controllers/admin/couponController.js';
 import OfferController from '../controllers/admin/offerController.js';
 
+
 router.get('/pageerror', adminController.pageerror);
 //Login Management
 router.get('/login', AuthMiddleware.isAdminLogin, adminController.loadLogin);
 router.post('/login', adminController.login);
-router.get('/dashboard', AuthMiddleware.adminAuth, adminController.loadDashboard);
+router.get('/dashboard', AuthMiddleware.adminAuth, dashboardController.loadDashboard);
 router.get('/logout', AuthMiddleware.adminAuth, adminController.logout);
 //customer management
 router.get('/customers', AuthMiddleware.adminAuth, customerController.loadCustomers);
@@ -179,5 +181,13 @@ router.get('/report', adminController.handleReport);
 
 // Same handler, but used for pagination/downloads
 router.get('/report/generate', adminController.handleReport);
+
+//Admin Dashboard
+
+router.get('/dashboard', dashboardController.loadDashboard);
+router.get('/dashboard-data', dashboardController.getDashboardData);
+//router.get('/report',dashboardController.handleReport);
+//router.get('/report/generate', dashboardController.handleReport);
+//router.get('/report/ledger', dashboardController.downloadLedger);
 
 export default router;
