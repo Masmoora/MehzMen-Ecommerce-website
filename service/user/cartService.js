@@ -200,12 +200,27 @@ class CartService {
   getCartPageData = async (userId) => {
     const cart = await Cart.findOne({ userId })
       .populate('items.productId')
-      .populate('items.variantId')
-      .lean();
+      .populate('items.variantId');
+      
 
     if (!cart || !cart.items?.length) return this.getEmptyCartData();
 
     //const items = cart.items.map((item) => {
+
+      // Keep cart quantities aligned with the latest variant stock.
+    let cartMutated = false;
+    const quantityAdjustedItemIds = new Set();
+    for (const cartItem of cart.items) {
+      const liveStock = Number(cartItem.variantId?.stock || 0);
+      const currentQty = Number(cartItem.quantity || 0);
+      if (liveStock > 0 && currentQty > liveStock) {
+        cartItem.quantity = liveStock;
+        cartMutated = true;
+        quantityAdjustedItemIds.add(cartItem._id.toString());
+      }
+    }
+    if (cartMutated) await cart.save();
+
     const items = await Promise.all(cart.items.map(async (item) => {
       const product = item.productId;
       const variant = item.variantId;
@@ -272,7 +287,8 @@ class CartService {
         stock,
         //lineTotal: item.salePrice * item.quantity,
         lineTotal: price,
-        outOfStock
+        outOfStock,
+        quantityAdjusted: quantityAdjustedItemIds.has(item._id.toString())
       };
     }));
 

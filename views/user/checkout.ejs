@@ -61,6 +61,11 @@
                                       ₹<%= item.price %>
                                         <% } %>
                               </div>
+                                                        <% if (item.quantityAdjusted) { %>
+                            <div class="text-warning fw-semibold small mt-1">
+                              Quantity updated to available stock.
+                            </div>
+                          <% } %>
                               <% if (item.outOfStock) { %>
                                 <div class="text-danger fw-semibold small mt-1">Out of stock</div>
                                 <% } %>

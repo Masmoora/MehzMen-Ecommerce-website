@@ -78,6 +78,9 @@
                         <button class="btn btn-sm btn-outline-danger" onclick="removeItem('<%= item._id %>')">
                           Remove
                         </button>
+                                            <% if (item.quantityAdjusted) { %>
+                      <div class="text-warning small mt-2">Quantity updated to available stock.</div>
+                    <% } %>
 
                         <% if (item.outOfStock) { %>
                           <div class="text-danger small mt-2">Out of stock</div>

@@ -11,6 +11,19 @@ import { getBestOffer } from "../../utils/offerHelper.js";
 const SHIPPING_FLAT = 50;
 
 class CheckoutService {
+
+    validateLiveStock = async (items = []) => {
+    for (const item of items) {
+      const variant = await ProductVariant.findOne({ _id: item.variantId, isActive: true })
+        .select('stock')
+        .lean();
+
+      if (!variant || Number(variant.stock || 0) < Number(item.quantity || 0)) {
+        throw new Error(`Stock changed for ${item.productName}. Please review checkout and try again.`);
+      }
+    }
+  };
+
   reserveStockForOrder = async (items) => {
     const reservedItems = [];
 
@@ -51,12 +64,27 @@ class CheckoutService {
         path: 'items.productId',
         populate: { path: 'brand', select: 'name' }
       })
-      .populate('items.variantId')
-      .lean();
+      .populate('items.variantId');
+      
 
     if (!cart || !cart.items?.length) return [];
 
     //return cart.items.map((item) => {
+
+          // Keep checkout quantities in sync with live variant stock.
+    let cartMutated = false;
+    const quantityAdjustedItemIds = new Set();
+    for (const cartItem of cart.items) {
+      const liveStock = Number(cartItem.variantId?.stock || 0);
+      const currentQty = Number(cartItem.quantity || 0);
+      if (liveStock > 0 && currentQty > liveStock) {
+        cartItem.quantity = liveStock;
+        cartMutated = true;
+        quantityAdjustedItemIds.add(cartItem._id.toString());
+      }
+    }
+    if (cartMutated) await cart.save();
+
     const processedItems = await Promise.all(cart.items.map(async (item) => {
 
       const product = item.productId;
@@ -133,7 +161,9 @@ class CheckoutService {
             : 0,
 
         itemTotal: price * item.quantity,
-        outOfStock
+        outOfStock,
+        stock,
+        quantityAdjusted: quantityAdjustedItemIds.has(item._id.toString())
       };
     }));
     return processedItems.filter(Boolean);
