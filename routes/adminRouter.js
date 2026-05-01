@@ -186,8 +186,6 @@ router.get('/report/generate', adminController.handleReport);
 
 router.get('/dashboard', dashboardController.loadDashboard);
 router.get('/dashboard-data', dashboardController.getDashboardData);
-//router.get('/report',dashboardController.handleReport);
-//router.get('/report/generate', dashboardController.handleReport);
-//router.get('/report/ledger', dashboardController.downloadLedger);
+
 
 export default router;

@@ -1,15 +1,16 @@
 import dashboardService from "../../service/admin/dashboardService.js";
-class DashboardController{
-        loadDashboard = async (req, res) => {
-            try {
-                return res.render('dashboard');
-            } catch (error) {
-                logger.error('page not found', error);
-                return res.redirect('/admin/pageerror');
-            }
-        };
+import logger from '../../logger.js';
+class DashboardController {
+  loadDashboard = async (req, res) => {
+    try {
+      return res.render('dashboard');
+    } catch (error) {
+      logger.error('page not found', error);
+      return res.redirect('/admin/pageerror');
+    }
+  };
 
-          getDashboardData = async (req, res) => {
+  getDashboardData = async (req, res) => {
     try {
       const {
         filter = 'monthly',

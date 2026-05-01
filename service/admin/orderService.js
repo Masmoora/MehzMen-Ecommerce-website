@@ -6,9 +6,9 @@ import fs from 'fs';
 import puppeteer from 'puppeteer';
 import ejs from 'ejs';
 import walletService from '../user/walletService.js';
+
 class AdminOrderService {
   normalize = (value) => String(value || '').trim().toLowerCase().replace(/\s+/g, '_');
-
   orderFlow = ['pending', 'confirmed', 'shipped', 'out_for_delivery', 'delivered'];
   isOrderPaid = (order) => {
     const method = this.normalize(order.paymentMethod || '');
@@ -32,9 +32,9 @@ class AdminOrderService {
 
     const subtotal = activeItems.reduce((sum, item) => sum + Number(item.itemTotal || 0), 0);
     const shippingCharge = activeItems.length ? Number(orderDoc.pricing?.shippingCharge || 0) : 0;
-    const tax = Number(orderDoc.pricing?.tax || 0);
+    
     const discount = Number(orderDoc.pricing?.couponDiscount || 0);
-    const finalAmount = Math.max(0, subtotal + shippingCharge + tax - discount);
+    const finalAmount = Math.max(0, subtotal + shippingCharge  - discount);
 
     orderDoc.pricing.totalItems = activeItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
     orderDoc.pricing.subtotal = subtotal;
@@ -190,7 +190,7 @@ class AdminOrderService {
     const highestItemIndex = this.getHighestItemFlowIndex(order);
     const targetIndex = this.orderFlow.indexOf(targetStatus);
 
-    // 🚫 Prevent downgrade below any delivered/shipped item
+    //  Prevent downgrade below any delivered/shipped item
     if (targetIndex < highestItemIndex) {
       throw new Error(
         `Cannot downgrade order below existing item progress.`
@@ -457,3 +457,6 @@ class AdminOrderService {
 }
 
 export default new AdminOrderService();
+
+
+
