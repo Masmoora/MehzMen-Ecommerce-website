@@ -80,12 +80,12 @@
             </div>
           </form>
         </div>
-
+        
         <!-- Product Table -->
-        <div class="table-container">
+        <div class="table-responsive bg-white border rounded">
           <% if (typeof products !=='undefined' && products.length> 0) { %>
-            <table class="table table-hover">
-              <thead>
+            <table class="table table-bordered table-striped mb-0">
+              <thead class="table-dark">
                 <tr>
 
                   <th>Product Name</th>
@@ -93,6 +93,7 @@
                   <th>Category</th>
 
                   <th>Status</th>
+                  <th>Variants</th>
                   <th>Actions</th>
                 </tr>
               </thead>

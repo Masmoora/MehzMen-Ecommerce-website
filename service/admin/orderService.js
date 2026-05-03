@@ -223,7 +223,7 @@ class AdminOrderService {
     if (!order) throw new Error('Order not found');
 
     const currentStatus = this.normalize(order.orderStatus);
-    if (['cancelled', 'delivered', 'returned'].includes(currentStatus)) {
+    if (['cancelled', 'delivered', 'returned','return_requested', 'return_approved'].includes(currentStatus)) {
       throw new Error('Cannot cancel this order');
     }
     if (this.isOrderPaid(order)) {

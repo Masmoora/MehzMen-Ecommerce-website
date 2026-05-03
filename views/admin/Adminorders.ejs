@@ -29,7 +29,8 @@
             }; %>
 
             <main class="main-content">
-              <h2 class=" mb-3">Order Management</h2>
+              
+              <h1 class="page-title">Order Management</h1>
 
               <form class="row g-2 mb-3" method="GET" action="/admin/orders">
                 <div class="col-md-5">
@@ -64,8 +65,8 @@
               </form>
 
               <div class="table-responsive bg-white border rounded">
-                <table class="table mb-0">
-                  <thead>
+                <table class="table table-bordered table-striped mb-0">
+                  <thead class="table-dark">
                     <tr>
                       <th>Order ID</th>
                       <th>Order Date</th>
@@ -123,7 +124,7 @@
                                       Update
                                     </button>
                                     <% } %>
-                                      <% if (!['cancelled','returned','delivered'].includes(orderStatus)) { %>
+                                      <% if (!['cancelled','returned','delivered','return_requested','return_approved'].includes(orderStatus)) { %>
                                         <button class="btn btn-danger btn-sm"
                                           onclick="cancelOrder('<%= order.orderId %>')">
                                           Cancel Order
@@ -183,7 +184,7 @@
                   Swal.fire('Success', 'Order updated', 'success').then(() => location.reload());
                 }
 
-                async function quickCancelOrder(orderId) {
+                async function cancelOrder(orderId) {
                   const ask = await Swal.fire({
                     title: 'Cancel order?',
                     icon: 'warning',

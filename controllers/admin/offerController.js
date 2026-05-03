@@ -9,7 +9,7 @@ class OfferController {
       const { page = 1, search = '' } = req.query;
 
       const safePage = Number(page) || 1;
-      const limit = 10;
+      const limit = 6;
 
       const [products, offersResult] = await Promise.all([
         offerService.getProducts(),

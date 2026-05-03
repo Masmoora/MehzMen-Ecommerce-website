@@ -8,6 +8,12 @@
     .main-content {
         padding: 2rem;
     }
+    .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 2rem;
+}
 
     .table thead th {
         background: #111827;

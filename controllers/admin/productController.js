@@ -8,7 +8,7 @@ class ProductController {
   loadProductsPage = async (req, res) => {
     try {
       const page = parseInt(req.query.page, 10) || 1;
-      const limit = 2;
+      const limit = 6;
       const search = req.query.search || '';
       const brand = req.query.brand || '';
       const category = req.query.category || '';

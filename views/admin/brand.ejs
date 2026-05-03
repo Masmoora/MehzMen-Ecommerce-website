@@ -10,6 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/admin/brand.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
 
 </head>
 
@@ -21,8 +23,9 @@
             <main class="main-content">
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Brand Management</h2>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBrandModal">
+                    
+                    <h1 class="page-title  mb-0">Brand Management</h1>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addBrandModal">
                         <i class="bi bi-plus-circle"></i> Add Brand
                     </button>
                 </div>
@@ -39,11 +42,11 @@
                         <a href="/admin/brands" class="btn btn-secondary">Clear</a>
                     </div>
                 </form>
-
+        
                 <!-- TABLE -->
-                <div class="table-responsive bg-white p-3 rounded shadow-sm">
+                <div class="table-responsive bg-white border rounded">
                     <% if (brands.length> 0) { %>
-                        <table class="table table-hover">
+                        <table class="table table-bordered table-striped mb-0">
                             <thead class="table-dark">
                                 <tr>
                                     <th>#</th>
@@ -79,11 +82,15 @@
                                         </td>
                                         <td>
                                             <!-- Edit -->
-                                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                                data-bs-target="#editBrandModal" data-id="<%= brand._id %>"
-                                                data-name="<%= brand.name %>" data-status="<%= brand.isListed %>">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
+                                           <button class="btn btn-sm btn-primary"
+  data-bs-toggle="modal"
+  data-bs-target="#editBrandModal"
+  data-id="<%= brand._id %>"
+  data-name="<%= brand.name %>"
+  data-status="<%= brand.isListed %>"
+  data-logo="<%= brand.logo %>">
+  <i class="bi bi-pencil"></i>
+</button>
 
                                             <!-- List / Unlist -->
                                             <button
@@ -142,7 +149,7 @@
             </main>
 
             <!-- ADD BRAND MODAL -->
-            <div class="modal fade" id="addBrandModal">
+            <div class="modal fade" id="addBrandModal" tabindex="-1" data-bs-focus="false">
                 <div class="modal-dialog">
                     <form id="addBrandForm" enctype="multipart/form-data" class="modal-content">
                         <div class="modal-header">
@@ -151,7 +158,7 @@
                         </div>
                         <div class="modal-body">
                             <input type="text" name="name" class="form-control mb-3" placeholder="Brand Name" >
-                            <input type="file" name="logo" class="form-control mb-3">
+                            <input type="file" name="logo" id="brandImage" class="form-control mb-3">
                             <div>
                                 <label>Status:</label><br>
                                 <input type="radio" name="isListed" value="true" checked> Listed
@@ -166,7 +173,7 @@
             </div>
 
             <!-- EDIT BRAND MODAL -->
-            <div class="modal fade" id="editBrandModal">
+            <div class="modal fade" id="editBrandModal" tabindex="-1" data-bs-focus="false">
                 <div class="modal-dialog">
                     <form id="editBrandForm" enctype="multipart/form-data" class="modal-content">
                         <input type="hidden" name="id" id="editBrandId">
@@ -176,7 +183,11 @@
                         </div>
                         <div class="modal-body">
                             <input type="text" name="name" id="editBrandName" class="form-control mb-3">
-                            <input type="file" name="logo" class="form-control mb-3">
+                            <div class="mb-3">
+  <label>Current Logo</label><br>
+  <img id="editBrandPreview" style="width:80px;height:80px;border-radius:8px">
+</div>
+                            <input type="file" name="logo" id="editBrandImage" class="form-control mb-3">
                             <div>
                                 <label>Status:</label><br>
                                 <input type="radio" name="isListed" value="true"> Listed
@@ -189,6 +200,20 @@
                     </form>
                 </div>
             </div>
+                        <!-- Image Crop Modal -->
+      <div class="modal fade" id="cropModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-body">
+              <img id="cropImage" alt="Crop image">
+            </div>
+            <div class="modal-footer">
+              <button id="cropSave" type="button" class="btn btn-success">Crop</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
             <!-- SweetAlert -->
             <script>
@@ -239,6 +264,9 @@
                     const btn = e.relatedTarget;
                     document.getElementById('editBrandId').value = btn.dataset.id;
                     document.getElementById('editBrandName').value = btn.dataset.name;
+                    // ✅ SET LOGO
+
+  document.getElementById('editBrandPreview').src = btn.dataset.logo || '';
                     // set status radio
                     const status = btn.dataset.status === "true";
                     document.querySelector(
@@ -306,6 +334,134 @@
             </script>
 
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+             <script>
+          (function () {
+            const cropModalEl = document.getElementById('cropModal');
+            const cropImageEl = document.getElementById('cropImage');
+            const cropSaveBtn = document.getElementById('cropSave');
+            if (!cropModalEl || !cropImageEl || !cropSaveBtn || typeof Cropper === 'undefined') return;
+
+            const cropModal = new bootstrap.Modal(cropModalEl);
+            const cropInputs = ['brandImage', 'editBrandImage']
+              .map((id) => document.getElementById(id))
+              .filter(Boolean);
+
+            let cropper = null;
+            let activeInput = null;
+            let activeObjectUrl = '';
+            let selectedFileName = 'cropped-image.jpg';
+            let cropConfirmed = false;
+            let addPreviewObjectUrl = '';
+            let editPreviewObjectUrl = '';
+            const addPreviewImage = document.getElementById('addCategoryPreviewImage');
+            const editPreviewImage = document.getElementById('editPreviewImage');
+
+            const clearActiveSelection = () => {
+              if (activeInput && !cropConfirmed) activeInput.value = '';
+              activeInput = null;
+              selectedFileName = 'cropped-image.jpg';
+            };
+
+            const buildCroppedFile = (blob, originalName) => {
+              const baseName = (originalName || 'cropped-image').replace(/\.[^/.]+$/, '');
+              const fileName = `${baseName}-cropped.jpg`;
+              return new File([blob], fileName, { type: 'image/jpeg' });
+            };
+
+            cropInputs.forEach((inputEl) => {
+              inputEl.addEventListener('change', (event) => {
+                const file = event.target.files && event.target.files[0];
+                if (!file) return;
+                if (!file.type.startsWith('image/')) {
+                  event.target.value = '';
+                  return;
+                }
+
+                cropConfirmed = false;
+                activeInput = event.target;
+                selectedFileName = file.name || 'cropped-image.jpg';
+
+                if (activeObjectUrl) URL.revokeObjectURL(activeObjectUrl);
+                activeObjectUrl = URL.createObjectURL(file);
+                cropImageEl.src = activeObjectUrl;
+
+                cropModal.show();
+              });
+            });
+
+            cropModalEl.addEventListener('shown.bs.modal', () => {
+              if (cropper) cropper.destroy();
+              cropper = new Cropper(cropImageEl, {
+                aspectRatio: NaN,
+                viewMode: 1,
+                autoCropArea: 1,
+                movable: true,
+                zoomable: true,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                ready() {
+                  const data = this.cropper.getImageData();
+                  this.cropper.setCropBoxData({
+                    left: data.left,
+                    top: data.top,
+                    width: data.width,
+                    height: data.height
+                  });
+                }
+              });
+            });
+
+            cropModalEl.addEventListener('hidden.bs.modal', () => {
+              if (cropper) {
+                cropper.destroy();
+                cropper = null;
+              }
+              if (activeObjectUrl) {
+                URL.revokeObjectURL(activeObjectUrl);
+                activeObjectUrl = '';
+              }
+              clearActiveSelection();
+            });
+
+            cropSaveBtn.addEventListener('click', () => {
+              if (!cropper || !activeInput) return;
+
+              const canvas = cropper.getCroppedCanvas({
+                width: 800,
+                height: 800,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
+              });
+              if (!canvas) return;
+
+              canvas.toBlob((blob) => {
+                if (!blob) return;
+
+                const croppedFile = buildCroppedFile(blob, selectedFileName);
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(croppedFile);
+                activeInput.files = dataTransfer.files;
+
+                if (activeInput.id === 'brandImage' && addPreviewImage) {
+                  if (addPreviewObjectUrl) URL.revokeObjectURL(addPreviewObjectUrl);
+                  addPreviewObjectUrl = URL.createObjectURL(croppedFile);
+                  addPreviewImage.src = addPreviewObjectUrl;
+                  addPreviewImage.style.display = 'block';
+                }
+
+                if (activeInput.id === 'editBrandImage' && editPreviewImage) {
+                  if (editPreviewObjectUrl) URL.revokeObjectURL(editPreviewObjectUrl);
+                  editPreviewObjectUrl = URL.createObjectURL(croppedFile);
+                  editPreviewImage.src = editPreviewObjectUrl;
+                }
+
+                cropConfirmed = true;
+                cropModal.hide();
+              }, 'image/jpeg', 0.92);
+            });
+          })();
+        </script>
+            
 </body>
 
 </html>

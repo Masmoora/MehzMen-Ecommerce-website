@@ -4,7 +4,7 @@ import AdminOrderService from '../../service/admin/orderService.js';
 class AdminOrderController {
   loadOrders = async (req, res) => {
     try {
-      const { page = 1, limit = 10, search = '', status = '', sort = 'date_desc' } = req.query || {};
+      const { page = 1, limit = 6, search = '', status = '', sort = 'date_desc' } = req.query || {};
       const data = await AdminOrderService.listOrders({ page, limit, search, status, sort });
       return res.render('Adminorders', data);
     } catch (error) {

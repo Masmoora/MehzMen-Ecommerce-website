@@ -216,8 +216,14 @@
           </div>
           <div class="modal-body">
             <label for="cancelOrderReason" class="form-label">Reason for cancellation</label>
-            <textarea id="cancelOrderReason" class="form-control" rows="4"
-              placeholder="Please tell us why you want to cancel this order"></textarea>
+            <select id="cancelOrderReason" class="form-control">
+  <option value="">Select reason</option>
+  <option value="Changed my mind">Changed my mind</option>
+  <option value="Found cheaper elsewhere">Found cheaper elsewhere</option>
+  <option value="Ordered by mistake">Ordered by mistake</option>
+  <option value="Delivery too slow">Delivery too slow</option>
+  <option value="Other">Other</option>
+</select>
             <div class="small text-muted mt-2">Reason is optional.</div>
           </div>
           <div class="modal-footer">
@@ -239,8 +245,14 @@
           </div>
           <div class="modal-body">
             <label for="returnOrderReason" class="form-label">Reason for return</label>
-            <textarea id="returnOrderReason" class="form-control" rows="4"
-              placeholder="Please tell us why you want to return this order"></textarea>
+            <select id="returnOrderReason" class="form-control">
+  <option value="">Select reason</option>
+  <option value="Wrong size">Wrong size</option>
+  <option value="Damaged product">Damaged product</option>
+  <option value="Quality issue">Quality issue</option>
+  <option value="Wrong item delivered">Wrong item delivered</option>
+  <option value="Other">Others</option>
+</select>
             <div class="small text-muted mt-2">Reason is required to submit return request.</div>
             <label for="returnOrderDescription" class="form-label mt-3">Description (Optional)</label>
             <textarea id="returnOrderDescription" class="form-control" rows="3"
@@ -393,13 +405,24 @@
           if (!confirm.isConfirmed) return;
 
           try {
-            const reasonInput = await Swal.fire({
-              title: 'Reason for cancellation',
-              input: 'text',
-              inputPlaceholder: 'Optional reason',
-              showCancelButton: true,
-              confirmButtonText: 'Continue'
-            });
+const reasonInput = await Swal.fire({
+  title: 'Reason for cancellation',
+  html: `
+    <select id="cancel-reason" class="swal2-input">
+      <option value="">Select reason</option>
+      <option value="Changed my mind">Changed my mind</option>
+      <option value="Found cheaper elsewhere">Found cheaper elsewhere</option>
+      <option value="Ordered by mistake">Ordered by mistake</option>
+      <option value="Delivery too slow">Delivery too slow</option>
+      <option value="Other">Other</option>
+    </select>
+  `,
+  showCancelButton: true,
+  confirmButtonText: 'Continue',
+  preConfirm: () => {
+    return document.getElementById('cancel-reason').value;
+  }
+});
             if (!reasonInput.isConfirmed) return;
 
             const res = await fetch(`/orders/${orderId}/items/${itemId}/cancel`, {

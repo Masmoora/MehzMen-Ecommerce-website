@@ -44,6 +44,11 @@
                         class="badge <%= badgeClass(order.orderStatus) %> status-badge">
                         <%= pretty(order.orderStatus) %>
                       </span></p>
+                      <% if (order.cancelReason) { %>
+  <p class="mb-1 text-danger">
+    <strong>Cancel Reason:</strong> <%= order.cancelReason %>
+  </p>
+<% } %>
                   </div>
                   <div class="d-flex gap-2 flex-wrap">
                     <% const orderStatus=normalize(order.orderStatus); %>
@@ -56,7 +61,7 @@
                           Update Status
                         </button>
                         <% } %>
-                          <% if (!['cancelled','returned','delivered'].includes(orderStatus)) { %>
+                          <% if (!['cancelled','returned','delivered','return_requested','return_approved'].includes(orderStatus)) { %>
                             <button class="btn btn-danger btn-sm" onclick="cancelOrder('<%= order.orderId %>')">
                               Cancel Order
                             </button>
@@ -110,6 +115,11 @@
                               class="badge <%= badgeClass(item.itemStatus) %> status-badge">
                               <%= pretty(item.itemStatus) %>
                             </span></div>
+                            <% if (normalize(item.itemStatus) === 'cancelled' && item.cancelReason) { %>
+  <div class="small text-danger mt-1">
+    <strong>Cancel Reason:</strong> <%= item.cancelReason %>
+  </div>
+<% } %>
                           <div class="small">Return Status:
                             <span
                               class="badge <%= badgeClass(item.returnStatus === 'approved' ? 'return_approved' : item.returnStatus === 'requested' ? 'return_requested' : item.returnStatus === 'returned' ? 'returned' : 'pending') %> status-badge">
@@ -136,7 +146,7 @@
                       <div class="d-flex gap-2 align-items-start">
                         <% const itemStatus=normalize(item.itemStatus); %>
 
-                          <% if (!['cancelled','returned','delivered'].includes(itemStatus)) { %>
+                          <% if (!['cancelled','returned','delivered','return_requested','return_approved'].includes(itemStatus)) { %>
                             <button class="btn btn-primary btn-sm"
                               onclick="updateItemStatus('<%= order.orderId %>', '<%= item._id %>', '<%= itemStatus %>')">
                               Update
@@ -144,7 +154,7 @@
                             <% } %>
 
 
-                              <% if (!['cancelled','returned','delivered'].includes(itemStatus)) { %>
+                              <% if (!['cancelled','returned','delivered','return_requested','return_approved'].includes(itemStatus)) { %>
                                 <button class="btn btn-danger btn-sm"
                                   onclick="cancelItem('<%= order.orderId %>', '<%= item._id %>')">
                                   Cancel

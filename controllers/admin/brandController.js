@@ -6,7 +6,7 @@ class BrandController {
     try {
       const search = req.query.search || '';
       const page = parseInt(req.query.page) || 1;
-      const limit = 2;
+      const limit = 6;
 
       const { brands, totalPages } =
         await BrandService.getBrands(search, page, limit);

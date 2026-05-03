@@ -30,7 +30,7 @@
       <main class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h1 class="page-title mb-0">Category Management</h1>
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
             <i class="bi bi-plus-circle me-1"></i>Add Category
           </button>
         </div>
@@ -54,12 +54,12 @@
             </div>
           </form>
         </div>
-
+        
         <!-- Category Table -->
-        <div class="table-container">
+        <div class="table-responsive bg-white border rounded">
           <% if (typeof categories !=='undefined' && categories.length> 0) { %>
-            <table class="table table-hover">
-              <thead>
+            <table class="table table-bordered table-striped mb-0">
+              <thead class="table-dark">
                 <tr>
                   <th>#</th>
                   <th>Category Image</th>
@@ -457,6 +457,19 @@
               }
             });
         </script>
+        <script>
+  const editImageInput = document.getElementById('editCategoryImage');
+  const previewImage = document.getElementById('editPreviewImage');
+
+  if (editImageInput) {
+    editImageInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        previewImage.src = URL.createObjectURL(file);
+      }
+    });
+  }
+</script>
 
         <script>
           const success = "<%= success || '' %>";
@@ -928,6 +941,134 @@
           })
 
         </script>
+         <script>
+          (function () {
+            const cropModalEl = document.getElementById('cropModal');
+            const cropImageEl = document.getElementById('cropImage');
+            const cropSaveBtn = document.getElementById('cropSave');
+            if (!cropModalEl || !cropImageEl || !cropSaveBtn || typeof Cropper === 'undefined') return;
+
+            const cropModal = new bootstrap.Modal(cropModalEl);
+            const cropInputs = ['categoryImage', 'editCategoryImage', 'brandImage']
+              .map((id) => document.getElementById(id))
+              .filter(Boolean);
+
+            let cropper = null;
+            let activeInput = null;
+            let activeObjectUrl = '';
+            let selectedFileName = 'cropped-image.jpg';
+            let cropConfirmed = false;
+            let addPreviewObjectUrl = '';
+            let editPreviewObjectUrl = '';
+            const addPreviewImage = document.getElementById('addCategoryPreviewImage');
+            const editPreviewImage = document.getElementById('editPreviewImage');
+
+            const clearActiveSelection = () => {
+              if (activeInput && !cropConfirmed) activeInput.value = '';
+              activeInput = null;
+              selectedFileName = 'cropped-image.jpg';
+            };
+
+            const buildCroppedFile = (blob, originalName) => {
+              const baseName = (originalName || 'cropped-image').replace(/\.[^/.]+$/, '');
+              const fileName = `${baseName}-cropped.jpg`;
+              return new File([blob], fileName, { type: 'image/jpeg' });
+            };
+
+            cropInputs.forEach((inputEl) => {
+              inputEl.addEventListener('change', (event) => {
+                const file = event.target.files && event.target.files[0];
+                if (!file) return;
+                if (!file.type.startsWith('image/')) {
+                  event.target.value = '';
+                  return;
+                }
+
+                cropConfirmed = false;
+                activeInput = event.target;
+                selectedFileName = file.name || 'cropped-image.jpg';
+
+                if (activeObjectUrl) URL.revokeObjectURL(activeObjectUrl);
+                activeObjectUrl = URL.createObjectURL(file);
+                cropImageEl.src = activeObjectUrl;
+
+                cropModal.show();
+              });
+            });
+
+            cropModalEl.addEventListener('shown.bs.modal', () => {
+              if (cropper) cropper.destroy();
+              cropper = new Cropper(cropImageEl, {
+                aspectRatio: NaN,
+                viewMode: 1,
+                autoCropArea: 1,
+                movable: true,
+                zoomable: true,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                ready() {
+                  const data = this.cropper.getImageData();
+                  this.cropper.setCropBoxData({
+                    left: data.left,
+                    top: data.top,
+                    width: data.width,
+                    height: data.height
+                  });
+                }
+              });
+            });
+
+            cropModalEl.addEventListener('hidden.bs.modal', () => {
+              if (cropper) {
+                cropper.destroy();
+                cropper = null;
+              }
+              if (activeObjectUrl) {
+                URL.revokeObjectURL(activeObjectUrl);
+                activeObjectUrl = '';
+              }
+              clearActiveSelection();
+            });
+
+            cropSaveBtn.addEventListener('click', () => {
+              if (!cropper || !activeInput) return;
+
+              const canvas = cropper.getCroppedCanvas({
+                width: 800,
+                height: 800,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
+              });
+              if (!canvas) return;
+
+              canvas.toBlob((blob) => {
+                if (!blob) return;
+
+                const croppedFile = buildCroppedFile(blob, selectedFileName);
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(croppedFile);
+                activeInput.files = dataTransfer.files;
+
+                if (activeInput.id === 'categoryImage' && addPreviewImage) {
+                  if (addPreviewObjectUrl) URL.revokeObjectURL(addPreviewObjectUrl);
+                  addPreviewObjectUrl = URL.createObjectURL(croppedFile);
+                  addPreviewImage.src = addPreviewObjectUrl;
+                  addPreviewImage.style.display = 'block';
+                }
+
+                if (activeInput.id === 'editCategoryImage' && editPreviewImage) {
+                  if (editPreviewObjectUrl) URL.revokeObjectURL(editPreviewObjectUrl);
+                  editPreviewObjectUrl = URL.createObjectURL(croppedFile);
+                  editPreviewImage.src = editPreviewObjectUrl;
+                }
+
+                cropConfirmed = true;
+                cropModal.hide();
+              }, 'image/jpeg', 0.92);
+            });
+          })();
+        </script>
+        
 </body>
 
 </html>

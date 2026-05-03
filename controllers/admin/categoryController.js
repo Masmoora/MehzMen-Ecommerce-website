@@ -15,7 +15,7 @@ class CategoryController {
       if (req.query.page) {
         page = parseInt(req.query.page, 10);
       }
-      let limit = 2;
+      let limit = 6;
       let { categories, totalPages } = await CategoryService.listCategory(
         search,
         page,
@@ -106,7 +106,7 @@ class CategoryController {
       };
 
       if (req.file) {
-        updateData.image = `/uploads/categories/${req.file.filename}`;
+        updateData.image = req.file.location;
       }
 
       await CategoryService.updateCategory(id, updateData);

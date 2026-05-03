@@ -110,14 +110,24 @@
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script>
         async function cancelOrder(orderId) {
-          const reasonPrompt = await Swal.fire({
-            title: 'Cancel this order?',
-            text: 'Reason is optional',
-            input: 'text',
-            inputPlaceholder: 'Optional reason',
-            showCancelButton: true,
-            confirmButtonText: 'Cancel Order'
-          });
+const reasonPrompt = await Swal.fire({
+  title: 'Cancel this order?',
+  html: `
+    <select id="cancel-reason" class="swal2-input">
+      <option value="">Select reason</option>
+      <option value="Changed my mind">Changed my mind</option>
+      <option value="Found cheaper elsewhere">Found cheaper elsewhere</option>
+      <option value="Ordered by mistake">Ordered by mistake</option>
+      <option value="Delivery too slow">Delivery too slow</option>
+      <option value="Other">Other</option>
+    </select>
+  `,
+  showCancelButton: true,
+  confirmButtonText: 'Cancel Order',
+  preConfirm: () => {
+    return document.getElementById('cancel-reason').value;
+  }
+});
           if (!reasonPrompt.isConfirmed) return;
 
           const res = await fetch(`/orders/${orderId}/cancel`, {

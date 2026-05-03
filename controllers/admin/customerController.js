@@ -10,7 +10,7 @@ class CustomerController {
             if (req.query.page) {
                 page = req.query.page;
             }
-            const limit = 1;
+            const limit = 6;
 
             const { users, totalPages } = await CustomerService.getUsers(
                 search,
