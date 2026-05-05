@@ -94,4 +94,23 @@ header{
   object-fit: contain;
   
 }
-
+.custom-caption {
+  position: absolute;
+  top: 6%;
+  left: 10%;   /* now this WILL work */
+  z-index: 10;
+}
+.custom-btn {
+  background-color: #000;   /* pure black */
+  color: #fff;              /* white text */
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  transition: all 0.3s ease;
+}
+.custom-btn:hover {
+  background-color: #222;   /* slightly lighter black */
+  transform: translateY(-2px);
+}

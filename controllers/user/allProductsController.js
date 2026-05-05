@@ -9,7 +9,7 @@ class AllProductsController {
     loadAllProducts = async (req, res) => {
         try {
             const page = Math.max(parseInt(req.query.page) || 1, 1);
-            const limit = 7;
+            const limit = 9;
             const search = (req.query.search || '').trim();
             const category = req.query.category || '';
             const brand = req.query.brand || '';

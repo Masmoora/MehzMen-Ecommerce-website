@@ -101,20 +101,30 @@ class OrderService {
     return order;
   };
 
-  recalculatePricing = (orderDoc) => {
+   recalculatePricing = (orderDoc) => {
     const activeItems = orderDoc.items.filter(
       (item) => this.normalizeStatus(item.itemStatus) !== 'cancelled'
     );
     const subtotal = activeItems.reduce((sum, item) => sum + item.itemTotal, 0);
     const shippingCharge = activeItems.length > 0 ? Number(orderDoc.pricing.shippingCharge || 0) : 0;
-    const discount = Number(orderDoc.pricing.couponDiscount || 0);
+    // ✅ FIX: reset coupon if no items
+
+const discount = activeItems.length > 0
+
+  ? Number(orderDoc.pricing.couponDiscount || 0)
+
+  : 0;
     // const tax = Number(orderDoc.pricing.tax || 0);
+    
     const finalAmount = Math.max(0, subtotal + shippingCharge - discount);
 
     orderDoc.pricing.totalItems = activeItems.reduce((sum, item) => sum + item.quantity, 0);
     orderDoc.pricing.subtotal = subtotal;
     orderDoc.pricing.shippingCharge = shippingCharge;
     orderDoc.pricing.finalAmount = finalAmount;
+    orderDoc.pricing.couponDiscount = discount;
+    
+
 
     const allCancelled = orderDoc.items.every(
       (item) => this.normalizeStatus(item.itemStatus) === 'cancelled'
