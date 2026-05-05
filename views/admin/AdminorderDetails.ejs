@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Order Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/admin/AdminorderDetail.css">
+</head>
+
+<body>
+  <%- include("../../views/partials/admin/header") %>
+    <%- include("../../views/partials/admin/sidebar") %>
+
+      <% const normalize=(value)=> String(value || '').trim().toLowerCase().replace(/\s+/g, '_'); %>
+        <% const pretty=(value)=> normalize(value).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); %>
+          <% const badgeClass=(value)=> {
+            const s = normalize(value);
+            if (s === 'pending') return 'bg-warning text-dark';
+            if (s === 'confirmed') return 'bg-primary';
+            if (s === 'shipped' || s === 'out_for_delivery') return 'bg-info text-dark';
+            if (s === 'delivered') return 'bg-success';
+            if (s === 'cancelled') return 'bg-danger';
+            if (s === 'return_requested') return 'bg-warning text-dark';
+            if (s === 'return_approved') return 'bg-primary';
+            if (s === 'returned') return 'bg-success';
+            return 'bg-secondary';
+            }; %>
+
+            <main class="main-content">
+              <h2 class="text-center mb-3">Order Details</h2>
+
+              <section class="card-clean p-3 mb-3">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                  <div>
+                    <p class="mb-1"><strong>Order ID:</strong>
+                      <%= order.orderId %>
+                    </p>
+                    <p class="mb-1"><strong>Order Date:</strong>
+                      <%= new Date(order.createdAt).toLocaleString() %>
+                    </p>
+                    <p class="mb-1"><strong>Status:</strong> <span
+                        class="badge <%= badgeClass(order.orderStatus) %> status-badge">
+                        <%= pretty(order.orderStatus) %>
+                      </span></p>
+                      <% if (order.cancelReason) { %>
+  <p class="mb-1 text-danger">
+    <strong>Cancel Reason:</strong> <%= order.cancelReason %>
+  </p>
+<% } %>
+                  </div>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <% const orderStatus=normalize(order.orderStatus); %>
+
+                      <% if
+                        (!['cancelled','returned','return_requested','return_approved','delivered'].includes(orderStatus))
+                        { %>
+                        <button class="btn btn-primary btn-sm"
+                          onclick="updateOrderStatus('<%= order.orderId %>', '<%= orderStatus %>')">
+                          Update Status
+                        </button>
+                        <% } %>
+                          <% if (!['cancelled','returned','delivered','return_requested','return_approved'].includes(orderStatus)) { %>
+                            <button class="btn btn-danger btn-sm" onclick="cancelOrder('<%= order.orderId %>')">
+                              Cancel Order
+                            </button>
+                            <% } %>
+                              <a class="btn btn-outline-dark btn-sm"
+                                href="/admin/orders/<%= order.orderId %>/invoice">Download
+                                Invoice</a>
+                              <a class="btn btn-dark btn-sm" href="/admin/orders">Back to Orders</a>
+                  </div>
+                </div>
+              </section>
+
+              <section class="card-clean p-3 mb-3">
+                <h5>Customer Information</h5>
+                <p class="mb-1"><strong>Name:</strong>
+                  <%= order.userId?.name || 'N/A' %>
+                </p>
+                <p class="mb-1"><strong>Phone:</strong>
+                  <%= order.userId?.phone || 'N/A' %>
+                </p>
+                <p class="mb-1"><strong>Email:</strong>
+                  <%= order.userId?.email || 'N/A' %>
+                </p>
+                <p class="mb-0"><strong>Address:</strong>
+                  <%= order.shippingAddress?.houseNo || '' %>, <%= order.shippingAddress?.landMark || '' %>,
+                      <%= order.shippingAddress?.city || '' %>, <%= order.shippingAddress?.state || '' %> - <%=
+                            order.shippingAddress?.pincode || '' %>,
+                            <%= order.shippingAddress?.country || '' %>
+                </p>
+              </section>
+
+              <section class="card-clean p-3 mb-3">
+                <h5 class="mb-3">All Products</h5>
+                <% (order.items || []).forEach((item)=> { %>
+                  <div class="border rounded p-3 mb-3">
+                    <div class="d-flex justify-content-between gap-2 flex-wrap">
+                      <div class="d-flex gap-3">
+                        <img class="item-img" src="<%= item.image || 'https://via.placeholder.com/56x56?text=P' %>"
+                          alt="<%= item.productName %>" />
+                        <div>
+                          <div class="fw-semibold">
+                            <%= item.productName %>
+                          </div>
+                          <div class="small">Qty: <%= item.quantity %>
+                          </div>
+                          <div class="small">Price: ₹<%= item.price %>
+                          </div>
+                          <div class="small">Total: ₹<%= item.itemTotal %>
+                          </div>
+                          <div class="small">Item Status: <span
+                              class="badge <%= badgeClass(item.itemStatus) %> status-badge">
+                              <%= pretty(item.itemStatus) %>
+                            </span></div>
+                            <% if (normalize(item.itemStatus) === 'cancelled' && item.cancelReason) { %>
+  <div class="small text-danger mt-1">
+    <strong>Cancel Reason:</strong> <%= item.cancelReason %>
+  </div>
+<% } %>
+                          <div class="small">Return Status:
+                            <span
+                              class="badge <%= badgeClass(item.returnStatus === 'approved' ? 'return_approved' : item.returnStatus === 'requested' ? 'return_requested' : item.returnStatus === 'returned' ? 'returned' : 'pending') %> status-badge">
+                              <%= pretty(item.returnStatus || 'none' ) %>
+                            </span>
+                          </div>
+                          <% if (normalize(item.returnStatus)==='requested' ) { %>
+                            <div class="small mt-1 text-warning"><strong>Return Request:</strong>
+                              <%= item.returnReason || 'Requested by user' %>
+                            </div>
+                            <% if (item.returnDescription) { %>
+                              <div class="small"><strong>Description:</strong>
+                                <%= item.returnDescription %>
+                              </div>
+                              <% } %>
+                                <% } %>
+                                  <% if (item.returnRejectionReason) { %>
+                                    <div class="small text-danger"><strong>Rejection Reason:</strong>
+                                      <%= item.returnRejectionReason %>
+                                    </div>
+                                    <% } %>
+                        </div>
+                      </div>
+                      <div class="d-flex gap-2 align-items-start">
+                        <% const itemStatus=normalize(item.itemStatus); %>
+
+                          <% if (!['cancelled','returned','delivered','return_requested','return_approved'].includes(itemStatus)) { %>
+                            <button class="btn btn-primary btn-sm"
+                              onclick="updateItemStatus('<%= order.orderId %>', '<%= item._id %>', '<%= itemStatus %>')">
+                              Update
+                            </button>
+                            <% } %>
+
+
+                              <% if (!['cancelled','returned','delivered','return_requested','return_approved'].includes(itemStatus)) { %>
+                                <button class="btn btn-danger btn-sm"
+                                  onclick="cancelItem('<%= order.orderId %>', '<%= item._id %>')">
+                                  Cancel
+                                </button>
+                                <% } %>
+                                  <% if (normalize(item.returnStatus)==='requested' ||
+                                    normalize(item.itemStatus)==='return_requested' ) { %>
+                                    <button class="btn btn-success btn-sm"
+                                      onclick="approveReturn('<%= order.orderId %>', '<%= item._id %>')">Approve
+                                      Return</button>
+                                    <button class="btn btn-warning btn-sm"
+                                      onclick="rejectReturn('<%= order.orderId %>', '<%= item._id %>')">Reject
+                                      Return</button>
+                                    <% } %>
+                                      <% if (normalize(item.returnStatus)==='approved' ||
+                                        normalize(item.itemStatus)==='return_approved' ) { %>
+                                        <button class="btn btn-dark btn-sm"
+                                          onclick="markReturned('<%= order.orderId %>', '<%= item._id %>')">Mark
+                                          Returned</button>
+                                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                  <% }) %>
+              </section>
+
+              <section class="card-clean p-3">
+                <h5>Order Summary</h5>
+                <div class="d-flex justify-content-between"><span>Subtotal</span><span>₹<%= order.pricing?.subtotal || 0
+                      %></span></div>
+                <div class="d-flex justify-content-between"><span>Shipping</span><span>₹<%=
+                      order.pricing?.shippingCharge || 0 %></span></div>
+                <div class="d-flex justify-content-between"><span>Discount</span><span>₹<%=
+                      order.pricing?.couponDiscount || 0 %></span></div>
+                <hr />
+                <div class="d-flex justify-content-between fw-bold"><span>Total</span><span>₹<%=
+                      order.pricing?.finalAmount || 0 %></span></div>
+              </section>
+            </main>
+
+            <%- include("../../views/partials/admin/footer") %>
+              <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+              <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+              <script>
+                async function updateOrderStatus(orderId, currentStatus) {
+                  const flow = ['pending', 'confirmed', 'shipped', 'out_for_delivery', 'delivered'];
+                  const currentIndex = flow.indexOf(currentStatus);
+                  const options = {};
+                  flow.slice(currentIndex + 1).forEach((s) => { options[s] = s.replace(/_/g, ' '); });
+                  if (!Object.keys(options).length) return Swal.fire('Info', 'No next status available', 'info');
+
+                  const result = await Swal.fire({
+                    title: 'Update order status',
+                    input: 'select',
+                    inputOptions: options,
+                    showCancelButton: true
+                  });
+                  if (!result.isConfirmed) return;
+
+                  const res = await fetch(`/admin/orders/${orderId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: result.value })
+                  });
+                  const data = await res.json();
+                  if (!res.ok || !data.success) return Swal.fire('Error', data.message || 'Failed', 'error');
+                  Swal.fire('Success', 'Order updated', 'success').then(() => location.reload());
+                }
+
+                async function cancelOrder(orderId) {
+                  const ask = await Swal.fire({
+                    title: 'Cancel order?',
+                    icon: 'warning',
+                    input: 'text',
+                    inputPlaceholder: 'Reason (optional)',
+                    showCancelButton: true
+                  });
+                  if (!ask.isConfirmed) return;
+                  const res = await fetch(`/admin/orders/${orderId}/cancel`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cancelReason: ask.value || '' })
+                  });
+                  const data = await res.json();
+                  if (!res.ok || !data.success) return Swal.fire('Error', data.message || 'Failed', 'error');
+                  Swal.fire('Success', 'Order cancelled', 'success').then(() => location.reload());
+                }
+
+                async function updateItemStatus(orderId, itemId, currentStatus) {
+                  const flow = ['pending', 'confirmed', 'shipped', 'out_for_delivery', 'delivered'];
+                  const currentIndex = flow.indexOf(currentStatus);
+                  const options = {};
+                  flow.slice(currentIndex + 1).forEach((s) => { options[s] = s.replace(/_/g, ' '); });
+                  if (!Object.keys(options).length) return Swal.fire('Info', 'No next status available', 'info');
+
+                  const result = await Swal.fire({
+                    title: 'Update item status',
+                    input: 'select',
+                    inputOptions: options,
+                    showCancelButton: true
+                  });
+                  if (!result.isConfirmed) return;
+
+                  const res = await fetch(`/admin/orders/${orderId}/items/${itemId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: result.value })
+                  });
+                  const data = await res.json();
+                  if (!res.ok || !data.success) return Swal.fire('Error', data.message || 'Failed', 'error');
+                  Swal.fire('Success', 'Item updated', 'success').then(() => location.reload());
+                }
+
+                async function cancelItem(orderId, itemId) {
+                  const ask = await Swal.fire({
+                    title: 'Cancel this item?',
+                    icon: 'warning',
+                    input: 'text',
+                    inputPlaceholder: 'Reason (optional)',
+                    showCancelButton: true
+                  });
+                  if (!ask.isConfirmed) return;
+
+                  const res = await fetch(`/admin/orders/${orderId}/items/${itemId}/cancel`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cancelReason: ask.value || '' })
+                  });
+                  const data = await res.json();
+                  if (!res.ok || !data.success) return Swal.fire('Error', data.message || 'Failed', 'error');
+                  Swal.fire('Success', 'Item cancelled', 'success').then(() => location.reload());
+                }
+
+                async function approveReturn(orderId, itemId) {
+                  const ask = await Swal.fire({
+                    title: 'Approve this return request?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Approve'
+                  });
+                  if (!ask.isConfirmed) return;
+
+                  const res = await fetch(`/admin/orders/${orderId}/items/${itemId}/approve-return`, { method: 'PATCH' });
+                  const data = await res.json();
+                  if (!res.ok || !data.success) return Swal.fire('Error', data.message || 'Failed', 'error');
+                  Swal.fire('Success', 'Return approved', 'success').then(() => location.reload());
+                }
+
+                async function rejectReturn(orderId, itemId) {
+                  const ask = await Swal.fire({
+                    title: 'Reject this return request?',
+                    icon: 'warning',
+                    input: 'text',
+                    inputPlaceholder: 'Enter rejection reason',
+                    showCancelButton: true
+                  });
+                  if (!ask.isConfirmed) return;
+
+                  const res = await fetch(`/admin/orders/${orderId}/items/${itemId}/reject-return`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rejectionReason: ask.value || '' })
+                  });
+                  const data = await res.json();
+                  if (!res.ok || !data.success) return Swal.fire('Error', data.message || 'Failed', 'error');
+                  Swal.fire('Success', 'Return rejected', 'success').then(() => location.reload());
+                }
+
+                async function markReturned(orderId, itemId) {
+                  const ask = await Swal.fire({
+                    title: 'Mark item as returned?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Mark Returned'
+                  });
+                  if (!ask.isConfirmed) return;
+
+                  const res = await fetch(`/admin/orders/${orderId}/items/${itemId}/mark-returned`, { method: 'PATCH' });
+                  const data = await res.json();
+                  if (!res.ok || !data.success) return Swal.fire('Error', data.message || 'Failed', 'error');
+                  Swal.fire('Success', 'Item marked as returned', 'success').then(() => location.reload());
+                }
+              </script>
+</body>
+
+</html>

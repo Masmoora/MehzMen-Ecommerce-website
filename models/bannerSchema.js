@@ -1,37 +1,39 @@
-const mongoose = require('mongoose')
-const {Schema} = mongoose
+import mongoose from 'mongoose';
 
-const bannerSchema = new Schema({
+const { Schema } = mongoose;
+
+const bannerSchema = new Schema(
+  {
     image: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
+      trim: true
     },
     title: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
+      trim: true
     },
     description: {
-        type: String,
-        required: true
+      type: String,
+      default: '',
+      trim: true
     },
-    link: {
-       type: String
-    },
-    startDate:{
-        type: Date,
-        required: true
+    startDate: {
+      type: Date,
+      required: true
     },
     endDate: {
-        type: Date,
-        required: true
+      type: Date,
+      required: true
     },
-    isActive: { 
-        type: Boolean, 
-        default: false 
+    link: {
+      type: String,
+      default: '',
+      trim: true
     }
-})
+  },
+  { timestamps: true }
+);
 
-
-const Banner = mongoose.model("Banner",bannerSchema)
-
-module.exports = Banner
+export default mongoose.model('Banner', bannerSchema);

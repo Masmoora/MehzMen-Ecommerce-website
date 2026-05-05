@@ -1,0 +1,114 @@
+
+import AllProductsService from '../../service/user/allProductService.js';
+import logger from '../../logger.js';
+import UserService from "../../service/user/userService.js";
+
+
+class AllProductsController {
+    // List all products page
+    loadAllProducts = async (req, res) => {
+        try {
+            const page = Math.max(parseInt(req.query.page) || 1, 1);
+            const limit = 9;
+            const search = (req.query.search || '').trim();
+            const category = req.query.category || '';
+            const brand = req.query.brand || '';
+            const minPrice = req.query.minPrice || '';
+            const maxPrice = req.query.maxPrice || '';
+            const sort = req.query.sort || '';
+            const color = req.query.color || '';
+
+            const { products, totalPages } = await AllProductsService.getAllProducts({
+                page,
+                limit,
+                search,
+                category,
+                brand,
+                minPrice,
+                maxPrice,
+                sort,
+                color
+            });
+
+            const [categories, brands, colors] = await Promise.all([
+                AllProductsService.getCategories(),
+                AllProductsService.getBrands(),
+                AllProductsService.getColors()
+            ]);
+            console.log(req.session.user)
+
+
+            const userId = req.session?.user;
+            if (!userId) return res.redirect('/login');
+
+            const user = await UserService.getUserById(userId);
+            if (!user) return res.redirect('/pageNotFound');
+            let wishlistProductIds = [];
+
+            if (user) {
+                wishlistProductIds = await AllProductsService.getWishlistProductIds(user._id);
+            }
+
+
+
+            res.render('allProducts', {
+                user,
+                products,
+                categories,
+                brands,
+                colors,
+                page,
+                totalPages,
+                search,
+                selectedCategory: category,
+                selectedBrand: brand,
+                selectedColor: color,
+                minPrice,
+                maxPrice,
+                sort,
+                wishlistProductIds
+            });
+        } catch (error) {
+            logger.error('Error loading all products page:', error);
+            res.status(500).render('pageerror');
+        }
+    };
+    // Product details page
+    loadProductDetails = async (req, res) => {
+        try {
+            const productId = req.params.id;
+            const data = await AllProductsService.getProductDetails(productId);
+
+            if (!data || !data.product) {
+                return res.redirect('/allProducts');
+            }
+
+            const { product, variants } = data;
+
+            // If product is blocked or no active variants, redirect
+            if (product.isBlocked || !variants.length) {
+                return res.redirect('/allProducts');
+            }
+
+            const relatedProducts = await AllProductsService.getRelatedProducts(
+                product._id,
+                product.category._id
+            );
+
+
+            const user = req.session?.user || null;
+
+            res.render('productDetail', {
+                user,
+                product,
+                variants,
+                relatedProducts
+            });
+        } catch (error) {
+            logger.error('Error loading product details:', error);
+            res.redirect('/allProducts');
+        }
+    };
+}
+
+export default new AllProductsController();

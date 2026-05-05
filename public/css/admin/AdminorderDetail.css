@@ -1,0 +1,39 @@
+    body {
+        background: #f5f7fb;
+        padding-top: 70px;
+        padding-left: 260px;
+        min-height: 100vh;
+    }
+
+    .main-content {
+        padding: 2rem;
+    }
+
+    .card-clean {
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    .item-img {
+        width: 56px;
+        height: 56px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .status-badge {
+        font-size: 0.75rem;
+        border-radius: 8px;
+        padding: 4px 8px;
+    }
+
+    @media (max-width: 768px) {
+        body {
+            padding-left: 0;
+        }
+
+        .main-content {
+            padding: 1rem;
+        }
+    }

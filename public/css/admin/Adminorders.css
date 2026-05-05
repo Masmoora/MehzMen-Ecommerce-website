@@ -1,0 +1,68 @@
+    body {
+        background: #f5f7fb;
+        padding-top: 70px;
+        padding-left: 260px;
+        min-height: 100vh;
+    }
+
+    .main-content {
+        padding: 2rem;
+    }
+    .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 2rem;
+}
+
+    .table thead th {
+        background: #111827;
+        color: #fff;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table tbody td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .products-list {
+        max-height: 140px;
+        overflow-y: auto;
+        text-align: left;
+    }
+
+    .product-row {
+        border-bottom: 1px dashed #ddd;
+        padding: 6px 0;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .product-row:last-child {
+        border-bottom: none;
+    }
+
+    .status-badge {
+        font-size: 0.75rem;
+        border-radius: 8px;
+        padding: 4px 8px;
+    }
+
+    .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    @media (max-width: 768px) {
+        body {
+            padding-left: 0;
+        }
+
+        .main-content {
+            padding: 1rem;
+        }
+    }

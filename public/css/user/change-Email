@@ -1,0 +1,16 @@
+    body {
+        background: #f6f7fb;
+        padding-top: 60px;
+    }
+
+    .card-soft {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        border: 1px solid #eee;
+    }
+
+    .error-text {
+        color: #dc3545;
+        font-size: 0.875rem;
+    }

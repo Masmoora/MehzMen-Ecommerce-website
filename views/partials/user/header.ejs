@@ -17,94 +17,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Nanum+Myeongjo&display=swap"
         rel="stylesheet">
-
-    <style>
-        /* Navbar */
-        .custom-navbar {
-            padding: 12px 40px;
-            background: #ffffff;
-            border-bottom: 1px solid #ececec;
-        }
-
-        .logo-text {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #000;
-            font-family: "Nanum Myeongjo", serif;
-            letter-spacing: 1.2px;
-        }
-
-        /* Links */
-        .navbar-nav .nav-link {
-            font-family: "Inter", sans-serif;
-            color: #444;
-            margin: 0 10px;
-            font-size: 0.95rem;
-            transition: 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: #b55a35;
-        }
-
-        /* Buttons */
-        .btn-login {
-            border: 1px solid #b55a35;
-            color: #b55a35;
-            padding: 6px 16px;
-            border-radius: 6px;
-            transition: 0.3s ease;
-        }
-
-        .btn-login:hover {
-            background: #b55a35;
-            color: white;
-        }
-
-        .signup-btn {
-            background-color: #b55a35;
-            color: #fff;
-            border-radius: 6px;
-            padding: 7px 18px;
-            transition: 0.3s ease;
-        }
-
-        .signup-btn:hover {
-            background-color: #944828;
-            color: #fff;
-        }
-
-        /* Toggler Icon */
-        .navbar-toggler {
-            border: none;
-        }
-
-        .navbar-toggler-icon {
-            filter: invert(40%) sepia(30%) hue-rotate(340deg);
-        }
-
-        @media (max-width: 992px) {
-            .custom-navbar {
-                padding: 12px 20px;
-            }
-
-            .logo-text {
-                font-size: 1.8rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/css/user/userHeader.css">
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-lg custom-navbar">
+    <nav class="navbar navbar-expand-lg custom-navbar fixed-top">
         <div class="container-fluid">
 
             <!-- Logo -->
             <a class="navbar-brand logo-text" href="/">MehzMen</a>
 
             <!-- Toggler -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -114,70 +40,80 @@
                 <ul class="navbar-nav align-items-lg-center">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="/home">Home</a>
+                        <a class="nav-link" href="/">Home</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="/shop">All Products</a>
+                        <a class="nav-link" href="/allProducts">All Products</a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Brands</a>
-                    </li>
 
-                    <% if (locals.user) { %>
 
-                        <!-- Wishlist -->
-                        <div class="d-flex align-items-center gap-3 ms-3">
+                    <% if (user) { %>
 
+                        <li class="nav-item d-flex align-items-center gap-3 ms-3">
                             <!-- Wishlist -->
-                            <a class="nav-link p-0" href="/wishlist">
+                            <a class="nav-link p-0 position-relative" href="/wishlist">
                                 <i class="bi bi-heart fs-5"></i>
+                                <% if ((wishlistItemCount || 0)> 0) { %>
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger icon-badge">
+                                        <%= wishlistItemCount %>
+                                    </span>
+                                    <% } %>
                             </a>
 
                             <!-- Cart -->
-                            <a class="nav-link p-0" href="/getCart">
+                            <a class="nav-link p-0 position-relative" href="/cart">
                                 <i class="bi bi-cart fs-5"></i>
+                                <% if ((cartItemCount || 0)> 0) { %>
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger icon-badge">
+                                        <%= cartItemCount %>
+                                    </span>
+                                    <% } %>
                             </a>
-
                             <!-- User Dropdown -->
                             <div class="dropdown">
                                 <a class="nav-link dropdown-toggle p-0 d-flex align-items-center" href="#"
-                                    id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                    id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-person-circle fs-5 me-1"></i>
-                                    <%= locals.user.name || 'Account' %>
+                                    <%= user.name || 'Account' %>
                                 </a>
 
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" href="/profile">Account</a></li>
-                                    <li><a class="dropdown-item" href="/orders">Orders</a></li>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="/userProfile"><i
+                                                class="bi bi-person me-2"></i>Account</a></li>
+                                    <li><a class="dropdown-item" href="/orders"><i class="bi bi-bag me-2"></i>Orders</a>
+                                    </li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                                    <li><a class="dropdown-item" href="/logout"><i
+                                                class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                                 </ul>
                             </div>
 
-                        </div>
-
-
-                        <% } else { %>
-
-                            <!-- Login -->
-                            <li class="nav-item ms-3">
-                                <a href="/login" class="btn btn-login">Login</a>
-                            </li>
-
-                            <!-- Signup -->
-                            <li class="nav-item ms-2">
-                                <a href="/signup" class="btn signup-btn">Sign Up</a>
-                            </li>
-
-                            <% } %>
-
-                </ul>
-
             </div>
+
+
+            <% } else { %>
+
+                <!-- Login -->
+                <li class="nav-item ms-3">
+                    <a href="/login" class="btn btn-login">Login</a>
+                </li>
+
+                <!-- Signup -->
+                <li class="nav-item ms-2">
+                    <a href="/signup" class="btn signup-btn">Sign Up</a>
+                </li>
+
+                <% } %>
+
+                    </ul>
+
+        </div>
         </div>
     </nav>
 

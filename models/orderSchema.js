@@ -1,101 +1,290 @@
-const mongoose = require('mongoose')
-const {Schema} = mongoose
-const {v4:uuidv4} = require('uuid')
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+
+const { Schema } = mongoose;
+
+/* ================================
+   ORDER ITEM SCHEMA (Snapshot Based)
+================================ */
+
+const orderItemSchema = new Schema({
+  productId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true
+  },
+
+  variantId: {
+    type: Schema.Types.ObjectId,
+    ref: 'ProductVariant',
+    required: true
+  },
+
+  // Snapshot Fields (VERY IMPORTANT)
+  productName: {
+    type: String,
+    required: true
+  },
+
+  brand: {
+    type: String,
+    default: 'N/A'
+  },
+
+  image: {
+    type: String,
+    default: ''
+  },
+
+  color: {
+    type: String,
+    default: '-'
+  },
+
+  size: {
+    type: String,
+    default: '-'
+  },
+
+  quantity: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+
+  price: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+   /** Per-unit list/base price before offer (for reporting). */
+  originalPrice: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+
+  /** Rupees saved on this line from product/category offer (not coupon). */
+  offerLineTotal: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+
+  itemTotal: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+
+  itemStatus: {
+    type: String,
+    enum: [
+  'processing',
+  'confirmed',
+  'shipped',
+  'out_for_delivery',
+  'delivered',
+  'cancelled',
+  'return_requested',
+  'return_approved',
+  'returned'
+],
+default: 'processing'
+  },
+
+  cancelReason: {
+    type: String,
+    default: ''
+  },
+
+  returnReason: {
+    type: String,
+    default: ''
+  },
+
+  returnDescription: {
+    type: String,
+    default: ''
+  },
+
+  returnStatus: {
+    type: String,
+    enum: ['none', 'requested', 'cancelled_by_user', 'approved', 'rejected', 'returned'],
+    default: 'none'
+  },
+
+  returnImages: {
+    type: [String],
+    default: [],
+    validate: {
+      validator: (arr) => arr.length <= 3,
+      message: 'You can upload up to 3 return images only'
+    }
+  },
+
+  returnRejectionReason: {
+    type: String,
+    default: ''
+  }
+
+}, { _id: true });
+
+/* ================================
+   SHIPPING ADDRESS (Snapshot)
+================================ */
+
+const shippingAddressSchema = new Schema({
+  name: { type: String, required: true },
+  phone: { type: String, required: true },
+  houseNo: { type: String, required: true },
+  city: { type: String, required: true },
+  landMark: { type: String, required: true },
+  state: { type: String, required: true },
+  country: { type: String, required: true },
+  pincode: { type: Number, required: true }
+}, { _id: false });
+
+/* ================================
+   PRICING BREAKDOWN
+================================ */
+
+const pricingSchema = new Schema({
+  totalItems: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+
+  subtotal: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+
+  shippingCharge: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+
+  tax: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+
+  couponCode: {
+    type: String,
+    default: ''
+  },
+
+  couponDiscount: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  /** Total savings from product/category offers (sum of line offerLineTotal). Not coupon. */
+  offerDiscount: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+
+  finalAmount: {
+    type: Number,
+    required: true,
+    min: 0
+  }
+
+}, { _id: false });
+
+/* ================================
+   MAIN ORDER SCHEMA
+================================ */
 
 const orderSchema = new Schema({
-    orderId: {
-        type:String,
-        default: ()=>uuidv4(),
-        unique: true
-    },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
-    },
-    orderItems: [{
-        product: {
-            type: Schema.Types.ObjectId,
-            ref: "Product",
-            required: true
-        },
-        variant: {
-           type: Schema.Types.ObjectId,
-           ref: 'ProductVariant',
-           required: true
-        },
-        quantity: {
-            type:Number,
-            required: true
-        },
-        price: {
-            type: Number,
-            default: 0
-        },
-        itemStatus: {
-            type: String,
-            default: 'Confirmed'
-        },
-        itemCancelReason: {
-            type: String,
-            default: ''
-        }
 
-    }],
-    totalPrice: {
-        type: Number,
-        required: true
-    },
-    discount: {
-        type: Number,
-        required: true
-    },
-    tax: {
-        type: Number,
-        required: true
-    },
-    shippingCharge: {
-        type: Number,
-        required: true
-    },
-    finalAmount: {
-        type:Number,
-        required: true
-    },
-    address: {
-        type: Schema.Types.Mixed,
-        //ref: "Address",
-        required: true
-    },
-    invoiceDate: {
-        type: Date
-    },
-    status: {
-        type: String,
-        required: true,
-        enum: ["Pending","Processing","Shipped","Delivered","Failed","Cancelled","Return Request","Returned","Rejected","Out for delivery", "Partially Cancelled", "Partially Returned", "Partially Delivered"],
-    },
-    cancelReason: {
-        type: String
-    },
-    payment: {
+  orderId: {
     type: String,
-    enum: ["cod", "wallet", "razorpay"],
-    default: "cod",
-    },
-    createdAt: {
-        type: Date,
-        default:Date.now,
-        required: true
-    },
-    appliedCoupon: {
-        type: Schema.Types.ObjectId,
-        ref: 'Coupon',
-        default: null
-    }
-})
+    default: () => uuidv4(),
+    unique: true,
+    index: true
+  },
+
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+
+  items: {
+    type: [orderItemSchema],
+    required: true
+  },
+
+  shippingAddress: {
+    type: shippingAddressSchema,
+    required: true
+  },
+
+  pricing: {
+    type: pricingSchema,
+    required: true
+  },
+
+  paymentMethod: {
+    type: String,
+    enum: ['cod', 'wallet', 'razorpay'],
+    default: 'cod'
+  },
+
+  paymentStatus: {
+    type: String,
+    enum: ['Pending', 'Completed', 'Failed', 'Refunded'],
+    default: 'Pending'
+  },
+
+  orderStatus: {
+    type: String,
+    enum: [
+  'processing',
+  'confirmed',
+  'shipped',
+  'out_for_delivery',
+  'delivered',
+  'partially_delivered',
+  'cancelled',
+  'partially_cancelled',
+  'return_requested',
+  'returned',
+  'partially_returned'
+],
+default: 'processing'
+  },
+
+  invoiceDate: {
+    type: Date
+  },
+
+  cancelReason: {
+    type: String,
+    default: ''
+  },
+
+  returnReason: {
+    type: String,
+    default: ''
+  }
+
+}, { timestamps: true });
+
+/* ================================
+   MODEL EXPORT
+================================ */
+
+const Order = mongoose.model('Order', orderSchema);
+
+export default Order;
 
 
-const Order = mongoose.model("Order",orderSchema)
-
-module.exports = Order

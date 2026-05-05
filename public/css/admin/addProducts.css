@@ -1,0 +1,63 @@
+  /* addProducts Styles */
+ body {
+     background-color: #f5f7fa;
+     padding-top: 70px;
+     padding-left: 260px;
+ }
+
+ .variant-box {
+     border: 1px dashed #ccc;
+     padding: 15px;
+     margin-bottom: 15px;
+     border-radius: 8px;
+     background: #fff;
+     position: relative;
+ }
+
+ .preview-wrapper {
+     position: relative;
+     display: inline-block;
+     margin-right: 6px;
+     margin-bottom: 6px;
+ }
+
+ .preview-img {
+     width: 80px;
+     height: 80px;
+     object-fit: cover;
+     border-radius: 6px;
+ }
+
+ .delete-img {
+     position: absolute;
+     top: -6px;
+     right: -6px;
+     background: #dc3545;
+     color: #fff;
+     border: none;
+     border-radius: 50%;
+     width: 20px;
+     height: 20px;
+     font-size: 12px;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     line-height: 1;
+ }
+
+ .delete-variant-btn {
+     position: absolute;
+     top: 10px;
+     right: 10px;
+ }
+
+ #cropModal .modal-body {
+     max-height: 70vh;
+     overflow: hidden;
+ }
+
+ #cropImage {
+     max-height: 70vh;
+     width: 100%;
+ }

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Management - Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/admin/Adminorders.css">
+</head>
+
+<body>
+  <%- include("../../views/partials/admin/header") %>
+    <%- include("../../views/partials/admin/sidebar") %>
+
+      <% const normalize=(value)=> String(value || '').trim().toLowerCase().replace(/\s+/g, '_'); %>
+        <% const pretty=(value)=> normalize(value).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); %>
+          <% const badgeClass=(value)=> {
+            const s = normalize(value);
+            if (s === 'pending') return 'bg-warning text-dark';
+            if (s === 'confirmed') return 'bg-primary';
+            if (s === 'shipped' || s === 'out_for_delivery') return 'bg-info text-dark';
+            if (s === 'delivered') return 'bg-success';
+            if (s === 'cancelled') return 'bg-danger';
+            if (s === 'return_requested') return 'bg-warning text-dark';
+            if (s === 'return_approved') return 'bg-primary';
+            if (s === 'returned') return 'bg-success';
+            return 'bg-secondary';
+            }; %>
+
+            <main class="main-content">
+              
+              <h1 class="page-title">Order Management</h1>
+
+              <form class="row g-2 mb-3" method="GET" action="/admin/orders">
+                <div class="col-md-5">
+                  <input class="form-control" name="search" placeholder="Search by Order ID, Customer Name..."
+                    value="<%= filters.search || '' %>" />
+                </div>
+                <div class="col-md-2">
+                  <select class="form-select" name="status">
+                    <option value="">All Status</option>
+                    <option value="pending" <%=filters.status==='pending' ? 'selected' : '' %>>Pending</option>
+                    <option value="confirmed" <%=filters.status==='confirmed' ? 'selected' : '' %>>Confirmed</option>
+                    <option value="shipped" <%=filters.status==='shipped' ? 'selected' : '' %>>Shipped</option>
+                    <option value="out_for_delivery" <%=filters.status==='out_for_delivery' ? 'selected' : '' %>>Out for
+                      Delivery</option>
+                    <option value="delivered" <%=filters.status==='delivered' ? 'selected' : '' %>>Delivered</option>
+                    <option value="cancelled" <%=filters.status==='cancelled' ? 'selected' : '' %>>Cancelled</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <select class="form-select" name="sort">
+                    <option value="date_desc" <%=filters.sort==='date_desc' ? 'selected' : '' %>>Latest</option>
+                    <option value="date_asc" <%=filters.sort==='date_asc' ? 'selected' : '' %>>Oldest</option>
+                    <option value="amount_desc" <%=filters.sort==='amount_desc' ? 'selected' : '' %>>Amount High
+                    </option>
+                    <option value="amount_asc" <%=filters.sort==='amount_asc' ? 'selected' : '' %>>Amount Low</option>
+                  </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                  <button class="btn btn-primary w-100">Search</button>
+                  <a href="/admin/orders" class="btn btn-dark w-100">Clear</a>
+                </div>
+              </form>
+
+              <div class="table-responsive bg-white border rounded">
+                <table class="table table-bordered table-striped mb-0">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Order Date</th>
+                      <th>Customer Name</th>
+                      <th>Products</th>
+                      <th>Entire Order Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (!orders || !orders.length) { %>
+                      <tr>
+                        <td colspan="6" class="py-4">No orders found</td>
+                      </tr>
+                      <% } %>
+                        <% (orders || []).forEach((order)=> { %>
+                          <tr>
+                            <td>
+                              <%= order.orderId %>
+                            </td>
+                            <td>
+                              <%= new Date(order.createdAt).toLocaleDateString('en-CA') %>
+                            </td>
+                            <td>
+                              <%= order.userId?.name || 'N/A' %>
+                            </td>
+                            <td>
+                              <div class="products-list">
+                                <% (order.items || []).forEach((item)=> { %>
+                                  <div class="product-row">
+                                    <span>
+                                      <%= item.productName %> (x<%= item.quantity %>)
+                                    </span>
+                                    <span class="badge <%= badgeClass(item.itemStatus) %> status-badge">
+                                      <%= pretty(item.itemStatus) %>
+                                    </span>
+                                  </div>
+                                  <% }) %>
+                              </div>
+                            </td>
+                            <td><span class="badge <%= badgeClass(order.orderStatus) %> status-badge">
+                                <%= pretty(order.orderStatus) %>
+                              </span></td>
+                            <td>
+                              <div class="actions">
+                                <a class="btn btn-sm btn-info text-white"
+                                  href="/admin/orders/<%= order.orderId %>">View</a>
+                                <% const orderStatus=normalize(order.orderStatus); %>
+
+                                  <% if
+                                    (!['cancelled','returned','return_requested','return_approved','delivered'].includes(orderStatus))
+                                    { %>
+                                    <button class="btn btn-sm btn-primary"
+                                      onclick="quickUpdateOrder('<%= order.orderId %>', '<%= orderStatus %>')">
+                                      Update
+                                    </button>
+                                    <% } %>
+                                      <% if (!['cancelled','returned','delivered','return_requested','return_approved'].includes(orderStatus)) { %>
+                                        <button class="btn btn-danger btn-sm"
+                                          onclick="cancelOrder('<%= order.orderId %>')">
+                                          Cancel Order
+                                        </button>
+                                        <% } %>
+                              </div>
+                            </td>
+                          </tr>
+                          <% }) %>
+                  </tbody>
+                </table>
+              </div>
+
+              <nav class="mt-3">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item <%= pagination.hasPrev ? '' : 'disabled' %>">
+                    <a class="page-link"
+                      href="/admin/orders?page=<%= pagination.page - 1 %>&search=<%= filters.search || '' %>&status=<%= filters.status || '' %>&sort=<%= filters.sort || 'date_desc' %>">Previous</a>
+                  </li>
+                  <li class="page-item disabled">
+                    <span class="page-link">Page <%= pagination.page %> of <%= pagination.totalPages %></span>
+                  </li>
+                  <li class="page-item <%= pagination.hasNext ? '' : 'disabled' %>">
+                    <a class="page-link"
+                      href="/admin/orders?page=<%= pagination.page + 1 %>&search=<%= filters.search || '' %>&status=<%= filters.status || '' %>&sort=<%= filters.sort || 'date_desc' %>">Next</a>
+                  </li>
+                </ul>
+              </nav>
+            </main>
+
+            <%- include("../../views/partials/admin/footer") %>
+              <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+              <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+              <script>
+                async function quickUpdateOrder(orderId, currentStatus) {
+                  const flow = ['pending', 'confirmed', 'shipped', 'out_for_delivery', 'delivered'];
+                  const currentIndex = flow.indexOf(currentStatus);
+                  const options = {};
+                  flow.slice(currentIndex + 1).forEach((s) => { options[s] = s.replace(/_/g, ' '); });
+                  if (!Object.keys(options).length) return Swal.fire('Info', 'No next status available', 'info');
+
+                  const result = await Swal.fire({
+                    title: 'Update order status',
+                    input: 'select',
+                    inputOptions: options,
+                    showCancelButton: true
+                  });
+                  if (!result.isConfirmed) return;
+
+                  const res = await fetch(`/admin/orders/${orderId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: result.value })
+                  });
+                  const data = await res.json();
+                  if (!res.ok || !data.success) return Swal.fire('Error', data.message || 'Failed', 'error');
+                  Swal.fire('Success', 'Order updated', 'success').then(() => location.reload());
+                }
+
+                async function cancelOrder(orderId) {
+                  const ask = await Swal.fire({
+                    title: 'Cancel order?',
+                    icon: 'warning',
+                    input: 'text',
+                    inputPlaceholder: 'Reason (optional)',
+                    showCancelButton: true
+                  });
+                  if (!ask.isConfirmed) return;
+
+                  const res = await fetch(`/admin/orders/${orderId}/cancel`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cancelReason: ask.value || '' })
+                  });
+                  const data = await res.json();
+                  if (!res.ok || !data.success) return Swal.fire('Error', data.message || 'Failed', 'error');
+                  Swal.fire('Success', 'Order cancelled', 'success').then(() => location.reload());
+                }
+              </script>
+</body>
+
+</html>

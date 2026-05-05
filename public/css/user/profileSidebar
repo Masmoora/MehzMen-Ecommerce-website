@@ -1,0 +1,25 @@
+ .profile-sidebar .list-group-item {
+    border: 0;
+    color: #1e293b;
+    transition: all 0.2s ease;
+  }
+
+  .profile-sidebar .list-group-item:hover {
+    background: #eef2ff;
+    color: #1e3a8a;
+  }
+
+  .profile-sidebar .list-group-item.active {
+    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+    color: #f8fafc;
+    border-color: transparent;
+  }
+
+  .profile-sidebar .list-group-item.active i {
+    color: #bfdbfe;
+  }
+
+  .profile-sidebar .list-group-item.text-danger:hover {
+    background: #fef2f2;
+    color: #dc2626;
+  }

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Invoice <%= order.orderId %></title>
+
+<style>
+
+body{
+font-family: Arial, Helvetica, sans-serif;
+font-size:12px;
+color:#111;
+margin:0;
+padding:25px;
+}
+
+.invoice-box{
+max-width:900px;
+margin:auto;
+border:1px solid #ddd;
+padding:25px;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.logo{
+font-size:26px;
+font-weight:bold;
+}
+
+.invoice-title{
+font-size:22px;
+font-weight:bold;
+}
+
+.section{
+margin-top:20px;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+gap:20px;
+}
+
+.box{
+border:1px solid #ddd;
+padding:10px;
+flex:1;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th{
+background:#f2f2f2;
+border:1px solid #ddd;
+padding:8px;
+text-align:left;
+font-size:12px;
+}
+
+td{
+border:1px solid #ddd;
+padding:8px;
+font-size:12px;
+}
+
+.total-box{
+width:280px;
+margin-left:auto;
+margin-top:20px;
+}
+
+.total-row{
+display:flex;
+justify-content:space-between;
+padding:5px 0;
+}
+
+.grand-total{
+font-weight:bold;
+font-size:14px;
+border-top:2px solid #000;
+padding-top:6px;
+}
+
+.footer{
+margin-top:30px;
+text-align:center;
+font-size:11px;
+color:#555;
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="invoice-box">
+
+<!-- HEADER -->
+<div class="header">
+
+<div class="logo">MehzMen</div>
+
+<div>
+<div class="invoice-title">TAX INVOICE</div>
+<div><b>Invoice ID:</b> <%= order.orderId %></div>
+<div><b>Order Date:</b> <%= new Date(order.createdAt).toLocaleDateString() %></div>
+<div><b>Invoice Date:</b> <%= new Date(order.invoiceDate).toLocaleDateString() %></div>
+</div>
+
+</div>
+
+
+<!-- ORDER DETAILS -->
+
+<div class="row section">
+
+<div class="box">
+
+<b>Payment Details</b><br><br>
+
+Payment Method: <%= order.paymentMethod.toUpperCase() %><br>
+Payment Status: <%= order.paymentStatus %><br>
+Order Status: <%= order.orderStatus %>
+
+</div>
+
+
+<div class="box">
+
+<b>Shipping Address</b><br><br>
+
+<%= order.shippingAddress.name %><br>
+<%= order.shippingAddress.phone %><br>
+
+<%= order.shippingAddress.houseNo %>,
+<%= order.shippingAddress.landMark %><br>
+
+<%= order.shippingAddress.city %>,
+<%= order.shippingAddress.state %><br>
+
+<%= order.shippingAddress.pincode %>,
+<%= order.shippingAddress.country %>
+
+</div>
+
+</div>
+
+
+<!-- ITEMS TABLE -->
+
+<div class="section">
+
+<h3>Order Items</h3>
+
+<table>
+
+<thead>
+<tr>
+<th>#</th>
+<th>Product</th>
+<th>Variant</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Total</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody>
+
+<% order.items.forEach((item,index)=>{ %>
+
+<tr>
+
+<td><%= index+1 %></td>
+
+<td>
+<%= item.productName %><br>
+<small><%= item.brand %></small>
+</td>
+
+<td>
+<%= item.color || '-' %> / <%= item.size || '-' %>
+</td>
+
+<td><%= item.quantity %></td>
+
+<td>₹<%= item.price %></td>
+
+<td>₹<%= item.itemTotal %></td>
+
+<td><%= item.itemStatus %></td>
+
+</tr>
+
+<% }) %>
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<!-- TOTALS -->
+
+<div class="total-box">
+
+<div class="total-row">
+<span>Subtotal</span>
+<span>₹<%= order.pricing.subtotal %></span>
+</div>
+
+<div class="total-row">
+<span>Shipping</span>
+<span>₹<%= order.pricing.shippingCharge %></span>
+</div>
+
+<div class="total-row">
+<span>Discount</span>
+<span>- ₹<%= order.pricing.couponDiscount || 0 %></span>
+</div>
+
+<div class="total-row grand-total">
+<span>Total</span>
+<span>₹<%= order.pricing.finalAmount %></span>
+</div>
+
+</div>
+
+
+<div class="footer">
+Thank you for shopping with MehzMen
+</div>
+
+
+</div>
+
+</body>
+</html>

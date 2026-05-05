@@ -1,45 +1,53 @@
-const mongoose = require('mongoose')
-const {Schema} = mongoose
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
 
 const productVariantSchema = new Schema({
-    productId: {
-        type: Schema.Types.ObjectId,
-        ref: "Product",
-        required: true
-    },
-    sku: {
-        type: String,
-        required: true,
-        trim:true
-    },
-    size: {
-        type: String,
-        required: true
-    },
-    stockQuantity: {
-        type: Number,
-        required: true,
-        min: 0,
-        default: 0
-    },
-    productOffer:{
-        type: Number,
-        default: 0
-    },
-    appliedOffer: {
-        type: {
-            offerType: String, //"product" | "subcategory" | "category"
-            offerValue: Number
-        },
-        default: null
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
-})
+  productId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true
+  },
+  color: {
+    type: String,
+    required: true
+  },
+  sku: {
+    type: String,
+    required: true,
+    trim: true
+  },
+    price:{
+    type:Number,
+    required:true
+  },
+  images: {
+    type: [String],
+    validate: [arr => arr.length >= 1, 'Each variant needs at least 1 images']
+  },
+  size: {
+    type: String,
+    required: true
+  },
+  stock: {
+    type: Number,
+    required: true,
+    min: 0,
+    default: 0
+  },
 
-productVariantSchema.index({ productId: 1 })
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  }
+},
+  { timestamps: true }
+);
 
-const ProductVariant = mongoose.model("ProductVariant",productVariantSchema)
-module.exports = ProductVariant
+productVariantSchema.index({ productId: 1 });
+
+const ProductVariant = mongoose.model('ProductVariant', productVariantSchema);
+export default ProductVariant;

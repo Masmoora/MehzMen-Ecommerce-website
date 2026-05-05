@@ -1,0 +1,40 @@
+body {
+    background: #f6f7fb;
+    padding-top: 60px;
+}
+
+.card-soft {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eee;
+}
+
+.otp-input {
+    height: 48px;
+    border-radius: 10px;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.otp-btn {
+    background: #167a3f;
+    border: none;
+    height: 48px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.otp-btn:hover {
+    background: #136b36;
+}
+
+.helper-text {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.error-text {
+    color: #dc3545;
+    font-size: 0.875rem;
+}

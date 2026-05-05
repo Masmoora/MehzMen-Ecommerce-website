@@ -1,0 +1,61 @@
+body {
+  background: #f6f7fb;
+  padding-top: 52px;
+}
+
+.card-soft {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+.wallet-balance-card {
+  background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+  border-radius: 16px;
+  color: #fff;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.wallet-balance-label {
+  font-size: .95rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .9;
+}
+
+.wallet-balance-value {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-top: .25rem;
+}
+
+.wallet-add-btn {
+  min-width: 160px;
+}
+
+.tx-card {
+  border-left: 4px solid transparent;
+  border-radius: 10px;
+  padding: .75rem 1rem;
+  margin-bottom: .5rem;
+}
+
+.tx-credit {
+  border-color: #16a34a;
+  background: #ecfdf3;
+}
+
+.tx-debit {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+.tx-refund {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.tx-amount {
+  font-weight: 600;
+}

@@ -1,0 +1,100 @@
+    /* product Details Page Styles */
+    body {
+        background: #f6f7fb;
+        padding-top: 60px;
+    }
+
+    .zoom-container {
+        position: relative;
+    }
+
+    .gallery-main {
+        width: 100%;
+        height: 420px;
+        object-fit: cover;
+        border-radius: 12px;
+        transition: transform 0.3s ease;
+        cursor: zoom-in;
+    }
+
+    .gallery-main:hover {
+        transform: scale(1.03);
+    }
+
+    .zoom-lens {
+        position: absolute;
+        border: 2px solid #111;
+        width: 120px;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.3);
+        display: none;
+        cursor: crosshair;
+    }
+
+    .zoom-result {
+        width: 100%;
+        height: 420px;
+        border-radius: 12px;
+        border: 1px solid #eee;
+        background-repeat: no-repeat;
+        background-size: 200% 200%;
+        display: none;
+        transition: opacity 0.2s ease;
+        opacity: 0;
+    }
+
+    .zoom-result.active {
+        display: block;
+        opacity: 1;
+    }
+
+    .zoom-icon {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        cursor: zoom-in;
+    }
+
+    .thumb {
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid transparent;
+        cursor: pointer;
+    }
+
+    .thumb.active {
+        border-color: #111;
+    }
+
+    .variant-btn {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 8px 12px;
+        background: #fff;
+        cursor: pointer;
+    }
+
+    .variant-btn.active {
+        background: #111;
+        color: #fff;
+        border-color: #111;
+    }
+
+    .price-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .badge-availability {
+        font-size: 0.9rem;
+    }

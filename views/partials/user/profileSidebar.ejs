@@ -1,0 +1,35 @@
+<%
+  const profileImage = (user && (user.profileImage || user.avatar)) || 'https://via.placeholder.com/120';
+  const displayName = (user && user.name) ? user.name : 'User';
+%>
+<div class="card border-0 shadow-sm profile-sidebar">
+  <div class="card-body text-center">
+    
+    <h6 class="mb-0"><%= displayName %></h6>
+  </div>
+  <div class="list-group list-group-flush">
+    <a href="/userProfile" class="list-group-item list-group-item-action <%= activeItem === 'account' ? 'active' : '' %>">
+      <i class="bi bi-person-circle me-2"></i>My Account
+    </a>
+    <a href="/address" class="list-group-item list-group-item-action <%= activeItem === 'address' ? 'active' : '' %>">
+      <i class="bi bi-geo-alt me-2"></i>Address
+    </a>
+    <a href="/orders" class="list-group-item list-group-item-action <%= activeItem === 'orders' ? 'active' : '' %>">
+      <i class="bi bi-bag-check me-2"></i>Orders
+    </a>
+    <a href="/wishlist" class="list-group-item list-group-item-action <%= activeItem === 'wishlist' ? 'active' : '' %>">
+      <i class="bi bi-heart me-2"></i>Wishlist
+    </a>
+    <a href="/profile/coupons" class="list-group-item list-group-item-action <%= activeItem === 'coupons' ? 'active' : '' %>">
+      <i class="bi bi-ticket-perforated me-2"></i>Coupons
+    </a>
+    <a href="/wallet" class="list-group-item list-group-item-action <%= activeItem === 'wallet' ? 'active' : '' %>">
+      <i class="bi bi-wallet2 me-2"></i>Wallet
+    </a>
+    <a href="/logout" class="list-group-item list-group-item-action text-danger">
+      <i class="bi bi-box-arrow-right me-2"></i>Logout
+    </a>
+  </div>
+</div>
+<link rel="stylesheet" href="/css/user/profileSidebar.css">
+

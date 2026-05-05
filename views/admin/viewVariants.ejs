@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>View Variants - <%= product.name %>
+  </title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <!-- CropperJS -->
+  <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin/viewVariants.css">
+  <!-- SweetAlert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body data-variants='<%- JSON.stringify(
+  variants && Array.isArray(variants) 
+    ? variants.map(function(v) {
+        return {
+          _id: v._id,
+          size: v.size,
+          color: v.color,
+          price: v.price,
+          stock: v.stock,
+          sku: v.sku || '',
+          isActive: v.isActive,
+          images: v.images || []
+        };
+      })
+    : []
+) %>'>
+
+  <%- include("../partials/admin/header") %>
+    <%- include("../partials/admin/sidebar") %>
+
+      <main class="p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h1 class="page-title mb-0">View Variants - <%= product.name %>
+          </h1>
+          <a href="/admin/products" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Products
+          </a>
+        </div>
+
+        <div class="card p-3">
+          <% if (variants && variants.length> 0) { %>
+            <% variants.forEach((variant, index)=> { %>
+              <div class="variant-card" data-variant-id="<%= variant._id %>">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="flex-grow-1">
+                    <div class="row">
+                      <div class="col-md-2">
+                        <strong>Size:</strong> <span data-field="size">
+                          <%= variant.size %>
+                        </span>
+                      </div>
+                      <div class="col-md-2">
+                        <strong>Color:</strong> <span data-field="color">
+                          <%= variant.color %>
+                        </span>
+                      </div>
+                      <div class="col-md-2">
+                        <strong>Price:</strong> $<span data-field="price">
+                          <%= variant.price.toFixed(2) %>
+                        </span>
+                      </div>
+                      <div class="col-md-2">
+                        <strong>Stock:</strong> <span data-field="stock">
+                          <%= variant.stock %>
+                        </span>
+                      </div>
+                      <div class="col-md-2">
+                        <strong>SKU:</strong> <span data-field="sku">
+                          <%= variant.sku || 'N/A' %>
+                        </span>
+                      </div>
+                      <div class="col-md-2">
+                        <% if (variant.isActive) { %>
+                          <span class="badge bg-success" data-field="status">Active</span>
+                          <% } else { %>
+                            <span class="badge bg-secondary" data-field="status">Inactive</span>
+                            <% } %>
+                      </div>
+                    </div>
+                    <div class="mt-2">
+                      <strong>Images (<%= variant.images.length %>):</strong>
+                      <div class="variant-images" data-field="images">
+                        <% variant.images.forEach(imgUrl=> { %>
+                          <img src="<%= imgUrl %>" class="variant-image" alt="Variant Image">
+                          <% }) %>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ms-3 d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-primary" onclick="openEditModal('<%= variant._id %>')">
+                      <i class="bi bi-pencil"></i> Edit
+                    </button>
+                    <button type="button"
+                      class="btn btn-sm <%= variant.isActive ? 'btn-warning' : 'btn-success' %> toggle-status-btn"
+                      data-variant-id="<%= variant._id %>" data-current-status="<%= variant.isActive %>"
+                      onclick="toggleVariantStatus(this)">
+                      <i class="bi bi-<%= variant.isActive ? 'eye-slash' : 'eye' %>"></i>
+                      <%= variant.isActive ? 'Unlist' : 'List' %>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+                <% } else { %>
+                  <div class="text-center py-4">
+                    <p class="text-muted">No variants found for this product.</p>
+                  </div>
+                  <% } %>
+        </div>
+      </main>
+
+      <!-- Hidden data container for variants -->
+      <script type="application/json" id="variants-data"><%- JSON.stringify(
+  variants && Array.isArray(variants) 
+    ? variants.map(function(v) {
+        return {
+          _id: v._id,
+          size: v.size,
+          color: v.color,
+          price: v.price,
+          stock: v.stock,
+          sku: v.sku || '',
+          isActive: v.isActive,
+          images: v.images || []
+        };
+      })
+    : []
+) %></script>
+
+      <!-- Edit Variant Modal -->
+      <div class="modal fade" id="editVariantModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Edit Variant</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <form id="editVariantForm">
+                <input type="hidden" id="editVariantId" name="variantId">
+
+                <div class="mb-3">
+                  <label class="form-label">Size</label>
+                  <select class="form-select" id="editSize" name="size" required>
+                    <option value="">Select Size</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Color</label>
+                  <select class="form-select" id="editColor" name="color" required>
+                    <option value="">Select Color</option>
+                    <option value="Black">Black</option>
+                    <option value="Blue">Blue</option>
+                    <option value="White">White</option>
+                    <option value="Green">Green</option>
+                    <option value="Yellow">Yellow</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Price</label>
+                  <input type="number" step="0.01" class="form-control" id="editPrice" name="price" required>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Stock</label>
+                  <input type="number" class="form-control" id="editStock" name="stock" required>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">SKU</label>
+                  <input type="text" class="form-control" id="editSku" name="sku" placeholder="SKU Code">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Active</label>
+                  <select class="form-select" id="editIsActive" name="isActive">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+
+                <!-- Existing Images -->
+                <div class="existing-images">
+                  <div class="existing-images-label">Existing Images</div>
+                  <div id="modal-existing-images"></div>
+                </div>
+
+                <!-- New Images Upload -->
+                <div class="mb-3">
+                  <label class="form-label">Add New Images (3 minimum required)</label>
+                  <input type="file" id="modalImageInput" multiple accept="image/*" class="form-control">
+                </div>
+
+                <div id="modal-new-previews" class="mt-2"></div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" onclick="saveVariantChanges()">Save Changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cropper Modal -->
+      <div class="modal fade" id="variantCropModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-body"><img id="variantCropImage"></div>
+            <div class="modal-footer">
+              <button id="variantCropSave" class="btn btn-success">Crop</button>
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+
+      <script>
+        // Store variants data for modal - loaded from JSON script tag to avoid EJS syntax in JS
+        const variantsArray = JSON.parse(document.getElementById('variants-data').textContent || '[]');
+        const variantsData = {};
+        variantsArray.forEach(function (variant) {
+          variantsData[variant._id] = {
+            size: variant.size,
+            color: variant.color,
+            price: variant.price,
+            stock: variant.stock,
+            sku: variant.sku || '',
+            isActive: variant.isActive,
+            images: variant.images || []
+          };
+        });
+
+        let currentVariantId = null;
+        let modalNewImages = [];
+        let modalImageQueue = [];
+        let modalImageIndex = 0;
+        let modalCropper = null;
+
+        const modalExistingImages = document.getElementById('modal-existing-images');
+        const modalNewPreviews = document.getElementById('modal-new-previews');
+        const modalImageInput = document.getElementById('modalImageInput');
+        const variantCropModalEl = document.getElementById('variantCropModal');
+        const variantCropModal = new bootstrap.Modal(variantCropModalEl);
+        const variantCropImageEl = document.getElementById('variantCropImage');
+        const variantCropSaveBtn = document.getElementById('variantCropSave');
+
+        // Open edit variant modal
+        function openEditModal(variantId) {
+          const variant = variantsData[variantId];
+          if (!variant) {
+            Swal.fire('Error', 'Variant data not found', 'error');
+            return;
+          }
+
+          currentVariantId = variantId;
+          modalNewImages = [];
+          modalImageQueue = [];
+          modalImageIndex = 0;
+          modalNewPreviews.innerHTML = '';
+          modalImageInput.value = '';
+
+          // Populate form fields
+          document.getElementById('editVariantId').value = variantId;
+          document.getElementById('editSize').value = variant.size;
+          document.getElementById('editColor').value = variant.color;
+          document.getElementById('editPrice').value = variant.price;
+          document.getElementById('editStock').value = variant.stock;
+          document.getElementById('editSku').value = variant.sku || '';
+          document.getElementById('editIsActive').value = variant.isActive.toString();
+
+          renderExistingImages(variantId);
+
+          // Show modal
+          const modal = new bootstrap.Modal(document.getElementById('editVariantModal'));
+          modal.show();
+        }
+
+        // Render existing images in modal
+        function renderExistingImages(variantId) {
+          const variant = variantsData[variantId];
+          modalExistingImages.innerHTML = '';
+
+          if (!variant || !variant.images) return;
+
+          variant.images.forEach((imgUrl) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'preview-wrapper';
+            wrapper.dataset.imageUrl = imgUrl;
+
+            const img = document.createElement('img');
+            img.src = imgUrl;
+            img.className = 'preview-img';
+            img.alt = 'Image';
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'delete-img';
+            deleteBtn.title = 'Delete Image';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.onclick = function () {
+              deleteExistingVariantImage(variantId, imgUrl, wrapper);
+            };
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(deleteBtn);
+            modalExistingImages.appendChild(wrapper);
+          });
+        }
+
+        // Delete existing image via AJAX
+        async function deleteExistingVariantImage(variantId, imageUrl, wrapperEl) {
+          try {
+            const result = await Swal.fire({
+              title: 'Delete Image?',
+              text: 'Are you sure you want to delete this image?',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#dc3545',
+              cancelButtonColor: '#6c757d',
+              confirmButtonText: 'Yes, delete it!'
+            });
+
+            if (result.isConfirmed) {
+              const response = await axios.post('/admin/products/variant/image/delete', {
+                variantId,
+                imageUrl
+              });
+
+              if (response.data.success) {
+                // Update local data
+                variantsData[variantId].images = variantsData[variantId].images.filter(img => img !== imageUrl);
+                wrapperEl.remove();
+                Swal.fire('Deleted!', 'Image has been deleted.', 'success');
+              }
+            }
+          } catch (error) {
+            Swal.fire(
+              'Error',
+              error.response?.data?.message || 'Failed to delete image',
+              'error'
+            );
+          }
+        }
+
+        // Handle new image selection (no validation here)
+        modalImageInput.addEventListener('change', function () {
+          modalImageQueue = Array.from(modalImageInput.files);
+          modalImageIndex = 0;
+          if (modalImageQueue.length > 0) {
+            openVariantCropper();
+          }
+        });
+
+        function openVariantCropper() {
+          const reader = new FileReader();
+          reader.onload = e => {
+            variantCropImageEl.src = e.target.result;
+            variantCropModal.show();
+          };
+          reader.readAsDataURL(modalImageQueue[modalImageIndex]);
+        }
+
+        variantCropModalEl.addEventListener('shown.bs.modal', () => {
+          if (modalCropper) modalCropper.destroy();
+          modalCropper = new Cropper(variantCropImageEl, {
+            aspectRatio: NaN,
+            viewMode: 1,
+            autoCropArea: 1,
+            movable: true,
+            zoomable: true,
+            cropBoxMovable: true,
+            cropBoxResizable: true
+          });
+        });
+
+        variantCropSaveBtn.addEventListener('click', () => {
+          modalCropper.getCroppedCanvas({ width: 800, height: 800 }).toBlob(blob => {
+            const file = new File([blob], `img-${Date.now()}.jpg`, { type: 'image/jpeg' });
+            modalNewImages.push(file);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'preview-wrapper';
+            wrapper.dataset.fileIndex = modalNewImages.length - 1;
+
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(blob);
+            img.className = 'preview-img';
+            img.alt = 'Image';
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'delete-img';
+            deleteBtn.title = 'Delete Image';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.onclick = function () {
+              deleteModalNewImage(wrapper);
+            };
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(deleteBtn);
+            modalNewPreviews.appendChild(wrapper);
+
+            variantCropModal.hide();
+            modalImageIndex++;
+
+            if (modalImageIndex < modalImageQueue.length) {
+              openVariantCropper();
+            } else {
+              modalImageInput.value = '';
+            }
+          });
+        });
+
+        function deleteModalNewImage(wrapperEl) {
+          const fileIndex = parseInt(wrapperEl.dataset.fileIndex);
+          const img = wrapperEl.querySelector('img');
+          if (img && img.src.startsWith('blob:')) {
+            URL.revokeObjectURL(img.src);
+          }
+          modalNewImages.splice(fileIndex, 1);
+          wrapperEl.remove();
+
+          // Reindex remaining previews
+          const remaining = modalNewPreviews.querySelectorAll('.preview-wrapper');
+          remaining.forEach((w, idx) => {
+            w.dataset.fileIndex = idx;
+          });
+        }
+
+        // Save variant changes
+        async function saveVariantChanges() {
+          const form = document.getElementById('editVariantForm');
+          const variantId = document.getElementById('editVariantId').value;
+          const size = document.getElementById('editSize').value;
+          const color = document.getElementById('editColor').value;
+          const price = parseFloat(document.getElementById('editPrice').value);
+          const stock = parseInt(document.getElementById('editStock').value);
+          const sku = document.getElementById('editSku').value;
+          const isActive = document.getElementById('editIsActive').value === 'true';
+
+          // Validate
+          if (!size || !color || Number.isNaN(price) || stock < 0) {
+            Swal.fire('Error', 'Please fill all required fields correctly', 'error');
+            return;
+          }
+
+          // Validate images count (existing + new)
+          const existingCount = variantsData[variantId]?.images?.length || 0;
+          const totalImages = existingCount + modalNewImages.length;
+          if (totalImages < 3) {
+            Swal.fire('Error', 'Minimum 3 images required for this variant', 'error');
+            return;
+          }
+
+          try {
+            const formData = new FormData();
+            formData.append('variantId', variantId);
+            formData.append('size', size);
+            formData.append('color', color);
+            formData.append('price', price);
+            formData.append('stock', stock);
+            formData.append('sku', sku || '');
+            formData.append('isActive', isActive);
+
+            modalNewImages.forEach(file => {
+              formData.append('images', file);
+            });
+
+            const response = await axios.post('/admin/products/variant/update', formData, {
+              headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            if (response.data.success) {
+              const updatedVariant = response.data.variant;
+              variantsData[variantId] = {
+                size: updatedVariant.size,
+                color: updatedVariant.color,
+                price: updatedVariant.price,
+                stock: updatedVariant.stock,
+                sku: updatedVariant.sku || '',
+                isActive: updatedVariant.isActive,
+                images: updatedVariant.images || []
+              };
+
+              // Close modal
+              const modal = bootstrap.Modal.getInstance(document.getElementById('editVariantModal'));
+              modal.hide();
+
+              // Update card UI without reload
+              updateVariantCardUI(variantId);
+
+              Swal.fire('Success!', response.data.message, 'success');
+            }
+          } catch (error) {
+            Swal.fire(
+              'Error',
+              error.response?.data?.message || 'Failed to update variant',
+              'error'
+            );
+          }
+        }
+
+        // Update variant card UI without reload
+        function updateVariantCardUI(variantId) {
+          const card = document.querySelector(`.variant-card[data-variant-id="${variantId}"]`);
+          const data = variantsData[variantId];
+          if (!card || !data) return;
+
+          const sizeEl = card.querySelector('[data-field="size"]');
+          const colorEl = card.querySelector('[data-field="color"]');
+          const priceEl = card.querySelector('[data-field="price"]');
+          const stockEl = card.querySelector('[data-field="stock"]');
+          const skuEl = card.querySelector('[data-field="sku"]');
+          const statusEl = card.querySelector('[data-field="status"]');
+          const imagesEl = card.querySelector('[data-field="images"]');
+
+          if (sizeEl) sizeEl.textContent = data.size;
+          if (colorEl) colorEl.textContent = data.color;
+          if (priceEl) priceEl.textContent = Number(data.price).toFixed(2);
+          if (stockEl) stockEl.textContent = data.stock;
+          if (skuEl) skuEl.textContent = data.sku || 'N/A';
+          if (statusEl) {
+            if (data.isActive) {
+              statusEl.className = 'badge bg-success';
+              statusEl.textContent = 'Active';
+            } else {
+              statusEl.className = 'badge bg-secondary';
+              statusEl.textContent = 'Inactive';
+            }
+          }
+          if (imagesEl) {
+            imagesEl.innerHTML = '';
+            data.images.forEach(imgUrl => {
+              const img = document.createElement('img');
+              img.src = imgUrl;
+              img.className = 'variant-image';
+              img.alt = 'Variant Image';
+              imagesEl.appendChild(img);
+            });
+          }
+        }
+
+        // Toggle variant status
+        async function toggleVariantStatus(buttonElement) {
+          const variantId = buttonElement.dataset.variantId;
+          const currentStatus = buttonElement.dataset.currentStatus === 'true';
+
+          try {
+            const result = await Swal.fire({
+              title: currentStatus ? 'Unlist Variant?' : 'List Variant?',
+              text: currentStatus
+                ? 'This variant will be marked as inactive. Continue?'
+                : 'This variant will be marked as active. Continue?',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonColor: currentStatus ? '#ffc107' : '#198754',
+              cancelButtonColor: '#6c757d',
+              confirmButtonText: currentStatus ? 'Yes, unlist it' : 'Yes, list it'
+            });
+
+            if (result.isConfirmed) {
+              const response = await axios.post('/admin/products/variant/toggle-status', {
+                variantId: variantId
+              });
+
+              if (response.data.success) {
+                // Update variantsData
+                if (variantsData[variantId]) {
+                  variantsData[variantId].isActive = response.data.isActive;
+                }
+
+                // Update UI without page reload
+                const variantCard = buttonElement.closest('.variant-card');
+                if (variantCard) {
+                  // Update badge
+                  const badge = variantCard.querySelector('.badge');
+                  if (badge) {
+                    if (response.data.isActive) {
+                      badge.className = 'badge bg-success';
+                      badge.textContent = 'Active';
+                    } else {
+                      badge.className = 'badge bg-secondary';
+                      badge.textContent = 'Inactive';
+                    }
+                  }
+
+                  // Update button
+                  if (response.data.isActive) {
+                    buttonElement.className = 'btn btn-sm btn-warning toggle-status-btn';
+                    buttonElement.innerHTML = '<i class="bi bi-eye-slash"></i> Unlist';
+                    buttonElement.dataset.currentStatus = 'true';
+                  } else {
+                    buttonElement.className = 'btn btn-sm btn-success toggle-status-btn';
+                    buttonElement.innerHTML = '<i class="bi bi-eye"></i> List';
+                    buttonElement.dataset.currentStatus = 'false';
+                  }
+                }
+
+                Swal.fire('Success!', response.data.message, 'success');
+              }
+            }
+          } catch (error) {
+            Swal.fire(
+              'Error',
+              error.response?.data?.message || 'Failed to update variant status',
+              'error'
+            );
+          }
+        }
+      </script>
+
+</body>
+
+</html>

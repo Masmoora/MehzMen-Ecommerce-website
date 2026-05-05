@@ -1,66 +1,39 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 const {Schema} = mongoose;
 
 const productSchema = new Schema({
-    productName:{
-        type:String,
-        required:true
-    },
-    description:{
-        type:String,
-        required:true
-    },
-    brand: {
-        type: Schema.Types.ObjectId,
-        ref: "Brand",
-        required: true
-    },
-    category:{
-        type:Schema.Types.ObjectId,
-        ref:"Category",
-        required:true,
+  name:{
+    type:String,
+    required:true
+  },
+  description:{
+    type:String,
+    required:true
+  },
+  brand: {
+    type: Schema.Types.ObjectId,
+    ref: 'Brand',
+    required: true
+  },
+  category:{
+    type:Schema.Types.ObjectId,
+    ref:'Category',
+    required:true,
 
+  },
+  isBlocked: {
+      type: Boolean,
+      default: false
     },
-    regularPrice:{
-        type:Number,
-        required:true
-    },
-    salesPrice:{
-        type:Number,
-        required:true
-    },
-    productOffer:{
-        type:Number,
-        default:0
-    },
-    quantity:{
-        type:Number,
-        default:true
-    },
-    color:{
-        type:String,
-        required:true
-    },
-    productImage:{
-        type:[String],
-        required:true
-    },
-    isBlocked:{
-        type:Boolean,
-        default:false
-    },
-    status:{
-        type:String,
-        enum:["Available","Out of stock","Discontinued"],
-        required:true,
-        default:"Available"
-    }
+status: {
+  type: String,
+  enum: ['available', 'out_of_stock', 'discontinued'],
+  required: true,
+  default: 'available'
+}
 
+},{timestamps:true});
 
+const Product = mongoose.model('Product',productSchema);
 
-},{timestamps:true})
-
-
-const Product = mongoose.model("Product",productSchema)
-
-module.exports = Product;
+export default  Product;

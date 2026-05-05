@@ -1,0 +1,31 @@
+    body {
+        background: #f6f7fb;
+        padding-top: 52px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    main {
+        flex: 1;
+    }
+
+    .success-card {
+        max-width: 480px;
+        margin: 0 auto;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .illus-wrap {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto 1rem;
+    }
+
+    .illus-wrap svg {
+        width: 100%;
+        height: 100%;
+    }

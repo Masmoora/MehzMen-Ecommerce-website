@@ -1,0 +1,13 @@
+body{
+    background:#f6f7fb;
+    padding-top:60px;
+}
+.card-soft{
+    background:#fff;
+    border-radius:12px;
+    border:1px solid #eee;
+}
+.empty-box{
+    text-align:center;
+    padding:60px 20px;
+}

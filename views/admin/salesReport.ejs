@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Report - Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/admin/salesReport.css">
+</head>
+
+<body>
+  <%- include("../../views/partials/admin/header")%>
+    <%- include("../../views/partials/admin/sidebar")%>
+
+      <main class="main-content">
+        
+        <div class="container-fluid px-0">
+          
+          <h1 class="page-title">Sales Report</h1>
+
+          <!-- Filter Form -->
+          <form method="GET" action="/admin/report/generate" class="row g-3 mb-4">
+            <div class="col-md-3">
+              <label for="rangeType" class="form-label">Select Report Type</label>
+              <select class="form-select" id="rangeType" name="rangeType" required
+                onchange="toggleDateInputs(this.value)">
+                <option value="day" <%=rangeType==='day' ? 'selected' : '' %>>Today</option>
+                <option value="week" <%=rangeType==='week' ? 'selected' : '' %>>This Week</option>
+                <option value="month" <%=rangeType==='month' ? 'selected' : '' %>>This Month</option>
+                <option value="custom" <%=rangeType==='custom' ? 'selected' : '' %>>Custom Range</option>
+              </select>
+            </div>
+
+            <div class="col-md-3 custom-range <%= rangeType !== 'custom' ? 'd-none' : '' %>">
+              <label for="startDate" class="form-label">Start Date</label>
+              <input type="date" class="form-control" id="startDate" name="startDate" value="<%= startDate || '' %>">
+            </div>
+
+            <div class="col-md-3 custom-range <%= rangeType !== 'custom' ? 'd-none' : '' %>">
+              <label for="endDate" class="form-label">End Date</label>
+              <input type="date" class="form-control" id="endDate" name="endDate" value="<%= endDate || '' %>">
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+              <button type="submit" class="btn btn-primary w-100">Generate Report</button>
+            </div>
+          </form>
+
+          <% if (salesData && salesData.length> 0) { %>
+            <!-- Summary -->
+            <div class="mb-3">
+              <p><strong>Total Orders:</strong>
+                <%= totalSale %>
+              </p>
+              <p><strong>Total Sales Amount:</strong> ₹<%= totalAmount %>
+              </p>
+              <p><strong>Total Discount:</strong> ₹<%= totalDiscount %>
+              </p>
+              <p><strong>Total Offer:</strong> ₹<%= totalOffer %>
+              </p>
+            </div>
+        
+            <!-- Report Table -->
+            <div class="table-responsive bg-white border rounded">
+              <table class="table table-bordered table-striped mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Order ID</th>
+                    <th>User</th>
+                    <th>Date</th>
+                    <th>Payment</th>
+                    <th>Total Amount</th>
+                    <th>Discount</th>
+                    <th>Offer</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% salesData.forEach((sale)=> { %>
+                    <tr>
+                      <td>
+                        <%= sale.orderId %>
+                      </td>
+                      <td>
+                        <%= sale.user %>
+                      </td>
+                      <td>
+                        <%= sale.date %>
+                      </td>
+                      <td>
+                        <%= sale.payment %>
+                      </td>
+                      <td>₹<%= sale.totalAmount %>
+                      </td>
+                      <td>₹<%= sale.discount %>
+                      </td>
+                      <td>₹<%= sale.offer %>
+                      </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Download buttons -->
+            <div class="mb-4">
+              <a href="/admin/report/generate?rangeType=<%= rangeType %>&startDate=<%= startDate %>&endDate=<%= endDate %>&format=pdf"
+                class="btn btn-danger me-2">
+                Download PDF
+              </a>
+              <a href="/admin/report/generate?rangeType=<%= rangeType %>&startDate=<%= startDate %>&endDate=<%= endDate %>&format=excel"
+                class="btn btn-success">
+                Download Excel
+              </a>
+            </div>
+            <% } else { %>
+              <div class="alert alert-warning">No sales data found for the selected range.</div>
+              <% } %>
+
+                <!-- Pagination -->
+                <% if (totalPages && totalPages> 1) { %>
+                  <nav>
+                    <ul class="pagination justify-content-center">
+                      <% for (let i=1; i <=totalPages; i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                          <a class="page-link"
+                            href="/admin/report/generate?page=<%= i %>&rangeType=<%= rangeType %>&startDate=<%= startDate %>&endDate=<%= endDate %>">
+                            <%= i %>
+                          </a>
+                        </li>
+                        <% } %>
+                    </ul>
+                  </nav>
+                  <% } %>
+        </div>
+      </main>
+
+      <%- include("../../views/partials/admin/footer")%>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+          function getTodayISODate() {
+            const today = new Date();
+            const y = today.getFullYear();
+            const m = String(today.getMonth() + 1).padStart(2, '0');
+            const d = String(today.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+          }
+
+          function parseDateInput(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            return new Date(y, m - 1, d);
+          }
+
+          function toggleDateInputs(value) {
+            const customRange = document.querySelectorAll('.custom-range');
+            const startInput = document.getElementById('startDate');
+            const endInput = document.getElementById('endDate');
+
+            customRange.forEach(el => {
+              el.classList.toggle('d-none', value !== 'custom');
+            });
+
+            const isCustom = value === 'custom';
+            startInput.required = isCustom;
+            endInput.required = isCustom;
+
+            if (isCustom) {
+              const today = getTodayISODate();
+              if (!startInput.value) startInput.value = today;
+              if (!endInput.value) endInput.value = today;
+            }
+          }
+
+          document.addEventListener('DOMContentLoaded', function () {
+            const rangeType = document.getElementById('rangeType').value;
+            toggleDateInputs(rangeType);
+
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function (e) {
+              const selectedRange = document.getElementById('rangeType').value;
+
+              if (selectedRange === 'custom') {
+                const start = document.getElementById('startDate').value;
+                const end = document.getElementById('endDate').value;
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (!start || !end) {
+                  e.preventDefault();
+                  Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid date',
+                    text: 'Please select start and end dates'
+                  });
+                  return;
+                }
+
+                const startDate = parseDateInput(start);
+                const endDate = parseDateInput(end);
+
+                if (startDate > endDate) {
+                  e.preventDefault();
+                  Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid date',
+                    text: 'Start date cannot be greater than end date'
+                  });
+                  return;
+                }
+
+                if (startDate > today || endDate > today) {
+                  e.preventDefault();
+                  Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid date',
+                    text: 'Dates cannot be in the future'
+                  });
+                  return;
+                }
+              }
+            });
+          });
+        </script>
+</body>
+
+</html>
