@@ -56,7 +56,7 @@ class AdminController {
                 req.session.admin = admin._id;
                 return res.redirect('/admin/dashboard');
             } else {
-                return res.render('/admin-login', { message: 'Invalid password' });
+                return res.render('admin-login', { message: 'Invalid password' });
             }
         } catch (error) {
             logger.error('page not found', error);
