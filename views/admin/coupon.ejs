@@ -84,9 +84,17 @@
                         <%= coupon.endDate ? new Date(coupon.endDate).toLocaleDateString() : '-' %>
                       </td>
                       <td>
-                        <span class="badge <%= coupon.isActive ? 'bg-success' : 'bg-secondary' %>">
-                          <%= coupon.isActive ? 'Active' : 'Inactive' %>
-                        </span>
+<%
+  const isExpired = coupon.endDate && new Date(coupon.endDate) < new Date();
+%>
+
+<% if (isExpired) { %>
+  <span class="badge bg-danger">Expired</span>
+<% } else if (coupon.isActive) { %>
+  <span class="badge bg-success">Active</span>
+<% } else { %>
+  <span class="badge bg-secondary">Inactive</span>
+<% } %>
                       </td>
                       <td>
                         <%= coupon.usedCount || 0 %> /
