@@ -56,7 +56,7 @@ class CouponController {
       }
       console.log("helloo",value)
       console.log(minOrderValue)
-      if(value>minOrderValue){
+      if(data.value>data.minOrderValue){
         return res.status(400).json({ success: false, message: 'min order should be greater than value' });
       }
 
