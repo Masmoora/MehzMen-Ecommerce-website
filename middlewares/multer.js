@@ -21,6 +21,11 @@ const s3Upload = (folderName) =>
         cb(null, `${folderName}/${Date.now()}-${file.originalname}`);
       },
     }),
+    limits: {
+
+      fileSize: 50 * 1024 * 1024
+
+    }
   });
 
 export default s3Upload;
